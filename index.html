@@ -207,11 +207,12 @@
             outline: none;
         }
         .input-group input:focus { border-color: var(--primary); }
-        .input-row {
+        .email-actions {
             display: flex;
             gap: 5px;
+            margin-top: 2px;
         }
-        .input-row input { flex: 1; }
+        .email-actions .btn-action { flex: 1; }
         .btn-action {
             padding: 8px 14px;
             border-radius: var(--radius-sm);
@@ -228,67 +229,6 @@
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-action.primary { background: var(--primary); }
         .btn-action.danger { background: var(--accent); }
-
-        .phone-prefix-wrapper {
-            display: flex;
-            align-items: center;
-            background: var(--bg-base);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            transition: border-color 0.2s;
-            flex: 1;
-        }
-        .phone-prefix-wrapper:focus-within {
-            border-color: var(--primary);
-        }
-        .phone-prefix-wrapper .prefix {
-            padding: 0 2px 0 10px;
-            font-weight: 600;
-            color: var(--text-main);
-            font-size: 0.85rem;
-            flex-shrink: 0;
-            background: transparent;
-            user-select: none;
-        }
-        .phone-prefix-wrapper input {
-            border: none !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            padding: 8px 10px 8px 4px !important;
-            flex: 1;
-            outline: none;
-            color: var(--text-main);
-            font-size: 0.85rem;
-            min-width: 0;
-        }
-        .phone-prefix-wrapper input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.6;
-        }
-
-        /* ─── Recaptcha container ─── */
-        #recaptcha-container {
-            margin: 4px 0;
-            min-height: 78px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: var(--bg-base);
-            border-radius: var(--radius-sm);
-            border: 1px dashed var(--border);
-        }
-        #recaptcha-container .g-recaptcha {
-            transform: scale(0.85);
-            transform-origin: center;
-        }
-
-        .email-actions {
-            display: flex;
-            gap: 5px;
-            margin-top: 2px;
-        }
-        .email-actions .btn-action { flex: 1; }
         .forgot-link {
             font-size: 0.65rem;
             color: var(--primary);
@@ -637,8 +577,6 @@
             .widget-value { font-size: 0.75rem; }
             header h1 { font-size: 0.8rem; }
             .user-badge .user-name { max-width: 45px; font-size: 0.55rem; }
-            #recaptcha-container { min-height: 70px; }
-            #recaptcha-container .g-recaptcha { transform: scale(0.75); }
         }
     </style>
 </head>
@@ -676,7 +614,7 @@
     <!-- App Container -->
     <div class="app-container" id="appContainer">
 
-        <!-- Login Overlay -->
+        <!-- Login Overlay (No Phone) -->
         <div id="login-overlay">
             <div class="login-icon"><i class="fas fa-user-graduate"></i></div>
             <h2>Study Time-Table</h2>
@@ -699,24 +637,6 @@
                         <button class="btn-action" id="email-signup-btn">Sign Up</button>
                     </div>
                     <div class="forgot-link" id="forgot-password-link">Forgot password?</div>
-                </div>
-
-                <div class="method-divider">or</div>
-
-                <!-- Phone with +91 prefix & visible reCAPTCHA -->
-                <div class="input-group" id="phone-section">
-                    <div class="input-row">
-                        <div class="phone-prefix-wrapper">
-                            <span class="prefix">+91</span>
-                            <input type="tel" id="phone-input" placeholder="9219951830" maxlength="10" />
-                        </div>
-                        <button class="btn-action" id="send-otp-btn">Send OTP</button>
-                    </div>
-                    <div id="recaptcha-container"></div>
-                    <div id="otp-group" style="display:none;" class="input-row">
-                        <input type="text" id="otp-input" placeholder="6-digit OTP" maxlength="6" />
-                        <button class="btn-action" id="verify-otp-btn">Verify</button>
-                    </div>
                 </div>
 
                 <div class="method-divider">or</div>
@@ -875,8 +795,6 @@
         let firebaseApp, auth, db;
         let currentUser = null;
         let isFirebaseReady = false;
-        let confirmationResult = null;
-        let recaptchaVerifier = null;
 
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -898,11 +816,6 @@
         const forgotPasswordLink = document.getElementById('forgot-password-link');
         const emailInput = document.getElementById('email-input');
         const passwordInput = document.getElementById('password-input');
-        const sendOtpBtn = document.getElementById('send-otp-btn');
-        const verifyOtpBtn = document.getElementById('verify-otp-btn');
-        const phoneInput = document.getElementById('phone-input');
-        const otpInput = document.getElementById('otp-input');
-        const otpGroup = document.getElementById('otp-group');
         const loginLoader = document.getElementById('login-loader');
         const userBadge = document.getElementById('user-badge');
         const userAvatar = document.getElementById('user-avatar');
@@ -1507,8 +1420,8 @@
                 loginOverlay.classList.add('hidden');
                 userBadge.style.display = 'flex';
                 userAvatar.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=4361ee&color=fff';
-                userAvatar.alt = user.displayName || user.phoneNumber || user.email || 'User';
-                let name = user.displayName || user.phoneNumber || user.email || 'User';
+                userAvatar.alt = user.displayName || user.email || 'User';
+                let name = user.displayName || user.email || 'User';
                 if (user.isAnonymous) {
                     name = 'Guest';
                     userTypeBadge.style.display = 'inline';
@@ -1673,97 +1586,6 @@
             }
         });
 
-        // ─── Phone Auth (with +91 prefix & visible reCAPTCHA) ───
-        function setupRecaptcha() {
-            if (!recaptchaVerifier) {
-                try {
-                    recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                        size: 'normal', // visible checkbox
-                        callback: () => {
-                            showStickerToast('✅ reCAPTCHA verified');
-                        },
-                        'expired-callback': () => {
-                            showStickerToast('⏳ reCAPTCHA expired. Please try again.');
-                            recaptchaVerifier = null;
-                        }
-                    });
-                } catch (e) {
-                    console.warn('reCAPTCHA setup error:', e);
-                    showStickerToast('⚠️ reCAPTCHA error. Please refresh.');
-                }
-            }
-        }
-
-        sendOtpBtn.addEventListener('click', async () => {
-            const number = phoneInput.value.trim();
-            if (!number || number.length < 10) {
-                showStickerToast('⚠️ Enter a valid 10-digit phone number.');
-                return;
-            }
-            const fullNumber = `+91${number}`;
-            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
-            loginLoader.classList.add('show');
-            sendOtpBtn.disabled = true;
-            try {
-                setupRecaptcha();
-                if (!recaptchaVerifier) {
-                    throw new Error('reCAPTCHA not initialized. Please refresh.');
-                }
-                confirmationResult = await auth.signInWithPhoneNumber(fullNumber, recaptchaVerifier);
-                otpGroup.style.display = 'flex';
-                showStickerToast(`📱 OTP sent to +91${number}`);
-            } catch (e) {
-                console.warn('Send OTP error:', e);
-                showStickerToast(`⚠️ ${e.message}`);
-                recaptchaVerifier = null;
-                // Reset recaptcha container
-                const container = document.getElementById('recaptcha-container');
-                container.innerHTML = ''; // Clear old recaptcha
-                // Try to re-render after a small delay
-                setTimeout(() => {
-                    try {
-                        recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                            size: 'normal',
-                            callback: () => { showStickerToast('✅ reCAPTCHA verified'); },
-                            'expired-callback': () => {
-                                showStickerToast('⏳ reCAPTCHA expired. Please try again.');
-                                recaptchaVerifier = null;
-                            }
-                        });
-                    } catch (err) { console.warn('reCAPTCHA re-init error:', err); }
-                }, 500);
-            } finally {
-                loginLoader.classList.remove('show');
-                sendOtpBtn.disabled = false;
-            }
-        });
-
-        verifyOtpBtn.addEventListener('click', async () => {
-            const code = otpInput.value.trim();
-            if (!code) { showStickerToast('⚠️ Enter OTP.'); return; }
-            loginLoader.classList.add('show');
-            verifyOtpBtn.disabled = true;
-            try {
-                const result = await confirmationResult.confirm(code);
-                setUser(result.user);
-                await syncAllToCloud();
-                otpGroup.style.display = 'none';
-                phoneInput.value = '';
-                otpInput.value = '';
-                // Reset recaptcha container
-                const container = document.getElementById('recaptcha-container');
-                container.innerHTML = '';
-                recaptchaVerifier = null;
-                showStickerToast('✅ Phone login successful!');
-            } catch (e) {
-                console.warn('OTP verify error:', e);
-                showStickerToast(`⚠️ ${e.message}`);
-            } finally {
-                loginLoader.classList.remove('show');
-                verifyOtpBtn.disabled = false;
-            }
-        });
-
         // ─── Auth state listener ───
         if (isFirebaseReady) {
             auth.onAuthStateChanged((user) => {
@@ -1782,7 +1604,7 @@
                 currentUser = { isAnonymous: true, uid: 'local' };
                 refreshAllViews();
             });
-            document.querySelector('#phone-section').style.display = 'none';
+            // Hide email & guest if Firebase not ready
             document.querySelector('.input-group').style.display = 'none';
             guestBtn.style.display = 'none';
         }
