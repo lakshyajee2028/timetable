@@ -6,9 +6,12 @@
     <title>Time Table · Sync</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js">
+    </script>
 
     <style>
         :root {
@@ -384,7 +387,10 @@
             position: relative;
             flex-shrink: 0;
         }
-        .user-badge img { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--primary); }
+        .user-badge img { width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--primary); }
         .user-badge .user-name {
             font-size: 0.65rem;
             font-weight: 600;
@@ -394,12 +400,20 @@
             white-space: nowrap;
             color: var(--text-main);
         }
-        .user-badge .logout-tip { font-size: 0.5rem; color: var(--text-muted); opacity: 0.6; }
+        .user-badge .logout-tip { font-size: 0.5rem;
+            color: var(--text-muted);
+            opacity: 0.6; }
         .user-badge .logout-tip i { font-size: 0.5rem; }
-        main { flex: 1; overflow-y: auto; padding: 10px 12px 90px 12px; }
-        .view-section { display: none; animation: fadeInView 0.3s ease-in-out; }
+        main { flex: 1;
+            overflow-y: auto;
+            padding: 10px 12px 90px 12px; }
+        .view-section { display: none;
+            animation: fadeInView 0.3s ease-in-out; }
         .view-section.active { display: block; }
-        @keyframes fadeInView { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeInView { from { opacity: 0;
+                transform: scale(0.98); }
+            to { opacity: 1;
+                transform: scale(1); } }
         h2 {
             font-family: 'Fredoka', sans-serif;
             font-size: 1rem;
@@ -553,7 +567,8 @@
             transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
         .btn:hover { transform: translateY(-2px); }
-        .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
+        .btn:active { transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--border); }
         .btn.primary {
             background: var(--primary);
             color: white;
@@ -782,6 +797,18 @@
             animation: pulseHeart 1.6s ease-in-out infinite;
         }
         @keyframes pulseHeart { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        @media (max-width: 480px) {
+            .app-container { height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                border: none; }
+            main { padding: 8px 8px 80px 8px; }
+            .home-widgets-grid { gap: 5px; }
+            .widget-value { font-size: 0.75rem; }
+            header h1 { font-size: 0.8rem; }
+            .user-badge .user-name { max-width: 45px;
+                font-size: 0.55rem; }
+        }
         .sync-btn {
             position: fixed;
             bottom: 100px;
@@ -807,6 +834,7 @@
     </style>
 </head>
 <body>
+
     <div class="bg-decor">
         <div class="floating-item">📚</div>
         <div class="floating-item">✏️</div>
@@ -834,6 +862,7 @@
     </div>
 
     <div class="app-container" id="appContainer">
+
         <div id="login-overlay">
             <div class="login-icon"><i class="fas fa-user-graduate"></i></div>
             <h2>Study Time-Table</h2>
@@ -959,6 +988,7 @@
             </div>
         </main>
 
+        <!-- Force Sync Button (Floating) -->
         <button class="sync-btn" id="force-sync-btn" title="Force Sync Data">
             <i class="fas fa-cloud-upload-alt"></i>
         </button>
@@ -979,12 +1009,15 @@
                 <button class="nav-item" data-target="view-calendar"><i class="fas fa-calendar-days"></i><span>Calendar</span></button>
             </div>
             <div class="footer-credit">
-                Built with <span class="heart">❤️</span> by <a href="https://Priyanshusingh.pages.dev/" target="_blank" rel="noopener noreferrer">PRIYANSHU SINGH</a>
+                Built with <span class="heart">❤️</span> by
+                <a href="https://Priyanshusingh.pages.dev/" target="_blank" rel="noopener noreferrer">PRIYANSHU SINGH</a>
             </div>
         </nav>
+
     </div>
 
     <script>
+        // ─── Firebase Config ───
         const firebaseConfig = {
             apiKey: "AIzaSyBhLhJq1MiFmILQv3xMdas12AwIxXLga60",
             authDomain: "studytimetable-67ded.firebaseapp.com",
@@ -995,236 +1028,920 @@
             measurementId: "G-X4W2ZJ8YHC"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
+        let firebaseApp, auth, db;
         let currentUser = null;
-        const STORAGE_KEY = "saved_timetable_matrix";
+        let isFirebaseReady = false;
 
-        function showStickerToast(text) {
-            const toast = document.getElementById('sticker-toast');
-            document.getElementById('toast-text').innerText = text;
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            db.enablePersistence({ synchronizeTabs: true }).catch(err => console.warn('Persistence:', err));
+            isFirebaseReady = true;
+        } catch (e) {
+            console.warn('Firebase init failed:', e);
+            isFirebaseReady = false;
+        }
+
+        // ─── DOM Refs ───
+        const loginOverlay = document.getElementById('login-overlay');
+        const googleBtn = document.getElementById('google-login-btn');
+        const guestBtn = document.getElementById('guest-login-btn');
+        const emailSigninBtn = document.getElementById('email-signin-btn');
+        const emailSignupBtn = document.getElementById('email-signup-btn');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const loginLoader = document.getElementById('login-loader');
+        const userBadge = document.getElementById('user-badge');
+        const userAvatar = document.getElementById('user-avatar');
+        const userNameDisplay = document.getElementById('user-name-display');
+        const userTypeBadge = document.getElementById('user-type-badge');
+        const appTitle = document.getElementById('app-title');
+        const forceSyncBtn = document.getElementById('force-sync-btn');
+
+        const toast = document.getElementById('sticker-toast');
+        const toastText = document.getElementById('toast-text');
+
+        function showStickerToast(msg) {
+            toastText.innerText = msg;
             toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
-        // Local & Cloud Sync Functions
-        function saveTimetableLocally(data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
+        // ─── Theme ───
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlEl = document.documentElement;
+        const savedTheme = localStorage.getItem('doodleTheme') || 'dark';
+        htmlEl.setAttribute('data-theme', savedTheme);
+        themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        themeToggle.addEventListener('click', () => {
+            const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            htmlEl.setAttribute('data-theme', next);
+            localStorage.setItem('doodleTheme', next);
+            themeIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        });
 
-        function loadTimetableLocally() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            return saved ? JSON.parse(saved) : null;
-        }
+        // ─── Modal ───
+        const modalOverlay = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content-area');
+        const modalCancel = document.getElementById('modal-cancel-btn');
+        const modalConfirm = document.getElementById('modal-confirm-btn');
+        let modalResolve = null;
 
-        function saveToCloud(data) {
-            if (!currentUser || currentUser.isAnonymous) return;
-            db.collection("timetables").doc(currentUser.uid).set({
-                timetable: data,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                showStickerToast("☁️ Synced to Cloud!");
-            }).catch(err => {
-                console.error("Cloud save error:", err);
+        function openStickerModal(title, icon, html) {
+            return new Promise((resolve) => {
+                modalTitle.innerHTML = `<i class="${icon}"></i> ${title}`;
+                modalContent.innerHTML = html;
+                modalOverlay.classList.add('active');
+                modalResolve = resolve;
             });
         }
-
-        function loadFromCloud() {
-            if (!currentUser || currentUser.isAnonymous) return Promise.resolve(null);
-            return db.collection("timetables").doc(currentUser.uid).get().then(doc => {
-                if (doc.exists) {
-                    return doc.data().timetable;
+        modalCancel.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+            if (modalResolve) modalResolve(null);
+        });
+        modalConfirm.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+            if (modalResolve) {
+                const inputs = modalContent.querySelectorAll('input, select');
+                if (inputs.length > 1) {
+                    const vals = {};
+                    inputs.forEach(inp => vals[inp.id || inp.name] = inp.value);
+                    modalResolve(vals);
+                } else {
+                    modalResolve(inputs[0] ? inputs[0].value : true);
                 }
-                return null;
-            }).catch(err => {
-                console.error("Cloud load error:", err);
-                return null;
-            });
-        }
-
-        // Render Table Data into Matrix UI
-        function renderTableData(data) {
-            if (!data || !data.headers || !data.rows) return;
-            
-            const headerRow = document.getElementById('matrix-header-row');
-            headerRow.innerHTML = '<th>Subject / Time</th>';
-            data.headers.forEach(h => {
-                const th = document.createElement('th');
-                th.innerHTML = `<input type="text" value="${h}" />`;
-                headerRow.appendChild(th);
-            });
-
-            const bodyRows = document.getElementById('matrix-body-rows');
-            bodyRows.innerHTML = '';
-            data.rows.forEach(row => {
-                const tr = document.createElement('tr');
-                row.forEach((cellVal, idx) => {
-                    const td = document.createElement('td');
-                    td.innerHTML = `<input type="text" value="${cellVal}" />`;
-                    tr.appendChild(td);
-                });
-                bodyRows.appendChild(tr);
-            });
-        }
-
-        function extractTableData() {
-            const headers = [];
-            const headerInputs = document.querySelectorAll('#matrix-header-row th input');
-            headerInputs.forEach(input => headers.push(input.value));
-
-            const rows = [];
-            const bodyRows = document.querySelectorAll('#matrix-body-rows tr');
-            bodyRows.forEach(tr => {
-                const rowData = [];
-                tr.querySelectorAll('input').forEach(input => rowData.push(input.value));
-                rows.push(rowData);
-            });
-
-            return { headers, rows };
-        }
-
-        document.getElementById('save-timetable-btn').addEventListener('click', () => {
-            const data = extractTableData();
-            saveTimetableLocally(data);
-            showStickerToast("💾 Timetable saved successfully!");
-            if (currentUser && !currentUser.isAnonymous) {
-                saveToCloud(data);
             }
         });
 
-        // Navigation Tabs Handling
-        document.querySelectorAll('.nav-item').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-                
-                btn.classList.add('active');
-                const targetId = btn.getAttribute('data-target');
-                document.getElementById(targetId).classList.add('active');
-            });
-        });
-
-        // Auth State Handler
-        auth.onAuthStateChanged(user => {
-            const loginOverlay = document.getElementById('login-overlay');
-            const userBadge = document.getElementById('user-badge');
-            
-            if (user) {
-                currentUser = user;
-                loginOverlay.classList.add('hidden');
-                userBadge.style.display = 'flex';
-                document.getElementById('user-name-display').innerText = user.displayName || user.email || 'User';
-                document.getElementById('user-avatar').src = user.photoURL || 'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/default.svg';
-                
-                // Fetch cloud data and sync with local storage
-                loadFromCloud().then(cloudData => {
-                    if (cloudData) {
-                        saveTimetableLocally(cloudData);
-                        renderTableData(cloudData);
-                        showStickerToast("✨ Synced with your account!");
-                    } else {
-                        const local = loadTimetableLocally();
-                        if (local) {
-                            renderTableData(local);
-                            saveToCloud(local);
-                        }
+        // ─── Navigation ───
+        const navItems = document.querySelectorAll('.nav-item');
+        const viewSections = document.querySelectorAll('.view-section');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                const target = item.getAttribute('data-target');
+                viewSections.forEach(sec => {
+                    sec.classList.remove('active');
+                    if (sec.id === target) {
+                        sec.classList.add('active');
+                        if (target === 'view-calendar') renderCalendar();
                     }
                 });
-            } else {
-                currentUser = null;
-                loginOverlay.classList.remove('hidden');
-                userBadge.style.display = 'none';
-            }
-        });
-
-        document.getElementById('google-login-btn').addEventListener('click', () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(error => {
-                showStickerToast("⚠️ Google Login Failed!");
-                console.error(error);
             });
         });
 
-        document.getElementById('guest-login-btn').addEventListener('click', () => {
-            document.getElementById('login-overlay').classList.add('hidden');
-            currentUser = { isAnonymous: true };
-            showStickerToast("📁 Working in Local Mode.");
-        });
+        // ─── Assistant ───
+        const assistantBtn = document.getElementById('assistant-btn');
+        const assistantBubble = document.getElementById('assistant-bubble');
+        const assistantClose = document.getElementById('assistant-close');
+        const speechWrap = document.getElementById('assistant-speech-wrap');
+        const guideMessages = [
+            "Hii I'm PS. Tap me for tips! 👋",
+            "⏱️ Live clock + target countdown!",
+            "📅 Calendar shows festivals & tests!",
+            "🎨 Studio lets you customise timetable!",
+            "🔐 Your data syncs across devices via Google!",
+            "🔄 Tap the cloud button on bottom-right to force sync!",
+            "Stay productive! 🚀"
+        ];
+        let guideIdx = 0;
 
-        document.getElementById('user-badge').addEventListener('click', () => {
-            if (confirm("Do you want to sign out?")) {
-                auth.signOut();
+        function handleAssistant() {
+            if (speechWrap.classList.contains('hidden')) {
+                speechWrap.classList.remove('hidden');
+                guideIdx = 0;
+                assistantBubble.innerHTML = guideMessages[0];
+                return;
             }
+            guideIdx = (guideIdx + 1) % guideMessages.length;
+            assistantBubble.innerHTML = guideMessages[guideIdx];
+        }
+        assistantBtn.addEventListener('click', handleAssistant);
+        assistantBubble.addEventListener('click', handleAssistant);
+        assistantClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            speechWrap.classList.add('hidden');
+            showStickerToast("Assistant hidden. Tap the boy to reopen.");
         });
 
-        document.getElementById('force-sync-btn').addEventListener('click', () => {
-            const currentData = extractTableData();
-            saveTimetableLocally(currentData);
-            if (currentUser && !currentUser.isAnonymous) {
-                saveToCloud(currentData);
-            } else {
-                showStickerToast("⚠️ Please login with Google to sync to cloud.");
+        // ─── Storage keys ───
+        const TIMETABLE_KEY = 'doodleTimetableData';
+        const TESTS_KEY = 'doodleTestsData';
+        const TARGET_KEY = 'doodleTargetExamData';
+
+        function getLocalDate(d = new Date()) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+        const todayStr = getLocalDate();
+        document.getElementById('today-heading').innerHTML = `<i class="fas fa-sun"></i> Today's Schedule (${todayStr})`;
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        document.getElementById('history-date-input').value = getLocalDate(yesterday);
+
+        // ─── Festivals DB ───
+        const globalFestivals = {
+            "2024-01-01": "New Year's Day 🎉",
+            "2024-01-14": "Makar Sankranti 🌾",
+            "2024-01-26": "Republic Day 🇮🇳",
+            "2024-03-08": "Maha Shivaratri 🔱",
+            "2024-03-25": "Holi 🎨",
+            "2024-04-11": "Eid-ul-Fitr 🌙",
+            "2024-04-17": "Rama Navami 🏹",
+            "2024-06-17": "Eid-ul-Adha 🕌",
+            "2024-08-15": "Independence Day 🇮🇳",
+            "2024-08-19": "Raksha Bandhan 🎁",
+            "2024-08-26": "Janmashtami 🪈",
+            "2024-09-07": "Ganesh Chaturthi 🐘",
+            "2024-10-02": "Gandhi Jayanti 🕊️",
+            "2024-10-12": "Dussehra 🏹",
+            "2024-11-01": "Diwali 🪔",
+            "2024-11-15": "Guru Nanak Jayanti 🪔",
+            "2024-12-25": "Christmas 🎄",
+            "2025-01-01": "New Year's Day 🎉",
+            "2025-01-14": "Makar Sankranti 🌾",
+            "2025-01-26": "Republic Day 🇮🇳",
+            "2025-02-26": "Maha Shivaratri 🔱",
+            "2025-03-14": "Holi 🎨",
+            "2025-03-31": "Eid-ul-Fitr 🌙",
+            "2025-04-06": "Rama Navami 🏹",
+            "2025-06-07": "Eid-ul-Adha 🕌",
+            "2025-08-15": "Independence Day 🇮🇳",
+            "2025-08-09": "Raksha Bandhan 🎁",
+            "2025-08-16": "Janmashtami 🪈",
+            "2025-08-27": "Ganesh Chaturthi 🐘",
+            "2025-10-02": "Gandhi Jayanti 🕊️",
+            "2025-10-02": "Dussehra 🏹",
+            "2025-10-20": "Diwali 🪔",
+            "2025-11-05": "Guru Nanak Jayanti 🪔",
+            "2025-12-25": "Christmas 🎄",
+            "2026-01-01": "New Year's Day 🎉",
+            "2026-01-14": "Makar Sankranti 🌾",
+            "2026-01-26": "Republic Day 🇮🇳",
+            "2026-02-15": "Maha Shivaratri 🔱",
+            "2026-03-03": "Holi 🎨",
+            "2026-03-20": "Eid-ul-Fitr 🌙",
+            "2026-03-27": "Rama Navami 🏹",
+            "2026-05-28": "Eid-ul-Adha 🕌",
+            "2026-08-15": "Independence Day 🇮🇳",
+            "2026-08-28": "Raksha Bandhan 🎁",
+            "2026-09-04": "Janmashtami 🪈",
+            "2026-09-16": "Ganesh Chaturthi 🐘",
+            "2026-10-02": "Gandhi Jayanti 🕊️",
+            "2026-10-20": "Dussehra 🏹",
+            "2026-11-08": "Diwali 🪔",
+            "2026-11-24": "Guru Nanak Jayanti 🪔",
+            "2026-12-25": "Christmas 🎄",
+            "2027-01-01": "New Year's Day 🎉",
+            "2027-01-14": "Makar Sankranti 🌾",
+            "2027-01-26": "Republic Day 🇮🇳",
+            "2027-03-07": "Maha Shivaratri 🔱",
+            "2027-03-22": "Holi 🎨",
+            "2027-03-10": "Eid-ul-Fitr 🌙",
+            "2027-04-16": "Rama Navami 🏹",
+            "2027-05-18": "Eid-ul-Adha 🕌",
+            "2027-08-15": "Independence Day 🇮🇳",
+            "2027-08-17": "Raksha Bandhan 🎁",
+            "2027-08-24": "Janmashtami 🪈",
+            "2027-09-06": "Ganesh Chaturthi 🐘",
+            "2027-10-02": "Gandhi Jayanti 🕊️",
+            "2027-10-10": "Dussehra 🏹",
+            "2027-10-29": "Diwali 🪔",
+            "2027-11-13": "Guru Nanak Jayanti 🪔",
+            "2027-12-25": "Christmas 🎄",
+            "2028-01-01": "New Year's Day 🎉",
+            "2028-01-14": "Makar Sankranti 🌾",
+            "2028-01-21": "JEE Main 2028 🎯",
+            "2028-01-26": "Republic Day 🇮🇳",
+            "2028-02-25": "Maha Shivaratri 🔱",
+            "2028-03-11": "Holi 🎨",
+            "2028-02-28": "Eid-ul-Fitr 🌙",
+            "2028-04-04": "Rama Navami 🏹",
+            "2028-05-06": "Eid-ul-Adha 🕌",
+            "2028-08-15": "Independence Day 🇮🇳",
+            "2028-08-05": "Raksha Bandhan 🎁",
+            "2028-08-12": "Janmashtami 🪈",
+            "2028-08-24": "Ganesh Chaturthi 🐘",
+            "2028-10-02": "Gandhi Jayanti 🕊️",
+            "2028-09-29": "Dussehra 🏹",
+            "2028-10-17": "Diwali 🪔",
+            "2028-11-02": "Guru Nanak Jayanti 🪔",
+            "2028-12-25": "Christmas 🎄",
+            "2029-01-01": "New Year's Day 🎉",
+            "2029-01-14": "Makar Sankranti 🌾",
+            "2029-01-26": "Republic Day 🇮🇳",
+            "2029-03-15": "Maha Shivaratri 🔱",
+            "2029-03-31": "Holi 🎨",
+            "2029-02-17": "Eid-ul-Fitr 🌙",
+            "2029-08-15": "Independence Day 🇮🇳",
+            "2029-08-25": "Raksha Bandhan 🎁",
+            "2029-10-02": "Gandhi Jayanti 🕊️",
+            "2029-11-05": "Diwali 🪔",
+            "2029-12-25": "Christmas 🎄",
+            "2030-01-01": "New Year's Day 🎉",
+            "2030-01-14": "Makar Sankranti 🌾",
+            "2030-01-26": "Republic Day 🇮🇳",
+            "2030-03-04": "Maha Shivaratri 🔱",
+            "2030-03-20": "Holi 🎨",
+            "2030-02-07": "Eid-ul-Fitr 🌙",
+            "2030-08-15": "Independence Day 🇮🇳",
+            "2030-08-14": "Raksha Bandhan 🎁",
+            "2030-10-02": "Gandhi Jayanti 🕊️",
+            "2030-10-26": "Diwali 🪔",
+            "2030-12-25": "Christmas 🎄"
+        };
+
+        // ─── Live Clock & Target ───
+        function updateLiveWidgets() {
+            const now = new Date();
+            document.getElementById('live-clock-display').innerText = now.toLocaleTimeString();
+            document.getElementById('live-date-display').innerText = now.toLocaleDateString(undefined, { weekday: 'short',
+                month: 'short', day: 'numeric', year: 'numeric' });
+            let targetData = JSON.parse(localStorage.getItem(TARGET_KEY));
+            if (!targetData) {
+                targetData = { name: "JEE 2028", date: "2028-01-21T09:00:00" };
+                localStorage.setItem(TARGET_KEY, JSON.stringify(targetData));
             }
-        });
-
-        // DOM Content Loaded - Load saved local data
-        window.addEventListener('DOMContentLoaded', () => {
-            const localData = loadTimetableLocally();
-            if (localData) {
-                renderTableData(localData);
+            document.getElementById('target-name-label').innerText = targetData.name;
+            const targetDate = new Date(targetData.date);
+            const diff = targetDate - now;
+            const el = document.getElementById('target-countdown-display');
+            if (diff <= 0) el.innerText = "Target Reached! 🎉";
+            else {
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                el.innerText = `${d}d ${h}h ${m}m ${s}s`;
             }
+        }
+        setInterval(updateLiveWidgets, 1000);
+        updateLiveWidgets();
+
+        document.getElementById('target-widget-box').addEventListener('click', async () => {
+            const cur = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
+            const html = `
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted)">Event / Target Name:</label>
+                <input type="text" id="modal-target-name" value="${cur.name}">
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted)">Target Date & Time:</label>
+                <input type="datetime-local" id="modal-target-date" value="${cur.date}">
+            `;
+            const res = await openStickerModal("Set Exam / Target", "fas fa-bullseye", html);
+            if (!res) return;
+            const nameVal = document.getElementById('modal-target-name').value;
+            const dateVal = document.getElementById('modal-target-date').value;
+            if (!nameVal || !dateVal) return;
+            const newTarget = { name: nameVal, date: dateVal };
+            localStorage.setItem(TARGET_KEY, JSON.stringify(newTarget));
+            showStickerToast(`🎯 Target updated to "${nameVal}"!`);
+            updateLiveWidgets();
+            if (currentUser && !currentUser.isAnonymous) syncTargetToCloud();
         });
 
-        // Matrix Row / Column Actions
-        document.getElementById('add-subject-row').addEventListener('click', () => {
-            const tbody = document.getElementById('matrix-body-rows');
-            const colCount = document.querySelectorAll('#matrix-header-row th').length;
-            const tr = document.createElement('tr');
+        // ─── Cloud Sync Functions ───
+        async function syncAllToCloud() {
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
+            try {
+                const uid = currentUser.uid;
+                const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
+                    date: "2028-01-21T09:00:00" };
+                await db.collection('users').doc(uid).set({ timetables, tests, target,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                console.log('☁️ Synced to cloud.');
+                showStickerToast('✅ Data synced to cloud!');
+                return true;
+            } catch (e) {
+                console.warn('Sync error:', e);
+                showStickerToast(`⚠️ Sync failed: ${e.message}`);
+                return false;
+            }
+        }
+        async function syncTimetableToCloud() {
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
+            try {
+                const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                await db.collection('users').doc(currentUser.uid).set({ timetables,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            } catch (e) { console.warn('Timetable sync error:', e); }
+        }
+        async function syncTestsToCloud() {
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
+            try {
+                const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                await db.collection('users').doc(currentUser.uid).set({ tests,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            } catch (e) { console.warn('Tests sync error:', e); }
+        }
+        async function syncTargetToCloud() {
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
+            try {
+                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
+                    date: "2028-01-21T09:00:00" };
+                await db.collection('users').doc(currentUser.uid).set({ target,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            } catch (e) { console.warn('Target sync error:', e); }
+        }
+
+        // ─── Improved loadFromCloud – never overwrites local data with empty cloud ───
+        async function loadFromCloud() {
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
+            try {
+                const doc = await db.collection('users').doc(currentUser.uid).get();
+                const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                const localTarget = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
+
+                if (!doc.exists) {
+                    // No cloud data – push local data to cloud
+                    if (localTimetables.length > 0 || localTests.length > 0) {
+                        await syncAllToCloud();
+                        showStickerToast("☁️ Local data backed up to cloud.");
+                    } else {
+                        showStickerToast("☁️ No data found. Start adding your timetable!");
+                    }
+                    return;
+                }
+
+                const data = doc.data();
+                const cloudHasTimetables = data.timetables && data.timetables.length > 0;
+                const cloudHasTests = data.tests && data.tests.length > 0;
+                const cloudHasTarget = data.target;
+
+                // If cloud is empty but local has data, upload local to cloud
+                if (!cloudHasTimetables && localTimetables.length > 0) {
+                    await syncTimetableToCloud();
+                }
+                if (!cloudHasTests && localTests.length > 0) {
+                    await syncTestsToCloud();
+                }
+                if (!cloudHasTarget && localTarget) {
+                    await syncTargetToCloud();
+                }
+
+                // Fetch the fresh cloud data (now it includes any newly uploaded local data)
+                const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
+                const updatedData = updatedDoc.data();
+
+                // Now load from cloud (it will have either old or newly merged data)
+                if (updatedData.timetables !== undefined) {
+                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedData.timetables));
+                }
+                if (updatedData.tests !== undefined) {
+                    localStorage.setItem(TESTS_KEY, JSON.stringify(updatedData.tests));
+                }
+                if (updatedData.target !== undefined) {
+                    localStorage.setItem(TARGET_KEY, JSON.stringify(updatedData.target));
+                }
+
+                showStickerToast("☁️ Cloud data loaded! Welcome back.");
+                refreshAllViews();
+                return true;
+            } catch (e) {
+                console.warn('Load from cloud error:', e);
+                showStickerToast("⚠️ Could not load cloud data. Using local data.");
+                return false;
+            }
+        }
+
+        // ─── Force Sync Button ───
+        forceSyncBtn.addEventListener('click', async () => {
+            if (!currentUser || currentUser.isAnonymous) {
+                showStickerToast("⚠️ Please login with Google or Email to sync.");
+                return;
+            }
+            showStickerToast("🔄 Syncing data...");
+            await syncAllToCloud();
+            await loadFromCloud();
+            refreshAllViews();
+        });
+
+        function refreshAllViews() {
+            loadTodayView();
+            renderCalendar();
+            updateLiveWidgets();
+            const histDate = document.getElementById('history-date-input').value;
+            if (histDate) loadHistory(histDate);
+        }
+
+        function loadHistory(dateVal) {
+            const container = document.getElementById('history-container');
+            const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            const found = data.find(d => d.date === dateVal);
+            container.innerHTML = '';
+            if (!found) {
+                container.innerHTML = `<div class="card"><p>No records for ${dateVal}.</p></div>`;
+                return;
+            }
+            renderTable(found, container);
+        }
+        document.getElementById('search-history-btn').addEventListener('click', () => {
+            const dateVal = document.getElementById('history-date-input').value;
+            if (dateVal) loadHistory(dateVal);
+        });
+
+        // ─── Table Render & Matrix Controls ───
+        function renderTable(obj, target) {
+            let html = `<div class="table-container"><table><thead><tr>`;
+            obj.headers.forEach(h => html += `<th>${h}</th>`);
+            html += `</tr></thead><tbody>`;
+            obj.rows.forEach(r => {
+                html += `<tr>`;
+                r.forEach(c => html += `<td>${c}</td>`);
+                html += `</tr>`;
+            });
+            html += `</tbody></table></div>`;
+            target.innerHTML = html;
+        }
+
+        function loadTodayView() {
+            const container = document.getElementById('today-container');
+            const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            const todayObj = data.find(d => d.date === todayStr);
+            if (!todayObj) {
+                container.innerHTML =
+                    `<div class="card"><p>No custom timetable for today. Create one in <b>Studio</b>! ✨</p></div>`;
+                return;
+            }
+            renderTable(todayObj, container);
+        }
+
+        // Matrix controls (same as before)
+        const headerRow = document.getElementById('matrix-header-row');
+        const bodyRows = document.getElementById('matrix-body-rows');
+        document.getElementById('add-time-col').addEventListener('click', async () => {
+            const total = headerRow.cells.length;
+            let opts = `<select id="modal-select-pos">`;
+            for (let i = 1; i <= total; i++) opts += `<option value="${i}">Before Col ${i}</option>`;
+            opts += `<option value="end" selected>At the End</option></select>`;
+            opts += `<input type="text" id="modal-input-val" placeholder="Time Slot" value="02:00 PM">`;
+            const res = await openStickerModal("Add Time Column", "fas fa-clock", opts);
+            if (!res) return;
+            const pos = document.getElementById('modal-select-pos').value;
+            const val = document.getElementById('modal-input-val').value;
+            if (!val) return;
+            const idx = pos === 'end' ? total : parseInt(pos) - 1;
+            const th = document.createElement('th');
+            th.innerHTML = `<input type="text" value="${val}">`;
+            if (idx >= total) headerRow.appendChild(th);
+            else headerRow.insertBefore(th, headerRow.cells[idx]);
+            Array.from(bodyRows.rows).forEach(row => {
+                const td = document.createElement('td');
+                td.innerHTML = `<input type="text" placeholder="Task">`;
+                if (idx >= row.cells.length) row.appendChild(td);
+                else row.insertBefore(td, row.cells[idx]);
+            });
+            showStickerToast("✨ Time column added!");
+        });
+        document.getElementById('remove-time-col').addEventListener('click', async () => {
+            const total = headerRow.cells.length - 1;
+            if (total <= 1) { showStickerToast("⚠️ Minimum 1 time slot!"); return; }
+            let opts = `<select id="modal-select-pos">`;
+            for (let i = 1; i <= total; i++) {
+                const label = headerRow.cells[i].querySelector('input')?.value || `Col ${i}`;
+                opts += `<option value="${i}">${i}: ${label}</option>`;
+            }
+            opts += `</select>`;
+            const res = await openStickerModal("Remove Time Column", "fas fa-trash-can", opts);
+            if (!res) return;
+            const idx = parseInt(document.getElementById('modal-select-pos').value);
+            headerRow.deleteCell(idx);
+            Array.from(bodyRows.rows).forEach(row => row.deleteCell(idx));
+            showStickerToast("🗑️ Column removed.");
+        });
+        document.getElementById('add-subject-row').addEventListener('click', async () => {
+            const total = bodyRows.rows.length;
+            let opts = `<select id="modal-select-pos">`;
+            for (let i = 1; i <= total; i++) opts += `<option value="${i-1}">Before Row ${i}</option>`;
+            opts += `<option value="end" selected>At the End</option></select>`;
+            opts += `<input type="text" id="modal-input-val" placeholder="Subject" value="Biology">`;
+            const res = await openStickerModal("Add Subject Row", "fas fa-book-open", opts);
+            if (!res) return;
+            const pos = document.getElementById('modal-select-pos').value;
+            const sub = document.getElementById('modal-input-val').value;
+            if (!sub) return;
+            const idx = pos === 'end' ? total : parseInt(pos);
+            const colCount = headerRow.cells.length;
+            const row = document.createElement('tr');
             for (let i = 0; i < colCount; i++) {
                 const td = document.createElement('td');
-                td.innerHTML = `<input type="text" value="New" />`;
-                tr.appendChild(td);
+                td.innerHTML = i === 0 ? `<input type="text" value="${sub}">` : `<input type="text" placeholder="Task">`;
+                row.appendChild(td);
             }
-            tbody.appendChild(tr);
+            if (idx >= total) bodyRows.appendChild(row);
+            else bodyRows.insertBefore(row, bodyRows.rows[idx]);
+            showStickerToast("✨ Subject row added!");
         });
-
-        document.getElementById('add-time-col').addEventListener('click', () => {
-            const headerRow = document.getElementById('matrix-header-row');
-            const th = document.createElement('th');
-            th.innerHTML = `<input type="text" value="02:00 PM" />`;
-            headerRow.appendChild(th);
-
-            const rows = document.querySelectorAll('#matrix-body-rows tr');
-            rows.forEach(tr => {
-                const td = document.createElement('td');
-                td.innerHTML = `<input type="text" value="Task" />`;
-                tr.appendChild(td);
-            });
-        });
-
-        document.getElementById('remove-subject-row').addEventListener('click', () => {
-            const tbody = document.getElementById('matrix-body-rows');
-            if (tbody.rows.length > 1) {
-                tbody.deleteRow(tbody.rows.length - 1);
+        document.getElementById('remove-subject-row').addEventListener('click', async () => {
+            const total = bodyRows.rows.length;
+            if (total <= 1) { showStickerToast("⚠️ Minimum 1 subject row!"); return; }
+            let opts = `<select id="modal-select-pos">`;
+            for (let i = 0; i < total; i++) {
+                const label = bodyRows.rows[i].cells[0].querySelector('input')?.value || `Row ${i+1}`;
+                opts += `<option value="${i}">${i+1}: ${label}</option>`;
             }
+            opts += `</select>`;
+            const res = await openStickerModal("Remove Subject Row", "fas fa-trash-can", opts);
+            if (!res) return;
+            const idx = parseInt(document.getElementById('modal-select-pos').value);
+            bodyRows.deleteRow(idx);
+            showStickerToast("🗑️ Subject row removed.");
+        });
+        document.getElementById('save-timetable-btn').addEventListener('click', async () => {
+            const headers = Array.from(headerRow.cells).map(th => th.querySelector('input')?.value || th.innerText);
+            const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector(
+                'input')?.value || cell.innerText));
+            const payload = { date: todayStr, headers, rows };
+            let allData = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            allData = allData.filter(d => d.date !== todayStr);
+            allData.push(payload);
+            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
+            showStickerToast("🎉 Timetable saved!");
+            loadTodayView();
+            if (currentUser && !currentUser.isAnonymous) syncTimetableToCloud();
         });
 
-        document.getElementById('remove-time-col').addEventListener('click', () => {
-            const headerRow = document.getElementById('matrix-header-row');
-            if (headerRow.cells.length > 2) {
-                headerRow.deleteCell(headerRow.cells.length - 1);
-                const rows = document.querySelectorAll('#matrix-body-rows tr');
-                rows.forEach(tr => {
-                    if (tr.cells.length > 1) {
-                        tr.deleteCell(tr.cells.length - 1);
-                    }
+        // ─── Calendar ───
+        let currMonth = new Date().getMonth();
+        let currYear = new Date().getFullYear();
+
+        function renderCalendar() {
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+                "November", "December"
+            ];
+            document.getElementById('calendar-month-year').innerText = `${months[currMonth]} ${currYear}`;
+            const grid = document.getElementById('calendar-dates-grid');
+            grid.innerHTML = '';
+            const firstDay = new Date(currYear, currMonth, 1).getDay();
+            const totalDays = new Date(currYear, currMonth + 1, 0).getDate();
+            const savedTests = (JSON.parse(localStorage.getItem(TESTS_KEY)) || []).map(t => t.date);
+            for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+            for (let day = 1; day <= totalDays; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-date';
+                cell.innerText = day;
+                const mStr = String(currMonth + 1).padStart(2, '0');
+                const dStr = String(day).padStart(2, '0');
+                const key = `${currYear}-${mStr}-${dStr}`;
+                if (globalFestivals[key]) cell.classList.add('has-festival');
+                if (savedTests.includes(key)) cell.classList.add('has-test');
+                if (key === todayStr) cell.classList.add('selected');
+                cell.addEventListener('click', () => {
+                    document.querySelectorAll('.calendar-date').forEach(d => d.classList.remove('selected'));
+                    cell.classList.add('selected');
+                    inspectDate(key);
                 });
+                grid.appendChild(cell);
+            }
+            inspectDate(todayStr);
+        }
+        document.getElementById('prev-month').addEventListener('click', () => { currMonth--;
+            if (currMonth < 0) { currMonth = 11;
+                currYear--; }
+            renderCalendar(); });
+        document.getElementById('next-month').addEventListener('click', () => { currMonth++;
+            if (currMonth > 11) { currMonth = 0;
+                currYear++; }
+            renderCalendar(); });
+
+        function inspectDate(dateStr) {
+            const container = document.getElementById('calendar-selected-data');
+            const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+            const tMatch = timetables.find(d => d.date === dateStr);
+            const testMatch = tests.find(t => t.date === dateStr);
+            const festMatch = globalFestivals[dateStr];
+            let html = `<h3 style="font-size:0.85rem;">📅 ${dateStr}</h3>`;
+            if (festMatch) {
+                html += `<div class="card" style="border-color:var(--festival-color);background:rgba(114,9,183,0.06);">
+                        <p style="color:var(--festival-color);"><b>🎉 Festival:</b> ${festMatch}</p></div>`;
+            }
+            if (testMatch) {
+                html += `<div class="card" style="border-color:var(--accent);background:rgba(230,57,70,0.06);">
+                        <p style="color:var(--accent);"><b>📝 Event:</b> ${testMatch.subject}</p>
+                        <button class="btn danger" style="margin-top:4px;padding:3px 8px;font-size:0.65rem;" onclick="removeTest('${dateStr}')">Remove</button>
+                    </div>`;
+            } else {
+                html +=
+                    `<button class="btn primary" style="width:100%;margin-bottom:6px;padding:5px;" onclick="promptAddTest('${dateStr}')"><i class="fas fa-plus"></i> Add Event</button>`;
+            }
+            if (tMatch) {
+                html += `<div id="cal-table-box"></div>`;
+            } else {
+                html += `<p style="color:var(--text-muted);font-size:0.7rem;">No timetable for this date.</p>`;
+            }
+            container.innerHTML = html;
+            if (tMatch) renderTable(tMatch, document.getElementById('cal-table-box'));
+        }
+
+        window.promptAddTest = async function(dateStr) {
+            const html = `<input type="text" id="modal-test-input" placeholder="Event / Test Name" value="Quiz">`;
+            const res = await openStickerModal("Schedule Event", "fas fa-bookmark", html);
+            if (!res) return;
+            const subject = document.getElementById('modal-test-input').value;
+            if (!subject) return;
+            let tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+            tests = tests.filter(t => t.date !== dateStr);
+            tests.push({ date: dateStr, subject });
+            localStorage.setItem(TESTS_KEY, JSON.stringify(tests));
+            showStickerToast("📝 Event scheduled!");
+            renderCalendar();
+            inspectDate(dateStr);
+            if (currentUser && !currentUser.isAnonymous) syncTestsToCloud();
+        };
+
+        window.removeTest = function(dateStr) {
+            let tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+            tests = tests.filter(t => t.date !== dateStr);
+            localStorage.setItem(TESTS_KEY, JSON.stringify(tests));
+            showStickerToast("Event deleted.");
+            renderCalendar();
+            inspectDate(dateStr);
+            if (currentUser && !currentUser.isAnonymous) syncTestsToCloud();
+        };
+
+        // ─── Auth Handlers ───
+        function setUser(user) {
+            currentUser = user;
+            if (user) {
+                loginOverlay.classList.add('hidden');
+                userBadge.style.display = 'flex';
+                userAvatar.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=4361ee&color=fff';
+                userAvatar.alt = user.displayName || user.email || 'User';
+                let name = user.displayName || user.email || 'User';
+                if (user.isAnonymous) {
+                    name = 'Guest';
+                    userTypeBadge.style.display = 'inline';
+                } else {
+                    userTypeBadge.style.display = 'none';
+                }
+                userNameDisplay.innerText = name.split(' ')[0] || 'User';
+                appTitle.innerText = user.isAnonymous ? '📁 GUEST MODE' : `📚 ${name.split(' ')[0] || 'Student'}'s T-T`;
+                showStickerToast(user.isAnonymous ? '👤 Logged in as Guest' : `👋 Welcome ${name}!`);
+                if (!user.isAnonymous) {
+                    // Load cloud data and then refresh
+                    loadFromCloud().then(() => {
+                        refreshAllViews();
+                    });
+                } else {
+                    refreshAllViews();
+                }
+            } else {
+                loginOverlay.classList.remove('hidden');
+                userBadge.style.display = 'none';
+                appTitle.innerText = 'SELF STUDY T-T';
+            }
+        }
+
+        // ─── Sign-out with confirmation ───
+        userBadge.addEventListener('click', async () => {
+            if (!auth || !currentUser) return;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay active';
+            overlay.style.position = 'absolute';
+            overlay.style.inset = '0';
+            overlay.style.zIndex = '3000';
+            overlay.innerHTML = `
+                <div class="modal-box">
+                    <h3><i class="fas fa-sign-out-alt"></i> Confirm Logout</h3>
+                    <p style="margin-bottom:16px;">Are you sure you want to sign out?</p>
+                    <div class="modal-actions">
+                        <button class="btn" id="temp-logout-cancel">Cancel</button>
+                        <button class="btn danger" id="temp-logout-confirm">Logout</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('appContainer').appendChild(overlay);
+
+            const result = await new Promise((resolve) => {
+                document.getElementById('temp-logout-cancel').addEventListener('click', () => {
+                    overlay.remove();
+                    resolve(false);
+                });
+                document.getElementById('temp-logout-confirm').addEventListener('click', async () => {
+                    overlay.remove();
+                    resolve(true);
+                });
+            });
+
+            if (result) {
+                try {
+                    await auth.signOut();
+                    setUser(null);
+                    showStickerToast('👋 Signed out successfully.');
+                } catch (e) {
+                    console.warn('Sign out error:', e);
+                    showStickerToast('⚠️ Could not sign out.');
+                }
             }
         });
+
+        // ─── Google Sign-In ───
+        googleBtn.addEventListener('click', async () => {
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            loginLoader.classList.add('show');
+            googleBtn.disabled = true;
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                const result = await auth.signInWithPopup(provider);
+                setUser(result.user);
+                // After login, sync local data to cloud if any
+                const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0) {
+                    await syncAllToCloud();
+                }
+            } catch (e) {
+                console.warn('Google login error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                googleBtn.disabled = false;
+            }
+        });
+
+        // ─── Guest Sign-In ───
+        guestBtn.addEventListener('click', async () => {
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            loginLoader.classList.add('show');
+            guestBtn.disabled = true;
+            try {
+                const result = await auth.signInAnonymously();
+                setUser(result.user);
+                showStickerToast('👤 Guest mode active. Data stored locally.');
+            } catch (e) {
+                console.warn('Guest login error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                guestBtn.disabled = false;
+            }
+        });
+
+        // ─── Email/Password Sign-In ───
+        emailSigninBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!email || !password) { showStickerToast('⚠️ Please enter email and password.'); return; }
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            loginLoader.classList.add('show');
+            emailSigninBtn.disabled = true;
+            try {
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                setUser(result.user);
+                const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0) {
+                    await syncAllToCloud();
+                }
+                emailInput.value = '';
+                passwordInput.value = '';
+            } catch (e) {
+                console.warn('Email sign-in error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                emailSigninBtn.disabled = false;
+            }
+        });
+
+        // ─── Email/Password Sign-Up ───
+        emailSignupBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!email || !password) { showStickerToast('⚠️ Please enter email and password.'); return; }
+            if (password.length < 6) { showStickerToast('⚠️ Password must be at least 6 characters.'); return; }
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            loginLoader.classList.add('show');
+            emailSignupBtn.disabled = true;
+            try {
+                const result = await auth.createUserWithEmailAndPassword(email, password);
+                setUser(result.user);
+                const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0) {
+                    await syncAllToCloud();
+                }
+                emailInput.value = '';
+                passwordInput.value = '';
+                showStickerToast('✅ Account created and signed in!');
+            } catch (e) {
+                console.warn('Email sign-up error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                emailSignupBtn.disabled = false;
+            }
+        });
+
+        // ─── Forgot Password ───
+        forgotPasswordLink.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            if (!email) { showStickerToast('⚠️ Enter your email address first.'); return; }
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showStickerToast('📧 Password reset email sent. Check your inbox.');
+            } catch (e) {
+                console.warn('Password reset error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            }
+        });
+
+        // ─── Auth state listener ───
+        if (isFirebaseReady) {
+            auth.onAuthStateChanged((user) => {
+                if (user) setUser(user);
+                else setUser(null);
+            });
+        } else {
+            // Fallback: local only
+            loginOverlay.querySelector('h2').innerHTML = '📚 Study Time-Table';
+            loginOverlay.querySelector('p').innerHTML = '⚠️ Firebase not configured. Data stored locally only.';
+            googleBtn.innerHTML = '<i class="fas fa-database"></i> Use Local Mode';
+            googleBtn.addEventListener('click', () => {
+                loginOverlay.classList.add('hidden');
+                showStickerToast("📁 Local mode active.");
+                appTitle.innerText = '📁 LOCAL MODE';
+                currentUser = { isAnonymous: true, uid: 'local' };
+                refreshAllViews();
+            });
+            document.querySelector('.input-group').style.display = 'none';
+            guestBtn.style.display = 'none';
+        }
+
+        // ─── Window Load ───
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTodayView();
+            renderCalendar();
+            const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+            const todayEvent = tests.find(t => t.date === todayStr);
+            if (todayEvent) {
+                setTimeout(() => showStickerToast(`📌 Today: "${todayEvent.subject}"`), 800);
+            } else if (globalFestivals[todayStr]) {
+                setTimeout(() => showStickerToast(`✨ ${globalFestivals[todayStr]}`), 800);
+            }
+        });
+
+        window.syncAll = syncAllToCloud;
+        window.loadCloud = loadFromCloud;
+        window.forceSync = () => {
+            if (currentUser && !currentUser.isAnonymous) {
+                syncAllToCloud().then(() => loadFromCloud().then(() => refreshAllViews()));
+            } else {
+                showStickerToast("⚠️ Please login with Google or Email.");
+            }
+        };
     </script>
 </body>
 </html>
