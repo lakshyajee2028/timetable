@@ -1355,9 +1355,10 @@
                 const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
                     date: "2028-01-21T09:00:00" };
+                console.log('☁️ Uploading:', { timetables, tests, target });
                 await db.collection('users').doc(uid).set({ timetables, tests, target,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-                console.log('☁️ Synced all to cloud.');
+                console.log('☁️ Upload successful.');
                 showStickerToast('✅ Data synced to cloud!');
                 return true;
             } catch (e) {
@@ -1367,7 +1368,7 @@
             }
         }
 
-        // ─── Improved loadFromCloud – always load cloud data if exists, else upload local ───
+        // ─── Improved loadFromCloud – always loads cloud if available, else uploads local ───
         async function loadFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
@@ -1377,7 +1378,7 @@
                 const localTarget = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
 
                 if (!doc.exists) {
-                    // No cloud data – push local data to cloud
+                    // No cloud data – upload local if any
                     if (localTimetables.length > 0 || localTests.length > 0) {
                         await syncAllToCloud();
                         showStickerToast("☁️ Local data backed up to cloud.");
@@ -1392,41 +1393,40 @@
                 let cloudHasTests = data.tests && data.tests.length > 0;
                 let cloudHasTarget = data.target;
 
-                // If cloud has data, load it (overwrite local)
+                // If cloud has timetables → load them
                 if (cloudHasTimetables) {
                     localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
+                    console.log('☁️ Loaded timetables from cloud:', data.timetables);
                 } else if (localTimetables.length > 0) {
-                    // Cloud empty, but local has data – upload local to cloud
-                    await syncAllToCloud(); // upload all to be safe
-                    showStickerToast("☁️ Local data uploaded to cloud.");
+                    // Cloud empty, local has data – upload local
+                    await syncAllToCloud();
+                    showStickerToast("☁️ Local timetable uploaded to cloud.");
+                    // Re-fetch to confirm
+                    const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
+                    if (updatedDoc.exists && updatedDoc.data().timetables) {
+                        localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedDoc.data().timetables));
+                    }
                 }
 
+                // Same for tests
                 if (cloudHasTests) {
                     localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
                 } else if (localTests.length > 0) {
                     await syncAllToCloud();
+                    const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
+                    if (updatedDoc.exists && updatedDoc.data().tests) {
+                        localStorage.setItem(TESTS_KEY, JSON.stringify(updatedDoc.data().tests));
+                    }
                 }
 
+                // Target
                 if (cloudHasTarget) {
                     localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
                 } else if (localTarget) {
                     await syncAllToCloud();
-                }
-
-                // Re-fetch cloud to get any newly uploaded data
-                if (!cloudHasTimetables && localTimetables.length > 0) {
                     const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
-                    if (updatedDoc.exists) {
-                        const updatedData = updatedDoc.data();
-                        if (updatedData.timetables && updatedData.timetables.length > 0) {
-                            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedData.timetables));
-                        }
-                        if (updatedData.tests && updatedData.tests.length > 0) {
-                            localStorage.setItem(TESTS_KEY, JSON.stringify(updatedData.tests));
-                        }
-                        if (updatedData.target) {
-                            localStorage.setItem(TARGET_KEY, JSON.stringify(updatedData.target));
-                        }
+                    if (updatedDoc.exists && updatedDoc.data().target) {
+                        localStorage.setItem(TARGET_KEY, JSON.stringify(updatedDoc.data().target));
                     }
                 }
 
@@ -1596,7 +1596,12 @@
             loadTodayView();
             // Sync to cloud if logged in
             if (currentUser && !currentUser.isAnonymous) {
-                await syncAllToCloud();
+                const success = await syncAllToCloud();
+                if (!success) {
+                    showStickerToast("⚠️ Timetable saved locally but cloud sync failed. Tap cloud button to retry.");
+                }
+            } else {
+                showStickerToast("💾 Timetable saved locally (guest mode).");
             }
         });
 
