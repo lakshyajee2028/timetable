@@ -1343,7 +1343,7 @@
             localStorage.setItem(TARGET_KEY, JSON.stringify(newTarget));
             showStickerToast(`🎯 Target updated to "${nameVal}"!`);
             updateLiveWidgets();
-            if (currentUser && !currentUser.isAnonymous) syncTargetToCloud();
+            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
         });
 
         // ─── Cloud Sync Functions ───
@@ -1357,7 +1357,7 @@
                     date: "2028-01-21T09:00:00" };
                 await db.collection('users').doc(uid).set({ timetables, tests, target,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-                console.log('☁️ Synced to cloud.');
+                console.log('☁️ Synced all to cloud.');
                 showStickerToast('✅ Data synced to cloud!');
                 return true;
             } catch (e) {
@@ -1366,33 +1366,8 @@
                 return false;
             }
         }
-        async function syncTimetableToCloud() {
-            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
-            try {
-                const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-                await db.collection('users').doc(currentUser.uid).set({ timetables,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-            } catch (e) { console.warn('Timetable sync error:', e); }
-        }
-        async function syncTestsToCloud() {
-            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
-            try {
-                const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-                await db.collection('users').doc(currentUser.uid).set({ tests,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-            } catch (e) { console.warn('Tests sync error:', e); }
-        }
-        async function syncTargetToCloud() {
-            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
-            try {
-                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
-                    date: "2028-01-21T09:00:00" };
-                await db.collection('users').doc(currentUser.uid).set({ target,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-            } catch (e) { console.warn('Target sync error:', e); }
-        }
 
-        // ─── Improved loadFromCloud – never overwrites local with empty cloud ───
+        // ─── Improved loadFromCloud – always load cloud data if exists, else upload local ───
         async function loadFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
@@ -1413,37 +1388,45 @@
                 }
 
                 const data = doc.data();
-                const cloudHasTimetables = data.timetables && data.timetables.length > 0;
-                const cloudHasTests = data.tests && data.tests.length > 0;
-                const cloudHasTarget = data.target;
+                let cloudHasTimetables = data.timetables && data.timetables.length > 0;
+                let cloudHasTests = data.tests && data.tests.length > 0;
+                let cloudHasTarget = data.target;
 
-                // Case 1: Cloud has timetables → load them (cross‑device sync)
+                // If cloud has data, load it (overwrite local)
                 if (cloudHasTimetables) {
                     localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
-                } else {
-                    // Cloud empty for timetables
-                    if (localTimetables.length > 0) {
-                        // We have local data – upload to cloud but keep local intact
-                        await syncTimetableToCloud();
-                        showStickerToast("☁️ Local timetable uploaded to cloud.");
-                    }
+                } else if (localTimetables.length > 0) {
+                    // Cloud empty, but local has data – upload local to cloud
+                    await syncAllToCloud(); // upload all to be safe
+                    showStickerToast("☁️ Local data uploaded to cloud.");
                 }
 
-                // Same for tests
                 if (cloudHasTests) {
                     localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
-                } else {
-                    if (localTests.length > 0) {
-                        await syncTestsToCloud();
-                    }
+                } else if (localTests.length > 0) {
+                    await syncAllToCloud();
                 }
 
-                // Target
                 if (cloudHasTarget) {
                     localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
-                } else {
-                    if (localTarget) {
-                        await syncTargetToCloud();
+                } else if (localTarget) {
+                    await syncAllToCloud();
+                }
+
+                // Re-fetch cloud to get any newly uploaded data
+                if (!cloudHasTimetables && localTimetables.length > 0) {
+                    const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
+                    if (updatedDoc.exists) {
+                        const updatedData = updatedDoc.data();
+                        if (updatedData.timetables && updatedData.timetables.length > 0) {
+                            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedData.timetables));
+                        }
+                        if (updatedData.tests && updatedData.tests.length > 0) {
+                            localStorage.setItem(TESTS_KEY, JSON.stringify(updatedData.tests));
+                        }
+                        if (updatedData.target) {
+                            localStorage.setItem(TARGET_KEY, JSON.stringify(updatedData.target));
+                        }
                     }
                 }
 
@@ -1609,9 +1592,12 @@
             allData = allData.filter(d => d.date !== todayStr);
             allData.push(payload);
             localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
-            showStickerToast("🎉 Timetable saved!");
+            showStickerToast("🎉 Timetable saved locally!");
             loadTodayView();
-            if (currentUser && !currentUser.isAnonymous) syncTimetableToCloud();
+            // Sync to cloud if logged in
+            if (currentUser && !currentUser.isAnonymous) {
+                await syncAllToCloud();
+            }
         });
 
         // ─── Calendar ───
@@ -1700,7 +1686,7 @@
             showStickerToast("📝 Event scheduled!");
             renderCalendar();
             inspectDate(dateStr);
-            if (currentUser && !currentUser.isAnonymous) syncTestsToCloud();
+            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
         };
 
         window.removeTest = function(dateStr) {
@@ -1710,7 +1696,7 @@
             showStickerToast("Event deleted.");
             renderCalendar();
             inspectDate(dateStr);
-            if (currentUser && !currentUser.isAnonymous) syncTestsToCloud();
+            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
         };
 
         // ─── Auth Handlers ───
