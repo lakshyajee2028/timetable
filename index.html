@@ -1343,19 +1343,22 @@
             localStorage.setItem(TARGET_KEY, JSON.stringify(newTarget));
             showStickerToast(`🎯 Target updated to "${nameVal}"!`);
             updateLiveWidgets();
-            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+            if (currentUser && !currentUser.isAnonymous) await syncAllToCloud();
         });
 
         // ─── Cloud Sync Functions ───
         async function syncAllToCloud() {
-            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
+                console.warn('Cannot sync: not logged in or Firebase not ready.');
+                return false;
+            }
             try {
                 const uid = currentUser.uid;
                 const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
-                    date: "2028-01-21T09:00:00" };
-                console.log('☁️ Uploading:', { timetables, tests, target });
+                date: "2028-01-21T09:00:00" };
+                console.log('☁️ Uploading to cloud:', { timetables, tests, target });
                 await db.collection('users').doc(uid).set({ timetables, tests, target,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
                 console.log('☁️ Upload successful.');
@@ -1368,17 +1371,21 @@
             }
         }
 
-        // ─── Improved loadFromCloud – always loads cloud if available, else uploads local ───
+        // ─── Aggressive load from cloud ───
         async function loadFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
-                const doc = await db.collection('users').doc(currentUser.uid).get();
+                const docRef = db.collection('users').doc(currentUser.uid);
+                const doc = await docRef.get();
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-                const localTarget = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
+                const localTarget = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
+                date: "2028-01-21T09:00:00" };
+
+                console.log('📥 Loading cloud data...');
 
                 if (!doc.exists) {
-                    // No cloud data – upload local if any
+                    console.log('📭 No cloud document. Uploading local data if any.');
                     if (localTimetables.length > 0 || localTests.length > 0) {
                         await syncAllToCloud();
                         showStickerToast("☁️ Local data backed up to cloud.");
@@ -1389,45 +1396,69 @@
                 }
 
                 const data = doc.data();
-                let cloudHasTimetables = data.timetables && data.timetables.length > 0;
-                let cloudHasTests = data.tests && data.tests.length > 0;
-                let cloudHasTarget = data.target;
+                console.log('📦 Cloud data:', data);
 
-                // If cloud has timetables → load them
-                if (cloudHasTimetables) {
-                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
-                    console.log('☁️ Loaded timetables from cloud:', data.timetables);
-                } else if (localTimetables.length > 0) {
-                    // Cloud empty, local has data – upload local
-                    await syncAllToCloud();
-                    showStickerToast("☁️ Local timetable uploaded to cloud.");
-                    // Re-fetch to confirm
-                    const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
-                    if (updatedDoc.exists && updatedDoc.data().timetables) {
-                        localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedDoc.data().timetables));
+                // Always prefer cloud data if it has timetables (even empty)
+                if (data.timetables !== undefined) {
+                    if (data.timetables.length > 0) {
+                        localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
+                        console.log('☁️ Loaded timetables from cloud:', data.timetables);
+                    } else {
+                        // Cloud has empty array – if local has data, upload local
+                        if (localTimetables.length > 0) {
+                            console.log('☁️ Cloud is empty, uploading local timetables.');
+                            await syncAllToCloud();
+                            // re-fetch after upload
+                            const updatedDoc = await docRef.get();
+                            if (updatedDoc.exists && updatedDoc.data().timetables) {
+                                localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedDoc.data().timetables));
+                            }
+                        } else {
+                            // Both empty, keep empty
+                            localStorage.setItem(TIMETABLE_KEY, JSON.stringify([]));
+                        }
+                    }
+                } else {
+                    // No timetables field – upload local if any
+                    if (localTimetables.length > 0) {
+                        await syncAllToCloud();
+                        const updatedDoc = await docRef.get();
+                        if (updatedDoc.exists && updatedDoc.data().timetables) {
+                            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedDoc.data().timetables));
+                        }
                     }
                 }
 
                 // Same for tests
-                if (cloudHasTests) {
-                    localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
-                } else if (localTests.length > 0) {
-                    await syncAllToCloud();
-                    const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
-                    if (updatedDoc.exists && updatedDoc.data().tests) {
-                        localStorage.setItem(TESTS_KEY, JSON.stringify(updatedDoc.data().tests));
+                if (data.tests !== undefined) {
+                    if (data.tests.length > 0) {
+                        localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
+                    } else {
+                        if (localTests.length > 0) {
+                            await syncAllToCloud();
+                            const updatedDoc = await docRef.get();
+                            if (updatedDoc.exists && updatedDoc.data().tests) {
+                                localStorage.setItem(TESTS_KEY, JSON.stringify(updatedDoc.data().tests));
+                            }
+                        } else {
+                            localStorage.setItem(TESTS_KEY, JSON.stringify([]));
+                        }
+                    }
+                } else {
+                    if (localTests.length > 0) {
+                        await syncAllToCloud();
+                        const updatedDoc = await docRef.get();
+                        if (updatedDoc.exists && updatedDoc.data().tests) {
+                            localStorage.setItem(TESTS_KEY, JSON.stringify(updatedDoc.data().tests));
+                        }
                     }
                 }
 
                 // Target
-                if (cloudHasTarget) {
+                if (data.target) {
                     localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
                 } else if (localTarget) {
                     await syncAllToCloud();
-                    const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
-                    if (updatedDoc.exists && updatedDoc.data().target) {
-                        localStorage.setItem(TARGET_KEY, JSON.stringify(updatedDoc.data().target));
-                    }
                 }
 
                 showStickerToast("☁️ Cloud sync complete.");
@@ -1691,7 +1722,7 @@
             showStickerToast("📝 Event scheduled!");
             renderCalendar();
             inspectDate(dateStr);
-            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+            if (currentUser && !currentUser.isAnonymous) await syncAllToCloud();
         };
 
         window.removeTest = function(dateStr) {
