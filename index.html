@@ -1392,7 +1392,7 @@
             } catch (e) { console.warn('Target sync error:', e); }
         }
 
-        // ─── Improved loadFromCloud – never overwrites local data with empty cloud ───
+        // ─── Improved loadFromCloud – never overwrites local with empty cloud ───
         async function loadFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
@@ -1417,33 +1417,37 @@
                 const cloudHasTests = data.tests && data.tests.length > 0;
                 const cloudHasTarget = data.target;
 
-                // If cloud is empty but local has data, upload local to cloud
-                if (!cloudHasTimetables && localTimetables.length > 0) {
-                    await syncTimetableToCloud();
-                }
-                if (!cloudHasTests && localTests.length > 0) {
-                    await syncTestsToCloud();
-                }
-                if (!cloudHasTarget && localTarget) {
-                    await syncTargetToCloud();
-                }
-
-                // Fetch the fresh cloud data (now it includes any newly uploaded local data)
-                const updatedDoc = await db.collection('users').doc(currentUser.uid).get();
-                const updatedData = updatedDoc.data();
-
-                // Now load from cloud (it will have either old or newly merged data)
-                if (updatedData.timetables !== undefined) {
-                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedData.timetables));
-                }
-                if (updatedData.tests !== undefined) {
-                    localStorage.setItem(TESTS_KEY, JSON.stringify(updatedData.tests));
-                }
-                if (updatedData.target !== undefined) {
-                    localStorage.setItem(TARGET_KEY, JSON.stringify(updatedData.target));
+                // Case 1: Cloud has timetables → load them (cross‑device sync)
+                if (cloudHasTimetables) {
+                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
+                } else {
+                    // Cloud empty for timetables
+                    if (localTimetables.length > 0) {
+                        // We have local data – upload to cloud but keep local intact
+                        await syncTimetableToCloud();
+                        showStickerToast("☁️ Local timetable uploaded to cloud.");
+                    }
                 }
 
-                showStickerToast("☁️ Cloud data loaded! Welcome back.");
+                // Same for tests
+                if (cloudHasTests) {
+                    localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
+                } else {
+                    if (localTests.length > 0) {
+                        await syncTestsToCloud();
+                    }
+                }
+
+                // Target
+                if (cloudHasTarget) {
+                    localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
+                } else {
+                    if (localTarget) {
+                        await syncTargetToCloud();
+                    }
+                }
+
+                showStickerToast("☁️ Cloud sync complete.");
                 refreshAllViews();
                 return true;
             } catch (e) {
