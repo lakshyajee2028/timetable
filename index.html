@@ -16,7 +16,7 @@
     </script>
 
     <style>
-        /* ── Root Variables ── */
+        /* ─── Root Variables ─── */
         :root {
             --bg-base: #f4f6fc;
             --bg-card: #ffffff;
@@ -34,7 +34,6 @@
             --radius-sm: 12px;
             --shadow: 0 12px 30px rgba(67, 97, 238, 0.12);
         }
-
         [data-theme="dark"] {
             --bg-base: #121420;
             --bg-card: #1b1e2e;
@@ -49,7 +48,6 @@
             --success: #38b000;
             --shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -57,7 +55,6 @@
             font-family: 'Quicksand', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
-
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
@@ -68,7 +65,6 @@
             overflow: hidden;
             position: relative;
         }
-
         .bg-decor {
             position: absolute;
             inset: 0;
@@ -89,12 +85,10 @@
         .floating-item:nth-child(5) { bottom: 12%; left: 10%; animation-delay: 3.2s; font-size: 2.6rem; }
         .floating-item:nth-child(6) { bottom: 18%; right: 12%; animation-delay: 2.1s; font-size: 2.3rem; }
         .floating-item:nth-child(7) { top: 28%; left: 45%; animation-delay: 4s; font-size: 1.8rem; opacity: 0.25; }
-
         @keyframes floatAnim {
             0% { transform: translateY(0px) rotate(0deg) scale(1); }
             100% { transform: translateY(-20px) rotate(12deg) scale(1.08); }
         }
-
         .app-container {
             width: 100%;
             max-width: 480px;
@@ -111,7 +105,7 @@
             overflow: hidden;
         }
 
-        /* Login overlay */
+        /* ─── Login Overlay ─── */
         #login-overlay {
             position: absolute;
             inset: 0;
@@ -121,45 +115,224 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 30px 24px;
+            padding: 20px 16px;
             text-align: center;
             transition: opacity 0.5s ease, transform 0.5s ease;
+            overflow-y: auto;
         }
         #login-overlay.hidden {
             opacity: 0;
             pointer-events: none;
             transform: scale(0.95);
         }
-        #login-overlay .login-icon { font-size: 4rem; color: var(--primary); margin-bottom: 16px; }
-        #login-overlay h2 { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; margin-bottom: 6px; }
-        #login-overlay p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; max-width: 300px; }
+        #login-overlay .login-icon { font-size: 3.2rem; color: var(--primary); margin-bottom: 8px; }
+        #login-overlay h2 { font-family: 'Fredoka', sans-serif; font-size: 1.4rem; margin-bottom: 4px; }
+        #login-overlay p { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 16px; max-width: 300px; }
+
+        .login-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 320px;
+        }
+        .method-divider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin: 2px 0;
+        }
+        .method-divider::before,
+        .method-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
         .btn-google {
             background: #fff;
             color: #444;
             border: 2px solid #ddd;
-            padding: 12px 28px;
+            padding: 10px 16px;
             border-radius: 40px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            gap: 10px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: 0.2s;
+            width: 100%;
         }
-        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
-        .btn-google i { font-size: 1.4rem; color: #ea4335; }
-        .login-loader { margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); display: none; }
-        .login-loader.show { display: block; }
-        .login-loader i { animation: spin 1s linear infinite; margin-right: 8px; }
+        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); }
+        .btn-google i { font-size: 1.2rem; color: #ea4335; }
+
+        .btn-guest {
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+            width: 100%;
+        }
+        .btn-guest:hover { border-color: var(--primary); background: var(--bg-card); }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .input-group input:focus { border-color: var(--primary); }
+        .input-row {
+            display: flex;
+            gap: 6px;
+        }
+        .input-row input { flex: 1; }
+        .btn-action {
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--secondary);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+        .btn-action:hover { opacity: 0.85; }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-action.primary { background: var(--primary); }
+        .btn-action.danger { background: var(--accent); }
+
+        /* ─── Phone Input with +91 Prefix ─── */
+        .phone-prefix-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .phone-prefix-wrapper:focus-within {
+            border-color: var(--primary);
+        }
+        .phone-prefix-wrapper .prefix {
+            padding: 0 4px 0 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            background: transparent;
+            user-select: none;
+        }
+        .phone-prefix-wrapper input {
+            border: none !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            padding: 10px 12px 10px 4px !important;
+            flex: 1;
+            outline: none;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            min-width: 0;
+        }
+        .phone-prefix-wrapper input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .email-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .email-actions .btn-action { flex: 1; }
+        .forgot-link {
+            font-size: 0.7rem;
+            color: var(--primary);
+            cursor: pointer;
+            text-align: right;
+            margin-top: 2px;
+        }
+        .forgot-link:hover { text-decoration: underline; }
+
+        .login-loader {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: none;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+        }
+        .login-loader.show { display: flex; }
+        .login-loader i { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Modal overlay */
+        .guest-badge {
+            font-size: 0.6rem;
+            background: var(--accent);
+            color: white;
+            padding: 1px 8px;
+            border-radius: 20px;
+            margin-left: 4px;
+        }
+
+        /* ─── Toast ─── */
+        #sticker-toast {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-140px);
+            background: var(--bg-card);
+            border: 3px solid var(--primary);
+            color: var(--text-main);
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%;
+        }
+        #sticker-toast.show { transform: translateX(-50%) translateY(0); }
+        #sticker-toast i { color: var(--accent); font-size: 1rem; }
+
+        /* ─── Modal ─── */
         .modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.55);
+            background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(5px);
             z-index: 1000;
             display: flex;
@@ -177,7 +350,7 @@
             max-width: 380px;
             padding: 24px;
             border-radius: var(--radius-lg);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             transform: scale(0.85);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
@@ -207,7 +380,7 @@
         .modal-box input:focus, .modal-box select:focus { border-color: var(--primary); }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
-        /* Header */
+        /* ─── Header ─── */
         header {
             background: var(--bg-card);
             padding: 10px 16px;
@@ -229,7 +402,7 @@
             align-items: center;
             color: white;
             font-size: 1rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
             flex-shrink: 0;
             animation: bounceMascot 2s ease-in-out infinite;
         }
@@ -268,25 +441,22 @@
         .user-badge .logout-tip { font-size: 0.6rem; color: var(--text-muted); opacity: 0.7; }
         .user-badge .logout-tip i { font-size: 0.55rem; }
 
+        /* ─── Main ─── */
         main { flex: 1; overflow-y: auto; padding: 12px 14px 100px 14px; }
         .view-section { display: none; animation: fadeInView 0.3s ease-in-out; }
         .view-section.active { display: block; }
         @keyframes fadeInView { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         h2 { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-
         .card { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; position: relative; overflow: hidden; }
         .card::before { content: '⭐'; position: absolute; top: 6px; right: 8px; font-size: 0.75rem; opacity: 0.3; }
-
         .home-widgets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         .widget-box { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 10px; text-align: center; position: relative; }
         .widget-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; gap: 4px; }
         .widget-value { font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--primary); }
         .countdown-sub { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; }
-
         .search-box { display: flex; gap: 8px; margin-bottom: 12px; }
         .search-box input { flex: 1; padding: 8px 12px; background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-weight: 600; font-size: 0.85rem; outline: none; }
         .search-box input:focus { border-color: var(--primary); }
-
         .table-container { overflow-x: auto; border-radius: var(--radius-md); border: 2px solid var(--border); background: var(--bg-card); margin-bottom: 12px; }
         table { width: 100%; border-collapse: collapse; text-align: center; min-width: 380px; }
         th, td { border: 2px solid var(--border); padding: 6px 4px; font-size: 0.75rem; }
@@ -294,7 +464,6 @@
         td:first-child { background-color: var(--bg-base); font-weight: 700; color: var(--secondary); }
         td input, th input { width: 100%; border: none; background: transparent; text-align: center; font-size: 0.75rem; font-weight: 600; outline: none; color: var(--text-main); padding: 2px; border-radius: 4px; }
         td input:focus, th input:focus { background: var(--bg-base); box-shadow: 0 0 0 2px var(--primary); }
-
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
         .btn {
             padding: 8px 12px;
@@ -317,7 +486,6 @@
         .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
         .btn.primary { background: var(--primary); color: white; border-color: var(--primary-hover); box-shadow: 0 3px 0 var(--primary-hover); }
         .btn.danger { background: #ff6b6b; color: white; border-color: #ee5253; box-shadow: 0 3px 0 #d63031; }
-
         .calendar-card { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 10px; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.95rem; }
         .calendar-header button { background: var(--bg-card); border: 2px solid var(--border); color: var(--text-main); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
@@ -338,43 +506,10 @@
         }
         .calendar-date:hover { border-color: var(--primary); }
         .calendar-date.selected { background-color: var(--primary) !important; color: white !important; border-color: var(--primary-hover) !important; }
-        .calendar-date.has-festival { background-color: rgba(114,9,183,0.15); border-color: var(--festival-color); color: var(--festival-color); }
-        .calendar-date.has-test { background-color: rgba(230,57,70,0.15); border-color: var(--accent); color: var(--accent); }
-        .calendar-date.has-festival.has-test { background: linear-gradient(135deg, rgba(114,9,183,0.2), rgba(230,57,70,0.2)); border-color: var(--accent); }
-
-        #sticker-toast {
-            position: absolute;
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-140px);
-            background: var(--bg-card);
-            border: 3px solid var(--primary);
-            color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: var(--radius-md);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 0.85rem;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-width: 90%;
-        }
-        #sticker-toast.show { transform: translateX(-50%) translateY(0); }
-        #sticker-toast i { color: var(--accent); font-size: 1rem; }
-
-        .assistant-widget {
-            position: absolute;
-            bottom: 74px;
-            right: 10px;
-            z-index: 150;
-            display: flex;
-            align-items: flex-end;
-            gap: 6px;
-            pointer-events: auto;
-        }
+        .calendar-date.has-festival { background-color: rgba(114, 9, 183, 0.15); border-color: var(--festival-color); color: var(--festival-color); }
+        .calendar-date.has-test { background-color: rgba(230, 57, 70, 0.15); border-color: var(--accent); color: var(--accent); }
+        .calendar-date.has-festival.has-test { background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(230, 57, 70, 0.2)); border-color: var(--accent); }
+        .assistant-widget { position: absolute; bottom: 74px; right: 10px; z-index: 150; display: flex; align-items: flex-end; gap: 6px; pointer-events: auto; }
         .assistant-speech-wrap { position: relative; opacity: 1; transform: scale(1); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .assistant-speech-wrap.hidden { opacity: 0; transform: scale(0); pointer-events: none; }
         .assistant-speech {
@@ -385,7 +520,7 @@
             font-family: 'Fredoka', sans-serif;
             font-size: 0.7rem;
             color: var(--text-main);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 130px;
             cursor: pointer;
             position: relative;
@@ -416,7 +551,7 @@
             justify-content: center;
             cursor: pointer;
             z-index: 155;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         .assistant-avatar-btn {
             width: 42px;
@@ -430,12 +565,11 @@
             color: white;
             font-size: 1.2rem;
             cursor: pointer;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
             animation: floatBoy 2.5s ease-in-out infinite alternate;
             flex-shrink: 0;
         }
         @keyframes floatBoy { 0% { transform: translateY(0); } 100% { transform: translateY(-5px); } }
-
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -477,10 +611,9 @@
             margin: 2px 12px 0 12px;
         }
         .footer-credit a { color: var(--primary); text-decoration: none; font-weight: 700; font-family: 'Fredoka', sans-serif; letter-spacing: 0.5px; transition: color 0.2s, text-shadow 0.2s; }
-        .footer-credit a:hover { color: var(--secondary); text-shadow: 0 0 12px rgba(67,97,238,0.35); text-decoration: underline; }
+        .footer-credit a:hover { color: var(--secondary); text-shadow: 0 0 12px rgba(67, 97, 238, 0.35); text-decoration: underline; }
         .footer-credit .heart { color: var(--accent); display: inline-block; animation: pulseHeart 1.6s ease-in-out infinite; }
         @keyframes pulseHeart { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-
         @media (max-width: 480px) {
             .app-container { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
             main { padding: 10px 10px 100px 10px; }
@@ -493,6 +626,7 @@
 </head>
 <body>
 
+    <!-- Decorations -->
     <div class="bg-decor">
         <div class="floating-item">📚</div>
         <div class="floating-item">✏️</div>
@@ -503,11 +637,13 @@
         <div class="floating-item">⭐</div>
     </div>
 
+    <!-- Toast -->
     <div id="sticker-toast">
         <i class="fas fa-sparkles"></i>
         <span id="toast-text">Ready!</span>
     </div>
 
+    <!-- Custom Modal -->
     <div class="modal-overlay" id="custom-modal">
         <div class="modal-box">
             <h3 id="modal-title"><i class="fas fa-pencil-alt"></i> Sticker Note</h3>
@@ -519,21 +655,67 @@
         </div>
     </div>
 
+    <!-- App Container -->
     <div class="app-container" id="appContainer">
 
-        <!-- Login Overlay -->
+        <!-- Login Overlay (4 methods) -->
         <div id="login-overlay">
             <div class="login-icon"><i class="fas fa-user-graduate"></i></div>
             <h2>Study Time-Table</h2>
-            <p>Sign in with your Google account to sync your timetable across all your devices.</p>
-            <button class="btn-google" id="google-login-btn">
-                <i class="fab fa-google"></i> Sign in with Google
-            </button>
-            <div class="login-loader" id="login-loader">
-                <i class="fas fa-spinner"></i> Signing in…
+            <p>Sign in to sync your timetable across devices.</p>
+
+            <div class="login-methods">
+                <!-- Google -->
+                <button class="btn-google" id="google-login-btn">
+                    <i class="fab fa-google"></i> Sign in with Google
+                </button>
+
+                <div class="method-divider">or</div>
+
+                <!-- Email / Password -->
+                <div class="input-group">
+                    <input type="email" id="email-input" placeholder="Email address" />
+                    <input type="password" id="password-input" placeholder="Password" />
+                    <div class="email-actions">
+                        <button class="btn-action primary" id="email-signin-btn">Sign In</button>
+                        <button class="btn-action" id="email-signup-btn">Sign Up</button>
+                    </div>
+                    <div class="forgot-link" id="forgot-password-link">Forgot password?</div>
+                </div>
+
+                <div class="method-divider">or</div>
+
+                <!-- Phone with +91 prefix -->
+                <div class="input-group" id="phone-section">
+                    <div class="input-row">
+                        <div class="phone-prefix-wrapper">
+                            <span class="prefix">+91</span>
+                            <input type="tel" id="phone-input" placeholder="9219951830" maxlength="10" />
+                        </div>
+                        <button class="btn-action" id="send-otp-btn">Send OTP</button>
+                    </div>
+                    <div id="recaptcha-container"></div>
+                    <div id="otp-group" style="display:none;" class="input-row">
+                        <input type="text" id="otp-input" placeholder="6-digit OTP" maxlength="6" />
+                        <button class="btn-action" id="verify-otp-btn">Verify</button>
+                    </div>
+                </div>
+
+                <div class="method-divider">or</div>
+
+                <!-- Guest -->
+                <button class="btn-guest" id="guest-login-btn">
+                    <i class="fas fa-user-astronaut"></i> Continue as Guest
+                </button>
             </div>
-            <div style="margin-top:20px; font-size:0.7rem; color:var(--text-muted); opacity:0.6;">
-                <i class="fas fa-lock"></i> Your data is stored securely in the cloud.
+
+            <!-- Loader -->
+            <div class="login-loader" id="login-loader">
+                <i class="fas fa-spinner"></i> Please wait...
+            </div>
+
+            <div style="margin-top:14px; font-size:0.6rem; color:var(--text-muted); opacity:0.7;">
+                <i class="fas fa-lock"></i> Guest data stays on this device only.
             </div>
         </div>
 
@@ -547,13 +729,14 @@
                 <div class="user-badge" id="user-badge" style="display:none;" title="Click to sign out">
                     <img id="user-avatar" src="" alt="avatar" />
                     <span class="user-name" id="user-name-display">User</span>
+                    <span id="user-type-badge" class="guest-badge" style="display:none;">Guest</span>
                     <span class="logout-tip"><i class="fas fa-sign-out-alt"></i></span>
                 </div>
                 <button class="icon-btn" id="theme-toggle" title="Toggle Theme"><i class="fas fa-moon" id="theme-icon"></i></button>
             </div>
         </header>
 
-        <!-- Main -->
+        <!-- Main (Today, History, Create, Calendar) -->
         <main>
             <div id="view-today" class="view-section active">
                 <div class="home-widgets-grid">
@@ -657,11 +840,9 @@
 
     </div>
 
-    <!-- ─── SCRIPT ─── -->
+    <!-- ─── Script ─── -->
     <script>
-        // ═══════════════════════════════════════════════════════════════
-        //  1.  FIREBASE CONFIG — EXACTLY AS PER YOUR CONSOLE (UPDATED)
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Firebase Config (YOUR REAL CONFIG) ───
         const firebaseConfig = {
             apiKey: "AIzaSyBhLhJq1MiFmILQv3xMdas12AwIxXLga60",
             authDomain: "studytimetable-67ded.firebaseapp.com",
@@ -672,34 +853,43 @@
             measurementId: "G-X4W2ZJ8YHC"
         };
 
-        // ═══════════════════════════════════════════════════════════════
-        //  2.  INIT FIREBASE
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Init Firebase ───
         let firebaseApp, auth, db;
         let currentUser = null;
         let isFirebaseReady = false;
+        let confirmationResult = null;
+        let recaptchaVerifier = null;
 
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
-            db.enablePersistence({ synchronizeTabs: true })
-                .catch(err => console.warn('Firestore persistence:', err));
+            db.enablePersistence({ synchronizeTabs: true }).catch(err => console.warn('Persistence:', err));
             isFirebaseReady = true;
         } catch (e) {
             console.warn('Firebase init failed:', e);
             isFirebaseReady = false;
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  3.  DOM REFS
-        // ═══════════════════════════════════════════════════════════════
+        // ─── DOM Refs ───
         const loginOverlay = document.getElementById('login-overlay');
         const googleBtn = document.getElementById('google-login-btn');
+        const guestBtn = document.getElementById('guest-login-btn');
+        const emailSigninBtn = document.getElementById('email-signin-btn');
+        const emailSignupBtn = document.getElementById('email-signup-btn');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const sendOtpBtn = document.getElementById('send-otp-btn');
+        const verifyOtpBtn = document.getElementById('verify-otp-btn');
+        const phoneInput = document.getElementById('phone-input');
+        const otpInput = document.getElementById('otp-input');
+        const otpGroup = document.getElementById('otp-group');
         const loginLoader = document.getElementById('login-loader');
         const userBadge = document.getElementById('user-badge');
         const userAvatar = document.getElementById('user-avatar');
         const userNameDisplay = document.getElementById('user-name-display');
+        const userTypeBadge = document.getElementById('user-type-badge');
         const appTitle = document.getElementById('app-title');
 
         const toast = document.getElementById('sticker-toast');
@@ -712,14 +902,13 @@
             toast._timer = setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
-        // ── Theme ──
+        // ─── Theme ───
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const htmlEl = document.documentElement;
         const savedTheme = localStorage.getItem('doodleTheme') || 'dark';
         htmlEl.setAttribute('data-theme', savedTheme);
         themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-
         themeToggle.addEventListener('click', () => {
             const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             htmlEl.setAttribute('data-theme', next);
@@ -727,7 +916,7 @@
             themeIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         });
 
-        // ── Modal ──
+        // ─── Modal ───
         const modalOverlay = document.getElementById('custom-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalContent = document.getElementById('modal-content-area');
@@ -761,7 +950,7 @@
             }
         });
 
-        // ── Navigation ──
+        // ─── Navigation ───
         const navItems = document.querySelectorAll('.nav-item');
         const viewSections = document.querySelectorAll('.view-section');
         navItems.forEach(item => {
@@ -779,7 +968,7 @@
             });
         });
 
-        // ── Assistant ──
+        // ─── Assistant ───
         const assistantBtn = document.getElementById('assistant-btn');
         const assistantBubble = document.getElementById('assistant-bubble');
         const assistantClose = document.getElementById('assistant-close');
@@ -812,9 +1001,7 @@
             showStickerToast("Assistant hidden. Tap the boy to reopen.");
         });
 
-        // ═══════════════════════════════════════════════════════════════
-        //  4.  STORAGE KEYS & HELPERS
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Storage keys ───
         const TIMETABLE_KEY = 'doodleTimetableData';
         const TESTS_KEY = 'doodleTestsData';
         const TARGET_KEY = 'doodleTargetExamData';
@@ -831,25 +1018,124 @@
         yesterday.setDate(yesterday.getDate() - 1);
         document.getElementById('history-date-input').value = getLocalDate(yesterday);
 
-        // ── Festivals DB ──
+        // ─── Festivals DB ───
         const globalFestivals = {
-            "2024-01-01":"New Year's Day 🎉","2024-01-14":"Makar Sankranti 🌾","2024-01-26":"Republic Day 🇮🇳","2024-03-08":"Maha Shivaratri 🔱","2024-03-25":"Holi 🎨","2024-04-11":"Eid-ul-Fitr 🌙","2024-04-17":"Rama Navami 🏹","2024-06-17":"Eid-ul-Adha 🕌","2024-08-15":"Independence Day 🇮🇳","2024-08-19":"Raksha Bandhan 🎁","2024-08-26":"Janmashtami 🪈","2024-09-07":"Ganesh Chaturthi 🐘","2024-10-02":"Gandhi Jayanti 🕊️","2024-10-12":"Dussehra 🏹","2024-11-01":"Diwali 🪔","2024-11-15":"Guru Nanak Jayanti 🪔","2024-12-25":"Christmas 🎄",
-            "2025-01-01":"New Year's Day 🎉","2025-01-14":"Makar Sankranti 🌾","2025-01-26":"Republic Day 🇮🇳","2025-02-26":"Maha Shivaratri 🔱","2025-03-14":"Holi 🎨","2025-03-31":"Eid-ul-Fitr 🌙","2025-04-06":"Rama Navami 🏹","2025-06-07":"Eid-ul-Adha 🕌","2025-08-15":"Independence Day 🇮🇳","2025-08-09":"Raksha Bandhan 🎁","2025-08-16":"Janmashtami 🪈","2025-08-27":"Ganesh Chaturthi 🐘","2025-10-02":"Gandhi Jayanti 🕊️","2025-10-02":"Dussehra 🏹","2025-10-20":"Diwali 🪔","2025-11-05":"Guru Nanak Jayanti 🪔","2025-12-25":"Christmas 🎄",
-            "2026-01-01":"New Year's Day 🎉","2026-01-14":"Makar Sankranti 🌾","2026-01-26":"Republic Day 🇮🇳","2026-02-15":"Maha Shivaratri 🔱","2026-03-03":"Holi 🎨","2026-03-20":"Eid-ul-Fitr 🌙","2026-03-27":"Rama Navami 🏹","2026-05-28":"Eid-ul-Adha 🕌","2026-08-15":"Independence Day 🇮🇳","2026-08-28":"Raksha Bandhan 🎁","2026-09-04":"Janmashtami 🪈","2026-09-16":"Ganesh Chaturthi 🐘","2026-10-02":"Gandhi Jayanti 🕊️","2026-10-20":"Dussehra 🏹","2026-11-08":"Diwali 🪔","2026-11-24":"Guru Nanak Jayanti 🪔","2026-12-25":"Christmas 🎄",
-            "2027-01-01":"New Year's Day 🎉","2027-01-14":"Makar Sankranti 🌾","2027-01-26":"Republic Day 🇮🇳","2027-03-07":"Maha Shivaratri 🔱","2027-03-22":"Holi 🎨","2027-03-10":"Eid-ul-Fitr 🌙","2027-04-16":"Rama Navami 🏹","2027-05-18":"Eid-ul-Adha 🕌","2027-08-15":"Independence Day 🇮🇳","2027-08-17":"Raksha Bandhan 🎁","2027-08-24":"Janmashtami 🪈","2027-09-06":"Ganesh Chaturthi 🐘","2027-10-02":"Gandhi Jayanti 🕊️","2027-10-10":"Dussehra 🏹","2027-10-29":"Diwali 🪔","2027-11-13":"Guru Nanak Jayanti 🪔","2027-12-25":"Christmas 🎄",
-            "2028-01-01":"New Year's Day 🎉","2028-01-14":"Makar Sankranti 🌾","2028-01-21":"JEE Main 2028 🎯","2028-01-26":"Republic Day 🇮🇳","2028-02-25":"Maha Shivaratri 🔱","2028-03-11":"Holi 🎨","2028-02-28":"Eid-ul-Fitr 🌙","2028-04-04":"Rama Navami 🏹","2028-05-06":"Eid-ul-Adha 🕌","2028-08-15":"Independence Day 🇮🇳","2028-08-05":"Raksha Bandhan 🎁","2028-08-12":"Janmashtami 🪈","2028-08-24":"Ganesh Chaturthi 🐘","2028-10-02":"Gandhi Jayanti 🕊️","2028-09-29":"Dussehra 🏹","2028-10-17":"Diwali 🪔","2028-11-02":"Guru Nanak Jayanti 🪔","2028-12-25":"Christmas 🎄",
-            "2029-01-01":"New Year's Day 🎉","2029-01-14":"Makar Sankranti 🌾","2029-01-26":"Republic Day 🇮🇳","2029-03-15":"Maha Shivaratri 🔱","2029-03-31":"Holi 🎨","2029-02-17":"Eid-ul-Fitr 🌙","2029-08-15":"Independence Day 🇮🇳","2029-08-25":"Raksha Bandhan 🎁","2029-10-02":"Gandhi Jayanti 🕊️","2029-11-05":"Diwali 🪔","2029-12-25":"Christmas 🎄",
-            "2030-01-01":"New Year's Day 🎉","2030-01-14":"Makar Sankranti 🌾","2030-01-26":"Republic Day 🇮🇳","2030-03-04":"Maha Shivaratri 🔱","2030-03-20":"Holi 🎨","2030-02-07":"Eid-ul-Fitr 🌙","2030-08-15":"Independence Day 🇮🇳","2030-08-14":"Raksha Bandhan 🎁","2030-10-02":"Gandhi Jayanti 🕊️","2030-10-26":"Diwali 🪔","2030-12-25":"Christmas 🎄"
+            "2024-01-01": "New Year's Day 🎉",
+            "2024-01-14": "Makar Sankranti 🌾",
+            "2024-01-26": "Republic Day 🇮🇳",
+            "2024-03-08": "Maha Shivaratri 🔱",
+            "2024-03-25": "Holi 🎨",
+            "2024-04-11": "Eid-ul-Fitr 🌙",
+            "2024-04-17": "Rama Navami 🏹",
+            "2024-06-17": "Eid-ul-Adha 🕌",
+            "2024-08-15": "Independence Day 🇮🇳",
+            "2024-08-19": "Raksha Bandhan 🎁",
+            "2024-08-26": "Janmashtami 🪈",
+            "2024-09-07": "Ganesh Chaturthi 🐘",
+            "2024-10-02": "Gandhi Jayanti 🕊️",
+            "2024-10-12": "Dussehra 🏹",
+            "2024-11-01": "Diwali 🪔",
+            "2024-11-15": "Guru Nanak Jayanti 🪔",
+            "2024-12-25": "Christmas 🎄",
+            "2025-01-01": "New Year's Day 🎉",
+            "2025-01-14": "Makar Sankranti 🌾",
+            "2025-01-26": "Republic Day 🇮🇳",
+            "2025-02-26": "Maha Shivaratri 🔱",
+            "2025-03-14": "Holi 🎨",
+            "2025-03-31": "Eid-ul-Fitr 🌙",
+            "2025-04-06": "Rama Navami 🏹",
+            "2025-06-07": "Eid-ul-Adha 🕌",
+            "2025-08-15": "Independence Day 🇮🇳",
+            "2025-08-09": "Raksha Bandhan 🎁",
+            "2025-08-16": "Janmashtami 🪈",
+            "2025-08-27": "Ganesh Chaturthi 🐘",
+            "2025-10-02": "Gandhi Jayanti 🕊️",
+            "2025-10-02": "Dussehra 🏹",
+            "2025-10-20": "Diwali 🪔",
+            "2025-11-05": "Guru Nanak Jayanti 🪔",
+            "2025-12-25": "Christmas 🎄",
+            "2026-01-01": "New Year's Day 🎉",
+            "2026-01-14": "Makar Sankranti 🌾",
+            "2026-01-26": "Republic Day 🇮🇳",
+            "2026-02-15": "Maha Shivaratri 🔱",
+            "2026-03-03": "Holi 🎨",
+            "2026-03-20": "Eid-ul-Fitr 🌙",
+            "2026-03-27": "Rama Navami 🏹",
+            "2026-05-28": "Eid-ul-Adha 🕌",
+            "2026-08-15": "Independence Day 🇮🇳",
+            "2026-08-28": "Raksha Bandhan 🎁",
+            "2026-09-04": "Janmashtami 🪈",
+            "2026-09-16": "Ganesh Chaturthi 🐘",
+            "2026-10-02": "Gandhi Jayanti 🕊️",
+            "2026-10-20": "Dussehra 🏹",
+            "2026-11-08": "Diwali 🪔",
+            "2026-11-24": "Guru Nanak Jayanti 🪔",
+            "2026-12-25": "Christmas 🎄",
+            "2027-01-01": "New Year's Day 🎉",
+            "2027-01-14": "Makar Sankranti 🌾",
+            "2027-01-26": "Republic Day 🇮🇳",
+            "2027-03-07": "Maha Shivaratri 🔱",
+            "2027-03-22": "Holi 🎨",
+            "2027-03-10": "Eid-ul-Fitr 🌙",
+            "2027-04-16": "Rama Navami 🏹",
+            "2027-05-18": "Eid-ul-Adha 🕌",
+            "2027-08-15": "Independence Day 🇮🇳",
+            "2027-08-17": "Raksha Bandhan 🎁",
+            "2027-08-24": "Janmashtami 🪈",
+            "2027-09-06": "Ganesh Chaturthi 🐘",
+            "2027-10-02": "Gandhi Jayanti 🕊️",
+            "2027-10-10": "Dussehra 🏹",
+            "2027-10-29": "Diwali 🪔",
+            "2027-11-13": "Guru Nanak Jayanti 🪔",
+            "2027-12-25": "Christmas 🎄",
+            "2028-01-01": "New Year's Day 🎉",
+            "2028-01-14": "Makar Sankranti 🌾",
+            "2028-01-21": "JEE Main 2028 🎯",
+            "2028-01-26": "Republic Day 🇮🇳",
+            "2028-02-25": "Maha Shivaratri 🔱",
+            "2028-03-11": "Holi 🎨",
+            "2028-02-28": "Eid-ul-Fitr 🌙",
+            "2028-04-04": "Rama Navami 🏹",
+            "2028-05-06": "Eid-ul-Adha 🕌",
+            "2028-08-15": "Independence Day 🇮🇳",
+            "2028-08-05": "Raksha Bandhan 🎁",
+            "2028-08-12": "Janmashtami 🪈",
+            "2028-08-24": "Ganesh Chaturthi 🐘",
+            "2028-10-02": "Gandhi Jayanti 🕊️",
+            "2028-09-29": "Dussehra 🏹",
+            "2028-10-17": "Diwali 🪔",
+            "2028-11-02": "Guru Nanak Jayanti 🪔",
+            "2028-12-25": "Christmas 🎄",
+            "2029-01-01": "New Year's Day 🎉",
+            "2029-01-14": "Makar Sankranti 🌾",
+            "2029-01-26": "Republic Day 🇮🇳",
+            "2029-03-15": "Maha Shivaratri 🔱",
+            "2029-03-31": "Holi 🎨",
+            "2029-02-17": "Eid-ul-Fitr 🌙",
+            "2029-08-15": "Independence Day 🇮🇳",
+            "2029-08-25": "Raksha Bandhan 🎁",
+            "2029-10-02": "Gandhi Jayanti 🕊️",
+            "2029-11-05": "Diwali 🪔",
+            "2029-12-25": "Christmas 🎄",
+            "2030-01-01": "New Year's Day 🎉",
+            "2030-01-14": "Makar Sankranti 🌾",
+            "2030-01-26": "Republic Day 🇮🇳",
+            "2030-03-04": "Maha Shivaratri 🔱",
+            "2030-03-20": "Holi 🎨",
+            "2030-02-07": "Eid-ul-Fitr 🌙",
+            "2030-08-15": "Independence Day 🇮🇳",
+            "2030-08-14": "Raksha Bandhan 🎁",
+            "2030-10-02": "Gandhi Jayanti 🕊️",
+            "2030-10-26": "Diwali 🪔",
+            "2030-12-25": "Christmas 🎄"
         };
 
-        // ═══════════════════════════════════════════════════════════════
-        //  5.  LIVE CLOCK & TARGET
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Live Clock & Target ───
         function updateLiveWidgets() {
             const now = new Date();
             document.getElementById('live-clock-display').innerText = now.toLocaleTimeString();
-            document.getElementById('live-date-display').innerText = now.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric', year:'numeric' });
-
+            document.getElementById('live-date-display').innerText = now.toLocaleDateString(undefined, { weekday: 'short',
+                month: 'short', day: 'numeric', year: 'numeric' });
             let targetData = JSON.parse(localStorage.getItem(TARGET_KEY));
             if (!targetData) {
                 targetData = { name: "JEE 2028", date: "2028-01-21T09:00:00" };
@@ -888,50 +1174,51 @@
             localStorage.setItem(TARGET_KEY, JSON.stringify(newTarget));
             showStickerToast(`🎯 Target updated to "${nameVal}"!`);
             updateLiveWidgets();
-            if (currentUser) syncTargetToCloud();
+            if (currentUser && !currentUser.isAnonymous) syncTargetToCloud();
         });
 
-        // ═══════════════════════════════════════════════════════════════
-        //  6.  CLOUD SYNC FUNCTIONS
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Cloud Sync Functions ───
         async function syncAllToCloud() {
-            if (!currentUser || !isFirebaseReady) return;
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
                 const uid = currentUser.uid;
                 const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
-                await db.collection('users').doc(uid).set({ timetables, tests, target, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-                console.log('☁️ Data synced to cloud.');
+                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
+                date: "2028-01-21T09:00:00" };
+                await db.collection('users').doc(uid).set({ timetables, tests, target,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                console.log('☁️ Synced to cloud.');
             } catch (e) { console.warn('Sync error:', e); }
         }
-
         async function syncTimetableToCloud() {
-            if (!currentUser || !isFirebaseReady) return;
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
                 const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-                await db.collection('users').doc(currentUser.uid).set({ timetables, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                await db.collection('users').doc(currentUser.uid).set({ timetables,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
             } catch (e) { console.warn('Timetable sync error:', e); }
         }
-
         async function syncTestsToCloud() {
-            if (!currentUser || !isFirebaseReady) return;
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
                 const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-                await db.collection('users').doc(currentUser.uid).set({ tests, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                await db.collection('users').doc(currentUser.uid).set({ tests,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
             } catch (e) { console.warn('Tests sync error:', e); }
         }
-
         async function syncTargetToCloud() {
-            if (!currentUser || !isFirebaseReady) return;
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
-                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
-                await db.collection('users').doc(currentUser.uid).set({ target, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
+                date: "2028-01-21T09:00:00" };
+                await db.collection('users').doc(currentUser.uid).set({ target,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
             } catch (e) { console.warn('Target sync error:', e); }
         }
 
         async function loadFromCloud() {
-            if (!currentUser || !isFirebaseReady) return;
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
                 const doc = await db.collection('users').doc(currentUser.uid).get();
                 if (!doc.exists) {
@@ -969,15 +1256,12 @@
             }
             renderTable(found, container);
         }
-
         document.getElementById('search-history-btn').addEventListener('click', () => {
             const dateVal = document.getElementById('history-date-input').value;
             if (dateVal) loadHistory(dateVal);
         });
 
-        // ═══════════════════════════════════════════════════════════════
-        //  7.  TABLE RENDER & MATRIX CONTROLS
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Table Render & Matrix Controls ───
         function renderTable(obj, target) {
             let html = `<div class="table-container"><table><thead><tr>`;
             obj.headers.forEach(h => html += `<th>${h}</th>`);
@@ -996,16 +1280,16 @@
             const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
             const todayObj = data.find(d => d.date === todayStr);
             if (!todayObj) {
-                container.innerHTML = `<div class="card"><p>No custom timetable for today. Create one in <b>Studio</b>! ✨</p></div>`;
+                container.innerHTML =
+                    `<div class="card"><p>No custom timetable for today. Create one in <b>Studio</b>! ✨</p></div>`;
                 return;
             }
             renderTable(todayObj, container);
         }
 
-        // Matrix controls
+        // Matrix controls (same as before)
         const headerRow = document.getElementById('matrix-header-row');
         const bodyRows = document.getElementById('matrix-body-rows');
-
         document.getElementById('add-time-col').addEventListener('click', async () => {
             const total = headerRow.cells.length;
             let opts = `<select id="modal-select-pos">`;
@@ -1030,7 +1314,6 @@
             });
             showStickerToast("✨ Time column added!");
         });
-
         document.getElementById('remove-time-col').addEventListener('click', async () => {
             const total = headerRow.cells.length - 1;
             if (total <= 1) { showStickerToast("⚠️ Minimum 1 time slot!"); return; }
@@ -1047,7 +1330,6 @@
             Array.from(bodyRows.rows).forEach(row => row.deleteCell(idx));
             showStickerToast("🗑️ Column removed.");
         });
-
         document.getElementById('add-subject-row').addEventListener('click', async () => {
             const total = bodyRows.rows.length;
             let opts = `<select id="modal-select-pos">`;
@@ -1071,7 +1353,6 @@
             else bodyRows.insertBefore(row, bodyRows.rows[idx]);
             showStickerToast("✨ Subject row added!");
         });
-
         document.getElementById('remove-subject-row').addEventListener('click', async () => {
             const total = bodyRows.rows.length;
             if (total <= 1) { showStickerToast("⚠️ Minimum 1 subject row!"); return; }
@@ -1087,10 +1368,10 @@
             bodyRows.deleteRow(idx);
             showStickerToast("🗑️ Subject row removed.");
         });
-
         document.getElementById('save-timetable-btn').addEventListener('click', async () => {
             const headers = Array.from(headerRow.cells).map(th => th.querySelector('input')?.value || th.innerText);
-            const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector('input')?.value || cell.innerText));
+            const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector(
+                'input')?.value || cell.innerText));
             const payload = { date: todayStr, headers, rows };
             let allData = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
             allData = allData.filter(d => d.date !== todayStr);
@@ -1098,17 +1379,17 @@
             localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
             showStickerToast("🎉 Timetable saved!");
             loadTodayView();
-            if (currentUser) syncTimetableToCloud();
+            if (currentUser && !currentUser.isAnonymous) syncTimetableToCloud();
         });
 
-        // ═══════════════════════════════════════════════════════════════
-        //  8.  CALENDAR
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Calendar ───
         let currMonth = new Date().getMonth();
         let currYear = new Date().getFullYear();
 
         function renderCalendar() {
-            const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+                "November", "December"
+            ];
             document.getElementById('calendar-month-year').innerText = `${months[currMonth]} ${currYear}`;
             const grid = document.getElementById('calendar-dates-grid');
             grid.innerHTML = '';
@@ -1135,9 +1416,14 @@
             }
             inspectDate(todayStr);
         }
-
-        document.getElementById('prev-month').addEventListener('click', () => { currMonth--; if (currMonth < 0) { currMonth = 11; currYear--; } renderCalendar(); });
-        document.getElementById('next-month').addEventListener('click', () => { currMonth++; if (currMonth > 11) { currMonth = 0; currYear++; } renderCalendar(); });
+        document.getElementById('prev-month').addEventListener('click', () => { currMonth--;
+            if (currMonth < 0) { currMonth = 11;
+                currYear--; }
+            renderCalendar(); });
+        document.getElementById('next-month').addEventListener('click', () => { currMonth++;
+            if (currMonth > 11) { currMonth = 0;
+                currYear++; }
+            renderCalendar(); });
 
         function inspectDate(dateStr) {
             const container = document.getElementById('calendar-selected-data');
@@ -1157,7 +1443,8 @@
                         <button class="btn danger" style="margin-top:6px;padding:4px 10px;font-size:0.7rem;" onclick="removeTest('${dateStr}')">Remove</button>
                     </div>`;
             } else {
-                html += `<button class="btn primary" style="width:100%;margin-bottom:8px;" onclick="promptAddTest('${dateStr}')"><i class="fas fa-plus"></i> Add Event</button>`;
+                html +=
+                    `<button class="btn primary" style="width:100%;margin-bottom:8px;" onclick="promptAddTest('${dateStr}')"><i class="fas fa-plus"></i> Add Event</button>`;
             }
             if (tMatch) {
                 html += `<div id="cal-table-box"></div>`;
@@ -1181,7 +1468,7 @@
             showStickerToast("📝 Event scheduled!");
             renderCalendar();
             inspectDate(dateStr);
-            if (currentUser) syncTestsToCloud();
+            if (currentUser && !currentUser.isAnonymous) syncTestsToCloud();
         }
 
         window.removeTest = function(dateStr) {
@@ -1191,23 +1478,34 @@
             showStickerToast("Event deleted.");
             renderCalendar();
             inspectDate(dateStr);
-            if (currentUser) syncTestsToCloud();
-        }
+            if (currentUser && !currentUser.isAnonymous) syncTestsToCloud();
+        };
 
-        // ═══════════════════════════════════════════════════════════════
-        //  9.  FIREBASE AUTH
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Auth Handlers ───
+
+        // Set user
         function setUser(user) {
             currentUser = user;
             if (user) {
                 loginOverlay.classList.add('hidden');
                 userBadge.style.display = 'flex';
                 userAvatar.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=4361ee&color=fff';
-                userAvatar.alt = user.displayName || 'User';
-                userNameDisplay.innerText = user.displayName ? user.displayName.split(' ')[0] : 'User';
-                appTitle.innerText = `📚 ${user.displayName ? user.displayName.split(' ')[0] : 'Student'}'s T-T`;
-                showStickerToast(`👋 Welcome ${user.displayName || 'Student'}!`);
-                loadFromCloud().then(() => refreshAllViews());
+                userAvatar.alt = user.displayName || user.phoneNumber || user.email || 'User';
+                let name = user.displayName || user.phoneNumber || user.email || 'User';
+                if (user.isAnonymous) {
+                    name = 'Guest';
+                    userTypeBadge.style.display = 'inline';
+                } else {
+                    userTypeBadge.style.display = 'none';
+                }
+                userNameDisplay.innerText = name.split(' ')[0] || 'User';
+                appTitle.innerText = user.isAnonymous ? '📁 GUEST MODE' : `📚 ${name.split(' ')[0] || 'Student'}'s T-T`;
+                showStickerToast(user.isAnonymous ? '👤 Logged in as Guest' : `👋 Welcome ${name}!`);
+                if (!user.isAnonymous) {
+                    loadFromCloud().then(() => refreshAllViews());
+                } else {
+                    refreshAllViews();
+                }
             } else {
                 loginOverlay.classList.remove('hidden');
                 userBadge.style.display = 'none';
@@ -1215,21 +1513,53 @@
             }
         }
 
+        // ─── Sign-out with confirmation ───
         userBadge.addEventListener('click', async () => {
-            if (auth && currentUser) {
+            if (!auth || !currentUser) return;
+            // Show confirmation modal
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay active';
+            overlay.style.position = 'absolute';
+            overlay.style.inset = '0';
+            overlay.style.zIndex = '3000';
+            overlay.innerHTML = `
+                <div class="modal-box">
+                    <h3><i class="fas fa-sign-out-alt"></i> Confirm Logout</h3>
+                    <p style="margin-bottom:16px;">Are you sure you want to sign out?</p>
+                    <div class="modal-actions">
+                        <button class="btn" id="temp-logout-cancel">Cancel</button>
+                        <button class="btn danger" id="temp-logout-confirm">Logout</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('appContainer').appendChild(overlay);
+
+            const result = await new Promise((resolve) => {
+                document.getElementById('temp-logout-cancel').addEventListener('click', () => {
+                    overlay.remove();
+                    resolve(false);
+                });
+                document.getElementById('temp-logout-confirm').addEventListener('click', async () => {
+                    overlay.remove();
+                    resolve(true);
+                });
+            });
+
+            if (result) {
                 try {
                     await auth.signOut();
                     setUser(null);
-                    showStickerToast("👋 Signed out. Your data stays on this device.");
-                } catch (e) { console.warn('Sign out error:', e); }
+                    showStickerToast('👋 Signed out successfully.');
+                } catch (e) {
+                    console.warn('Sign out error:', e);
+                    showStickerToast('⚠️ Could not sign out.');
+                }
             }
         });
 
+        // ─── Google Sign-In ───
         googleBtn.addEventListener('click', async () => {
-            if (!isFirebaseReady) {
-                showStickerToast("⚠️ Firebase not configured. Please set up your config.");
-                return;
-            }
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
             loginLoader.classList.add('show');
             googleBtn.disabled = true;
             try {
@@ -1239,14 +1569,153 @@
                 setUser(result.user);
                 await syncAllToCloud();
             } catch (e) {
-                console.warn('Login error:', e);
-                showStickerToast(`⚠️ Login failed: ${e.message}`);
+                console.warn('Google login error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
             } finally {
                 loginLoader.classList.remove('show');
                 googleBtn.disabled = false;
             }
         });
 
+        // ─── Guest Sign-In ───
+        guestBtn.addEventListener('click', async () => {
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            loginLoader.classList.add('show');
+            guestBtn.disabled = true;
+            try {
+                const result = await auth.signInAnonymously();
+                setUser(result.user);
+                showStickerToast('👤 Guest mode active. Data stored locally.');
+            } catch (e) {
+                console.warn('Guest login error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                guestBtn.disabled = false;
+            }
+        });
+
+        // ─── Email/Password Sign-In ───
+        emailSigninBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!email || !password) { showStickerToast('⚠️ Please enter email and password.'); return; }
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            loginLoader.classList.add('show');
+            emailSigninBtn.disabled = true;
+            try {
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                setUser(result.user);
+                await syncAllToCloud();
+                emailInput.value = '';
+                passwordInput.value = '';
+            } catch (e) {
+                console.warn('Email sign-in error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                emailSigninBtn.disabled = false;
+            }
+        });
+
+        // ─── Email/Password Sign-Up ───
+        emailSignupBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!email || !password) { showStickerToast('⚠️ Please enter email and password.'); return; }
+            if (password.length < 6) { showStickerToast('⚠️ Password must be at least 6 characters.'); return; }
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            loginLoader.classList.add('show');
+            emailSignupBtn.disabled = true;
+            try {
+                const result = await auth.createUserWithEmailAndPassword(email, password);
+                setUser(result.user);
+                await syncAllToCloud();
+                emailInput.value = '';
+                passwordInput.value = '';
+                showStickerToast('✅ Account created and signed in!');
+            } catch (e) {
+                console.warn('Email sign-up error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                emailSignupBtn.disabled = false;
+            }
+        });
+
+        // ─── Forgot Password ───
+        forgotPasswordLink.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            if (!email) { showStickerToast('⚠️ Enter your email address first.'); return; }
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showStickerToast('📧 Password reset email sent. Check your inbox.');
+            } catch (e) {
+                console.warn('Password reset error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            }
+        });
+
+        // ─── Phone Auth (with +91 prefix) ───
+        function setupRecaptcha() {
+            if (!recaptchaVerifier) {
+                recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    size: 'invisible',
+                    callback: () => {}
+                });
+            }
+        }
+
+        sendOtpBtn.addEventListener('click', async () => {
+            // Get number and prepend +91
+            const number = phoneInput.value.trim();
+            if (!number || number.length < 10) {
+                showStickerToast('⚠️ Enter a valid 10-digit phone number.');
+                return;
+            }
+            const fullNumber = `+91${number}`;
+            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            loginLoader.classList.add('show');
+            sendOtpBtn.disabled = true;
+            try {
+                setupRecaptcha();
+                confirmationResult = await auth.signInWithPhoneNumber(fullNumber, recaptchaVerifier);
+                otpGroup.style.display = 'flex';
+                showStickerToast('📱 OTP sent to +91' + number);
+            } catch (e) {
+                console.warn('Send OTP error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+                recaptchaVerifier = null;
+            } finally {
+                loginLoader.classList.remove('show');
+                sendOtpBtn.disabled = false;
+            }
+        });
+
+        verifyOtpBtn.addEventListener('click', async () => {
+            const code = otpInput.value.trim();
+            if (!code) { showStickerToast('⚠️ Enter OTP.'); return; }
+            loginLoader.classList.add('show');
+            verifyOtpBtn.disabled = true;
+            try {
+                const result = await confirmationResult.confirm(code);
+                setUser(result.user);
+                await syncAllToCloud();
+                otpGroup.style.display = 'none';
+                phoneInput.value = '';
+                otpInput.value = '';
+                showStickerToast('✅ Phone login successful!');
+            } catch (e) {
+                console.warn('OTP verify error:', e);
+                showStickerToast(`⚠️ ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                verifyOtpBtn.disabled = false;
+            }
+        });
+
+        // ─── Auth state listener ───
         if (isFirebaseReady) {
             auth.onAuthStateChanged((user) => {
                 if (user) setUser(user);
@@ -1259,14 +1728,18 @@
             googleBtn.innerHTML = '<i class="fas fa-database"></i> Use Local Mode';
             googleBtn.addEventListener('click', () => {
                 loginOverlay.classList.add('hidden');
-                showStickerToast("📁 Local mode active. Data is stored on this device only.");
+                showStickerToast("📁 Local mode active.");
                 appTitle.innerText = '📁 LOCAL MODE';
+                currentUser = { isAnonymous: true, uid: 'local' };
+                refreshAllViews();
             });
+            // Hide phone and email methods if Firebase not ready
+            document.querySelector('#phone-section').style.display = 'none';
+            document.querySelector('.input-group').style.display = 'none';
+            guestBtn.style.display = 'none';
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        //  10. STARTUP
-        // ═══════════════════════════════════════════════════════════════
+        // ─── Window Load ───
         window.addEventListener('DOMContentLoaded', () => {
             loadTodayView();
             renderCalendar();
@@ -1279,7 +1752,7 @@
             }
         });
 
-        // Expose sync to console for debugging
+        // Expose sync for debugging
         window.syncAll = syncAllToCloud;
         window.loadCloud = loadFromCloud;
     </script>
