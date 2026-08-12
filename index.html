@@ -3,9 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Time Table</title>
+    <title>Time Table · Sync</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js">
+    </script>
+
     <style>
         /* ── Root Variables ── */
         :root {
@@ -41,7 +50,6 @@
             --shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
         }
 
-        /* ── Reset & Base ── */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -61,7 +69,6 @@
             position: relative;
         }
 
-        /* ── Floating Background Decor ── */
         .bg-decor {
             position: absolute;
             inset: 0;
@@ -69,68 +76,25 @@
             pointer-events: none;
             z-index: 0;
         }
-
         .floating-item {
             position: absolute;
             font-size: 2rem;
             opacity: 0.35;
             animation: floatAnim 9s ease-in-out infinite alternate;
         }
-
-        .floating-item:nth-child(1) {
-            top: 8%;
-            left: 6%;
-            animation-delay: 0s;
-            font-size: 2.4rem;
-        }
-        .floating-item:nth-child(2) {
-            top: 15%;
-            right: 8%;
-            animation-delay: 1.2s;
-            font-size: 2.2rem;
-        }
-        .floating-item:nth-child(3) {
-            top: 40%;
-            left: 4%;
-            animation-delay: 2.5s;
-            font-size: 2.5rem;
-        }
-        .floating-item:nth-child(4) {
-            top: 55%;
-            right: 5%;
-            animation-delay: 1.8s;
-            font-size: 2.1rem;
-        }
-        .floating-item:nth-child(5) {
-            bottom: 12%;
-            left: 10%;
-            animation-delay: 3.2s;
-            font-size: 2.6rem;
-        }
-        .floating-item:nth-child(6) {
-            bottom: 18%;
-            right: 12%;
-            animation-delay: 2.1s;
-            font-size: 2.3rem;
-        }
-        .floating-item:nth-child(7) {
-            top: 28%;
-            left: 45%;
-            animation-delay: 4s;
-            font-size: 1.8rem;
-            opacity: 0.25;
-        }
+        .floating-item:nth-child(1) { top: 8%; left: 6%; animation-delay: 0s; font-size: 2.4rem; }
+        .floating-item:nth-child(2) { top: 15%; right: 8%; animation-delay: 1.2s; font-size: 2.2rem; }
+        .floating-item:nth-child(3) { top: 40%; left: 4%; animation-delay: 2.5s; font-size: 2.5rem; }
+        .floating-item:nth-child(4) { top: 55%; right: 5%; animation-delay: 1.8s; font-size: 2.1rem; }
+        .floating-item:nth-child(5) { bottom: 12%; left: 10%; animation-delay: 3.2s; font-size: 2.6rem; }
+        .floating-item:nth-child(6) { bottom: 18%; right: 12%; animation-delay: 2.1s; font-size: 2.3rem; }
+        .floating-item:nth-child(7) { top: 28%; left: 45%; animation-delay: 4s; font-size: 1.8rem; opacity: 0.25; }
 
         @keyframes floatAnim {
-            0% {
-                transform: translateY(0px) rotate(0deg) scale(1);
-            }
-            100% {
-                transform: translateY(-20px) rotate(12deg) scale(1.08);
-            }
+            0% { transform: translateY(0px) rotate(0deg) scale(1); }
+            100% { transform: translateY(-20px) rotate(12deg) scale(1.08); }
         }
 
-        /* ── App Container ── */
         .app-container {
             width: 100%;
             max-width: 480px;
@@ -147,11 +111,55 @@
             overflow: hidden;
         }
 
-        /* ── Modal Overlay ── */
+        /* Login overlay */
+        #login-overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-card);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 24px;
+            text-align: center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        #login-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+        }
+        #login-overlay .login-icon { font-size: 4rem; color: var(--primary); margin-bottom: 16px; }
+        #login-overlay h2 { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; margin-bottom: 6px; }
+        #login-overlay p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; max-width: 300px; }
+        .btn-google {
+            background: #fff;
+            color: #444;
+            border: 2px solid #ddd;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+        .btn-google i { font-size: 1.4rem; color: #ea4335; }
+        .login-loader { margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); display: none; }
+        .login-loader.show { display: block; }
+        .login-loader i { animation: spin 1s linear infinite; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Modal overlay */
         .modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0,0,0,0.55);
             backdrop-filter: blur(5px);
             z-index: 1000;
             display: flex;
@@ -161,12 +169,7 @@
             pointer-events: none;
             transition: opacity 0.25s ease;
         }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-box {
             background: var(--bg-card);
             border: 3px solid var(--primary);
@@ -174,16 +177,12 @@
             max-width: 380px;
             padding: 24px;
             border-radius: var(--radius-lg);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             transform: scale(0.85);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
         }
-
-        .modal-overlay.active .modal-box {
-            transform: scale(1);
-        }
-
+        .modal-overlay.active .modal-box { transform: scale(1); }
         .modal-box h3 {
             font-family: 'Fredoka', sans-serif;
             font-size: 1.3rem;
@@ -193,9 +192,7 @@
             align-items: center;
             gap: 10px;
         }
-
-        .modal-box input,
-        .modal-box select {
+        .modal-box input, .modal-box select {
             width: 100%;
             padding: 12px 16px;
             background: var(--bg-base);
@@ -207,287 +204,104 @@
             margin-bottom: 16px;
             outline: none;
         }
+        .modal-box input:focus, .modal-box select:focus { border-color: var(--primary); }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
-        .modal-box input:focus,
-        .modal-box select:focus {
-            border-color: var(--primary);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        /* ── Header ── */
+        /* Header */
         header {
             background: var(--bg-card);
-            padding: 14px 20px;
+            padding: 10px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px dashed var(--border);
             flex-shrink: 0;
+            gap: 8px;
         }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .logo-area { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
         .mascot-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            flex-shrink: 0;
             animation: bounceMascot 2s ease-in-out infinite;
         }
-
-        @keyframes bounceMascot {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-4px);
-            }
-        }
-
-        header h1 {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--text-main);
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 8px;
-        }
-
+        @keyframes bounceMascot { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        header h1 { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.3px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .header-controls { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
         .icon-btn {
             background: var(--bg-base);
             border: 2px solid var(--border);
             color: var(--text-main);
-            width: 36px;
-            height: 36px;
+            width: 34px; height: 34px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
-        }
-
-        .icon-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: scale(1.05);
-        }
-
-        /* ── Main ── */
-        main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px 16px 100px 16px;
-            /* extra bottom room for nav + footer */;
-        }
-
-        .view-section {
-            display: none;
-            animation: fadeInView 0.3s ease-in-out;
-        }
-
-        .view-section.active {
-            display: block;
-        }
-
-        @keyframes fadeInView {
-            from {
-                opacity: 0;
-                transform: scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        h2 {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* ── Cards ── */
-        .card {
-            background: var(--bg-base);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 14px;
-            margin-bottom: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '⭐';
-            position: absolute;
-            top: 8px;
-            right: 10px;
             font-size: 0.85rem;
-            opacity: 0.4;
+            flex-shrink: 0;
         }
+        .icon-btn:hover { border-color: var(--primary); color: var(--primary); transform: scale(1.05); }
 
-        /* ── Home Widgets ── */
-        .home-widgets-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-
-        .widget-box {
-            background: var(--bg-base);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            text-align: center;
-            position: relative;
-        }
-
-        .widget-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
+        .user-badge {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .widget-value {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .countdown-sub {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            margin-top: 3px;
-        }
-
-        /* ── Search ── */
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-
-        .search-box input {
-            flex: 1;
-            padding: 10px 14px;
+            gap: 6px;
             background: var(--bg-base);
             border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 0.9rem;
-            outline: none;
+            border-radius: 40px;
+            padding: 2px 8px 2px 4px;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
         }
+        .user-badge img { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--primary); }
+        .user-badge .user-name { font-size: 0.7rem; font-weight: 600; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-main); }
+        .user-badge .logout-tip { font-size: 0.6rem; color: var(--text-muted); opacity: 0.7; }
+        .user-badge .logout-tip i { font-size: 0.55rem; }
 
-        .search-box input:focus {
-            border-color: var(--primary);
-        }
+        main { flex: 1; overflow-y: auto; padding: 12px 14px 100px 14px; }
+        .view-section { display: none; animation: fadeInView 0.3s ease-in-out; }
+        .view-section.active { display: block; }
+        @keyframes fadeInView { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        h2 { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
 
-        /* ── Matrix Table ── */
-        .table-container {
-            overflow-x: auto;
-            border-radius: var(--radius-md);
-            border: 2px solid var(--border);
-            background: var(--bg-card);
-            margin-bottom: 14px;
-        }
+        .card { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; position: relative; overflow: hidden; }
+        .card::before { content: '⭐'; position: absolute; top: 6px; right: 8px; font-size: 0.75rem; opacity: 0.3; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
-            min-width: 420px;
-        }
+        .home-widgets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .widget-box { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 10px; text-align: center; position: relative; }
+        .widget-title { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .widget-value { font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--primary); }
+        .countdown-sub { font-size: 0.6rem; color: var(--text-muted); margin-top: 2px; }
 
-        th,
-        td {
-            border: 2px solid var(--border);
-            padding: 8px 6px;
-            font-size: 0.8rem;
-        }
+        .search-box { display: flex; gap: 8px; margin-bottom: 12px; }
+        .search-box input { flex: 1; padding: 8px 12px; background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-weight: 600; font-size: 0.85rem; outline: none; }
+        .search-box input:focus { border-color: var(--primary); }
 
-        th {
-            background-color: var(--bg-base);
-            color: var(--primary);
-            font-family: 'Fredoka', sans-serif;
-            font-weight: 600;
-        }
+        .table-container { overflow-x: auto; border-radius: var(--radius-md); border: 2px solid var(--border); background: var(--bg-card); margin-bottom: 12px; }
+        table { width: 100%; border-collapse: collapse; text-align: center; min-width: 380px; }
+        th, td { border: 2px solid var(--border); padding: 6px 4px; font-size: 0.75rem; }
+        th { background-color: var(--bg-base); color: var(--primary); font-family: 'Fredoka', sans-serif; font-weight: 600; }
+        td:first-child { background-color: var(--bg-base); font-weight: 700; color: var(--secondary); }
+        td input, th input { width: 100%; border: none; background: transparent; text-align: center; font-size: 0.75rem; font-weight: 600; outline: none; color: var(--text-main); padding: 2px; border-radius: 4px; }
+        td input:focus, th input:focus { background: var(--bg-base); box-shadow: 0 0 0 2px var(--primary); }
 
-        td:first-child {
-            background-color: var(--bg-base);
-            font-weight: 700;
-            color: var(--secondary);
-        }
-
-        td input,
-        th input {
-            width: 100%;
-            border: none;
-            background: transparent;
-            text-align: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-            outline: none;
-            color: var(--text-main);
-            padding: 4px;
-            border-radius: 4px;
-        }
-
-        td input:focus,
-        th input:focus {
-            background: var(--bg-base);
-            box-shadow: 0 0 0 2px var(--primary);
-        }
-
-        /* ── Buttons ── */
-        .btn-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
         .btn {
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: var(--radius-sm);
             font-family: 'Fredoka', sans-serif;
             font-weight: 500;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             border: 2px solid var(--border);
             background: var(--bg-base);
@@ -495,82 +309,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
             box-shadow: 0 3px 0 var(--border);
             transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
+        .btn.primary { background: var(--primary); color: white; border-color: var(--primary-hover); box-shadow: 0 3px 0 var(--primary-hover); }
+        .btn.danger { background: #ff6b6b; color: white; border-color: #ee5253; box-shadow: 0 3px 0 #d63031; }
 
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 var(--border);
-        }
-
-        .btn.primary {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary-hover);
-            box-shadow: 0 3px 0 var(--primary-hover);
-        }
-
-        .btn.danger {
-            background: #ff6b6b;
-            color: white;
-            border-color: #ee5253;
-            box-shadow: 0 3px 0 #d63031;
-        }
-
-        /* ── Calendar ── */
-        .calendar-card {
-            background: var(--bg-base);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 12px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-family: 'Fredoka', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .calendar-header button {
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            color: var(--text-main);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            text-align: center;
-        }
-
-        .calendar-day-name {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            padding-bottom: 4px;
-        }
-
+        .calendar-card { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 10px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.95rem; }
+        .calendar-header button { background: var(--bg-card); border: 2px solid var(--border); color: var(--text-main); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; }
+        .calendar-day-name { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); padding-bottom: 2px; }
         .calendar-date {
             aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             border-radius: 50%;
             cursor: pointer;
@@ -578,142 +336,91 @@
             background-color: var(--bg-card);
             border: 1px solid var(--border);
         }
+        .calendar-date:hover { border-color: var(--primary); }
+        .calendar-date.selected { background-color: var(--primary) !important; color: white !important; border-color: var(--primary-hover) !important; }
+        .calendar-date.has-festival { background-color: rgba(114,9,183,0.15); border-color: var(--festival-color); color: var(--festival-color); }
+        .calendar-date.has-test { background-color: rgba(230,57,70,0.15); border-color: var(--accent); color: var(--accent); }
+        .calendar-date.has-festival.has-test { background: linear-gradient(135deg, rgba(114,9,183,0.2), rgba(230,57,70,0.2)); border-color: var(--accent); }
 
-        .calendar-date:hover {
-            border-color: var(--primary);
-        }
-
-        .calendar-date.selected {
-            background-color: var(--primary) !important;
-            color: white !important;
-            border-color: var(--primary-hover) !important;
-        }
-
-        .calendar-date.has-festival {
-            background-color: rgba(114, 9, 183, 0.15);
-            border-color: var(--festival-color);
-            color: var(--festival-color);
-        }
-
-        .calendar-date.has-test {
-            background-color: rgba(230, 57, 70, 0.15);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .calendar-date.has-festival.has-test {
-            background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(230, 57, 70, 0.2));
-            border-color: var(--accent);
-        }
-
-        /* ── Toast ── */
         #sticker-toast {
             position: absolute;
-            top: 16px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%) translateY(-140px);
             background: var(--bg-card);
             border: 3px solid var(--primary);
             color: var(--text-main);
-            padding: 12px 18px;
+            padding: 10px 16px;
             border-radius: var(--radius-md);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             z-index: 2000;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-width: 90%;
         }
+        #sticker-toast.show { transform: translateX(-50%) translateY(0); }
+        #sticker-toast i { color: var(--accent); font-size: 1rem; }
 
-        #sticker-toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        #sticker-toast i {
-            color: var(--accent);
-            font-size: 1.2rem;
-        }
-
-        /* ── Assistant ── */
         .assistant-widget {
             position: absolute;
-            bottom: 78px;
-            right: 12px;
+            bottom: 74px;
+            right: 10px;
             z-index: 150;
             display: flex;
             align-items: flex-end;
-            gap: 8px;
+            gap: 6px;
             pointer-events: auto;
         }
-
-        .assistant-speech-wrap {
-            position: relative;
-            opacity: 1;
-            transform: scale(1);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .assistant-speech-wrap.hidden {
-            opacity: 0;
-            transform: scale(0);
-            pointer-events: none;
-        }
-
+        .assistant-speech-wrap { position: relative; opacity: 1; transform: scale(1); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .assistant-speech-wrap.hidden { opacity: 0; transform: scale(0); pointer-events: none; }
         .assistant-speech {
             background: var(--bg-card);
             border: 2px solid var(--primary);
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 12px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-main);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 140px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 130px;
             cursor: pointer;
             position: relative;
         }
-
         .assistant-speech::after {
             content: '';
             position: absolute;
             right: -6px;
-            bottom: 8px;
+            bottom: 6px;
             width: 0;
             height: 0;
             border-top: 6px solid transparent;
             border-bottom: 6px solid transparent;
             border-left: 6px solid var(--primary);
         }
-
         .assistant-close-btn {
             position: absolute;
             top: -8px;
             left: -8px;
-            width: 20px;
-            height: 20px;
+            width: 18px; height: 18px;
             background: var(--accent);
             color: white;
             border: 2px solid var(--bg-card);
             border-radius: 50%;
-            font-size: 0.65rem;
+            font-size: 0.55rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 155;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
-        .assistant-close-btn:hover {
-            transform: scale(1.15);
-        }
-
         .assistant-avatar-btn {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 50%;
             border: 3px solid var(--bg-card);
@@ -721,22 +428,14 @@
             justify-content: center;
             align-items: center;
             color: white;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
             animation: floatBoy 2.5s ease-in-out infinite alternate;
+            flex-shrink: 0;
         }
+        @keyframes floatBoy { 0% { transform: translateY(0); } 100% { transform: translateY(-5px); } }
 
-        @keyframes floatBoy {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(-5px);
-            }
-        }
-
-        /* ── Bottom Navigation + Footer ── */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -747,17 +446,10 @@
             z-index: 100;
             display: flex;
             flex-direction: column;
-            padding: 6px 0 4px 0;
+            padding: 4px 0 2px 0;
             flex-shrink: 0;
         }
-
-        .nav-items-row {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 0 4px;
-        }
-
+        .nav-items-row { display: flex; justify-content: space-around; align-items: center; padding: 0 4px; }
         .nav-item {
             background: none;
             border: none;
@@ -765,89 +457,42 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 1px;
             flex: 1;
             color: var(--text-muted);
             font-family: 'Fredoka', sans-serif;
             font-weight: 500;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             padding: 4px 0;
         }
-
-        .nav-item i {
-            font-size: 1.2rem;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-            transform: scale(1.1);
-        }
-
-        /* ── Footer Credit ── */
+        .nav-item i { font-size: 1.1rem; }
+        .nav-item.active { color: var(--primary); transform: scale(1.05); }
         .footer-credit {
             text-align: center;
-            font-size: 0.62rem;
+            font-size: 0.55rem;
             color: var(--text-muted);
-            padding: 4px 0 2px 0;
+            padding: 2px 0 2px 0;
             letter-spacing: 0.3px;
             border-top: 1px solid var(--border);
             margin: 2px 12px 0 12px;
         }
+        .footer-credit a { color: var(--primary); text-decoration: none; font-weight: 700; font-family: 'Fredoka', sans-serif; letter-spacing: 0.5px; transition: color 0.2s, text-shadow 0.2s; }
+        .footer-credit a:hover { color: var(--secondary); text-shadow: 0 0 12px rgba(67,97,238,0.35); text-decoration: underline; }
+        .footer-credit .heart { color: var(--accent); display: inline-block; animation: pulseHeart 1.6s ease-in-out infinite; }
+        @keyframes pulseHeart { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-        .footer-credit a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            font-family: 'Fredoka', sans-serif;
-            letter-spacing: 0.5px;
-            transition: color 0.2s, text-shadow 0.2s;
-        }
-
-        .footer-credit a:hover {
-            color: var(--secondary);
-            text-shadow: 0 0 12px rgba(67, 97, 238, 0.35);
-            text-decoration: underline;
-        }
-
-        .footer-credit .heart {
-            color: var(--accent);
-            display: inline-block;
-            animation: pulseHeart 1.6s ease-in-out infinite;
-        }
-
-        @keyframes pulseHeart {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.25);
-            }
-        }
-
-        /* ── Responsive tweaks ── */
         @media (max-width: 480px) {
-            .app-container {
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-                border: none;
-            }
-            main {
-                padding: 12px 12px 100px 12px;
-            }
-            .home-widgets-grid {
-                gap: 8px;
-            }
-            .widget-value {
-                font-size: 0.9rem;
-            }
+            .app-container { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
+            main { padding: 10px 10px 100px 10px; }
+            .home-widgets-grid { gap: 6px; }
+            .widget-value { font-size: 0.85rem; }
+            header h1 { font-size: 0.9rem; }
+            .user-badge .user-name { max-width: 50px; font-size: 0.6rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ─── Floating Decor ─── -->
     <div class="bg-decor">
         <div class="floating-item">📚</div>
         <div class="floating-item">✏️</div>
@@ -858,13 +503,11 @@
         <div class="floating-item">⭐</div>
     </div>
 
-    <!-- ─── Toast ─── -->
     <div id="sticker-toast">
         <i class="fas fa-sparkles"></i>
-        <span id="toast-text">Study Note Loaded!</span>
+        <span id="toast-text">Ready!</span>
     </div>
 
-    <!-- ─── Modal ─── -->
     <div class="modal-overlay" id="custom-modal">
         <div class="modal-box">
             <h3 id="modal-title"><i class="fas fa-pencil-alt"></i> Sticker Note</h3>
@@ -876,23 +519,42 @@
         </div>
     </div>
 
-    <!-- ─── App ─── -->
-    <div class="app-container">
+    <div class="app-container" id="appContainer">
+
+        <!-- Login Overlay -->
+        <div id="login-overlay">
+            <div class="login-icon"><i class="fas fa-user-graduate"></i></div>
+            <h2>Study Time-Table</h2>
+            <p>Sign in with your Google account to sync your timetable across all your devices.</p>
+            <button class="btn-google" id="google-login-btn">
+                <i class="fab fa-google"></i> Sign in with Google
+            </button>
+            <div class="login-loader" id="login-loader">
+                <i class="fas fa-spinner"></i> Signing in…
+            </div>
+            <div style="margin-top:20px; font-size:0.7rem; color:var(--text-muted); opacity:0.6;">
+                <i class="fas fa-lock"></i> Your data is stored securely in the cloud.
+            </div>
+        </div>
 
         <!-- Header -->
         <header>
             <div class="logo-area">
                 <div class="mascot-avatar"><i class="fas fa-cat"></i></div>
-                <h1>SELF STUDY T-T</h1>
+                <h1 id="app-title">SELF STUDY T-T</h1>
             </div>
             <div class="header-controls">
+                <div class="user-badge" id="user-badge" style="display:none;" title="Click to sign out">
+                    <img id="user-avatar" src="" alt="avatar" />
+                    <span class="user-name" id="user-name-display">User</span>
+                    <span class="logout-tip"><i class="fas fa-sign-out-alt"></i></span>
+                </div>
                 <button class="icon-btn" id="theme-toggle" title="Toggle Theme"><i class="fas fa-moon" id="theme-icon"></i></button>
             </div>
         </header>
 
         <!-- Main -->
         <main>
-            <!-- Today -->
             <div id="view-today" class="view-section active">
                 <div class="home-widgets-grid">
                     <div class="widget-box">
@@ -901,36 +563,32 @@
                         <div class="countdown-sub" id="live-date-display">--</div>
                     </div>
                     <div class="widget-box" id="target-widget-box" style="cursor: pointer;" title="Tap to change target date">
-                        <div class="widget-title"><i class="fas fa-bullseye"></i> <span id="target-name-label">JEE Target</span></div>
-                        <div class="widget-value" id="target-countdown-display" style="font-size: 0.9rem;">0d 0h 0m 0s</div>
-                        <div class="countdown-sub">Tap to set target 🎯</div>
+                        <div class="widget-title"><i class="fas fa-bullseye"></i> <span id="target-name-label">Target</span></div>
+                        <div class="widget-value" id="target-countdown-display" style="font-size:0.85rem;">0d 0h 0m 0s</div>
+                        <div class="countdown-sub">Tap to set 🎯</div>
                     </div>
                 </div>
-
                 <h2 id="today-heading"><i class="fas fa-sun"></i> Today's Schedule</h2>
                 <div id="today-container"></div>
             </div>
 
-            <!-- History -->
             <div id="view-yesterday" class="view-section">
-                <h2><i class="fas fa-box-archive"></i> All Past Time-Tables.</h2>
+                <h2><i class="fas fa-box-archive"></i> All Past Time-Tables</h2>
                 <div class="search-box">
                     <input type="date" id="history-date-input" />
-                    <button class="btn primary" id="search-history-btn" style="width:auto; padding:8px 14px;">Find</button>
+                    <button class="btn primary" id="search-history-btn" style="width:auto; padding:6px 12px;">Find</button>
                 </div>
                 <div id="history-container"></div>
             </div>
 
-            <!-- Create / Studio -->
             <div id="view-create" class="view-section">
-                <h2><i class="fas fa-wand-magic-sparkles"></i> Timetable Generating Area</h2>
+                <h2><i class="fas fa-wand-magic-sparkles"></i> Timetable Studio</h2>
                 <div class="btn-grid">
                     <button class="btn" id="add-subject-row"><i class="fas fa-plus-circle"></i> Add Row</button>
                     <button class="btn" id="add-time-col"><i class="fas fa-plus-circle"></i> Add Col</button>
                     <button class="btn danger" id="remove-subject-row"><i class="fas fa-trash-can"></i> Del Row</button>
                     <button class="btn danger" id="remove-time-col"><i class="fas fa-trash-can"></i> Del Col</button>
                 </div>
-
                 <div class="table-container">
                     <table id="matrix-table">
                         <thead>
@@ -942,32 +600,15 @@
                             </tr>
                         </thead>
                         <tbody id="matrix-body-rows">
-                            <tr>
-                                <td><input type="text" value="Maths" /></td>
-                                <td><input type="text" value="Calculus" /></td>
-                                <td><input type="text" value="Algebra" /></td>
-                                <td><input type="text" value="Revision" /></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" value="Physics" /></td>
-                                <td><input type="text" value="Mechanics" /></td>
-                                <td><input type="text" value="Optics" /></td>
-                                <td><input type="text" value="Numericals" /></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" value="Chemistry" /></td>
-                                <td><input type="text" value="Organic" /></td>
-                                <td><input type="text" value="Inorganic" /></td>
-                                <td><input type="text" value="Equations" /></td>
-                            </tr>
+                            <tr><td><input type="text" value="Maths" /></td><td><input type="text" value="Calculus" /></td><td><input type="text" value="Algebra" /></td><td><input type="text" value="Revision" /></td></tr>
+                            <tr><td><input type="text" value="Physics" /></td><td><input type="text" value="Mechanics" /></td><td><input type="text" value="Optics" /></td><td><input type="text" value="Numericals" /></td></tr>
+                            <tr><td><input type="text" value="Chemistry" /></td><td><input type="text" value="Organic" /></td><td><input type="text" value="Inorganic" /></td><td><input type="text" value="Equations" /></td></tr>
                         </tbody>
                     </table>
                 </div>
-
                 <button class="btn primary" id="save-timetable-btn" style="width:100%;"><i class="fas fa-cloud-arrow-up"></i> SAVE TIMETABLE</button>
             </div>
 
-            <!-- Calendar -->
             <div id="view-calendar" class="view-section">
                 <h2><i class="fas fa-calendar-heart"></i> Perfect Fitted Calendar</h2>
                 <div class="calendar-card">
@@ -985,22 +626,22 @@
                         <div class="calendar-day-name">Fr</div>
                         <div class="calendar-day-name">Sa</div>
                     </div>
-                    <div class="calendar-grid" id="calendar-dates-grid" style="margin-top:6px;"></div>
+                    <div class="calendar-grid" id="calendar-dates-grid" style="margin-top:4px;"></div>
                 </div>
-                <div id="calendar-selected-data" style="margin-top:12px;"></div>
+                <div id="calendar-selected-data" style="margin-top:10px;"></div>
             </div>
         </main>
 
-        <!-- ─── Assistant ─── -->
+        <!-- Assistant -->
         <div class="assistant-widget" id="assistant-widget">
             <div class="assistant-speech-wrap" id="assistant-speech-wrap">
-                <button class="assistant-close-btn" id="assistant-close" title="Hide assistant"><i class="fas fa-times"></i></button>
-                <div class="assistant-speech" id="assistant-bubble">May I help you? Tap me! 👋</div>
+                <button class="assistant-close-btn" id="assistant-close" title="Hide"><i class="fas fa-times"></i></button>
+                <div class="assistant-speech" id="assistant-bubble">Tap me for help! 👋</div>
             </div>
-            <div class="assistant-avatar-btn" id="assistant-btn" title="Tap for guide / Reopen help"><i class="fas fa-child-reaching"></i></div>
+            <div class="assistant-avatar-btn" id="assistant-btn" title="Tap for guide"><i class="fas fa-child-reaching"></i></div>
         </div>
 
-        <!-- ─── Bottom Navigation + Footer ─── -->
+        <!-- Bottom Nav -->
         <nav class="bottom-nav">
             <div class="nav-items-row">
                 <button class="nav-item active" data-target="view-today"><i class="fas fa-house-chimney"></i><span>Today</span></button>
@@ -1018,102 +659,104 @@
 
     <!-- ─── SCRIPT ─── -->
     <script>
-        // ── Theme Engine ──
+        // ═══════════════════════════════════════════════════════════════
+        //  1.  FIREBASE CONFIG — EXACTLY AS PER YOUR CONSOLE (UPDATED)
+        // ═══════════════════════════════════════════════════════════════
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhLhJq1MiFmILQv3xMdas12AwIxXLga60",
+            authDomain: "studytimetable-67ded.firebaseapp.com",
+            projectId: "studytimetable-67ded",
+            storageBucket: "studytimetable-67ded.firebasestorage.app",
+            messagingSenderId: "820472729807",
+            appId: "1:820472729807:web:9ef769bfabdf1db1dae7ba",
+            measurementId: "G-X4W2ZJ8YHC"
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        //  2.  INIT FIREBASE
+        // ═══════════════════════════════════════════════════════════════
+        let firebaseApp, auth, db;
+        let currentUser = null;
+        let isFirebaseReady = false;
+
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            db.enablePersistence({ synchronizeTabs: true })
+                .catch(err => console.warn('Firestore persistence:', err));
+            isFirebaseReady = true;
+        } catch (e) {
+            console.warn('Firebase init failed:', e);
+            isFirebaseReady = false;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  3.  DOM REFS
+        // ═══════════════════════════════════════════════════════════════
+        const loginOverlay = document.getElementById('login-overlay');
+        const googleBtn = document.getElementById('google-login-btn');
+        const loginLoader = document.getElementById('login-loader');
+        const userBadge = document.getElementById('user-badge');
+        const userAvatar = document.getElementById('user-avatar');
+        const userNameDisplay = document.getElementById('user-name-display');
+        const appTitle = document.getElementById('app-title');
+
+        const toast = document.getElementById('sticker-toast');
+        const toastText = document.getElementById('toast-text');
+
+        function showStickerToast(msg) {
+            toastText.innerText = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // ── Theme ──
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
-        const htmlElement = document.documentElement;
-
-        const currentTheme = localStorage.getItem('doodleTheme') || 'dark';
-        htmlElement.setAttribute('data-theme', currentTheme);
-        updateThemeUI(currentTheme);
+        const htmlEl = document.documentElement;
+        const savedTheme = localStorage.getItem('doodleTheme') || 'dark';
+        htmlEl.setAttribute('data-theme', savedTheme);
+        themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
 
         themeToggle.addEventListener('click', () => {
-            const nextTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            htmlElement.setAttribute('data-theme', nextTheme);
-            localStorage.setItem('doodleTheme', nextTheme);
-            updateThemeUI(nextTheme);
-        });
-
-        function updateThemeUI(theme) {
-            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-
-        // ── Toast ──
-        function showStickerToast(msg) {
-            const toast = document.getElementById('sticker-toast');
-            document.getElementById('toast-text').innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3500);
-        }
-
-        // ── Assistant ──
-        const assistantBtn = document.getElementById('assistant-btn');
-        const assistantBubble = document.getElementById('assistant-bubble');
-        const assistantClose = document.getElementById('assistant-close');
-        const speechWrap = document.getElementById('assistant-speech-wrap');
-
-        const guideMessages = [
-            "Hii i'm PS. May I help you? Tap me! 👋",
-            "⏱️ Homepage pe live clock, target stopwatch aur aaj ka time table!",
-            "✨ History me past timetables dekh skte ho!",
-            "📅 Calendar mein past aur future ke saare main festivals and test add kr skte ho!",
-            "🎨 Add tab mein apna timetable easily customize karo!",
-            "You're all set! Have a super productive study session! ✨"
-        ];
-        let guideIndex = 0;
-
-        function handleAssistantClick() {
-            if (speechWrap.classList.contains('hidden')) {
-                speechWrap.classList.remove('hidden');
-                guideIndex = 0;
-                assistantBubble.innerHTML = guideMessages[0];
-                return;
-            }
-            guideIndex = (guideIndex + 1) % guideMessages.length;
-            assistantBubble.innerHTML = guideMessages[guideIndex];
-        }
-
-        assistantBtn.addEventListener('click', handleAssistantClick);
-        assistantBubble.addEventListener('click', handleAssistantClick);
-
-        assistantClose.addEventListener('click', (e) => {
-            e.stopPropagation();
-            speechWrap.classList.add('hidden');
-            showStickerToast("Assistant minimized! Tap the boy anytime to reopen.");
+            const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            htmlEl.setAttribute('data-theme', next);
+            localStorage.setItem('doodleTheme', next);
+            themeIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         });
 
         // ── Modal ──
         const modalOverlay = document.getElementById('custom-modal');
         const modalTitle = document.getElementById('modal-title');
-        const modalContentArea = document.getElementById('modal-content-area');
-        const modalCancelBtn = document.getElementById('modal-cancel-btn');
-        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
-        let modalResolveCallback = null;
+        const modalContent = document.getElementById('modal-content-area');
+        const modalCancel = document.getElementById('modal-cancel-btn');
+        const modalConfirm = document.getElementById('modal-confirm-btn');
+        let modalResolve = null;
 
-        function openStickerModal(title, iconClass, htmlContent) {
+        function openStickerModal(title, icon, html) {
             return new Promise((resolve) => {
-                modalTitle.innerHTML = `<i class="${iconClass}"></i> ${title}`;
-                modalContentArea.innerHTML = htmlContent;
+                modalTitle.innerHTML = `<i class="${icon}"></i> ${title}`;
+                modalContent.innerHTML = html;
                 modalOverlay.classList.add('active');
-                modalResolveCallback = resolve;
+                modalResolve = resolve;
             });
         }
-
-        modalCancelBtn.addEventListener('click', () => {
+        modalCancel.addEventListener('click', () => {
             modalOverlay.classList.remove('active');
-            if (modalResolveCallback) modalResolveCallback(null);
+            if (modalResolve) modalResolve(null);
         });
-
-        modalConfirmBtn.addEventListener('click', () => {
+        modalConfirm.addEventListener('click', () => {
             modalOverlay.classList.remove('active');
-            if (modalResolveCallback) {
-                const inputs = modalContentArea.querySelectorAll('input, select');
+            if (modalResolve) {
+                const inputs = modalContent.querySelectorAll('input, select');
                 if (inputs.length > 1) {
-                    const values = {};
-                    inputs.forEach(inp => values[inp.id || inp.name] = inp.value);
-                    modalResolveCallback(values);
+                    const vals = {};
+                    inputs.forEach(inp => vals[inp.id || inp.name] = inp.value);
+                    modalResolve(vals);
                 } else {
-                    modalResolveCallback(inputs[0] ? inputs[0].value : true);
+                    modalResolve(inputs[0] ? inputs[0].value : true);
                 }
             }
         });
@@ -1121,377 +764,220 @@
         // ── Navigation ──
         const navItems = document.querySelectorAll('.nav-item');
         const viewSections = document.querySelectorAll('.view-section');
-
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(n => n.classList.remove('active'));
                 item.classList.add('active');
-                const targetId = item.getAttribute('data-target');
+                const target = item.getAttribute('data-target');
                 viewSections.forEach(sec => {
                     sec.classList.remove('active');
-                    if (sec.id === targetId) {
+                    if (sec.id === target) {
                         sec.classList.add('active');
-                        if (targetId === 'view-calendar') renderCalendar();
+                        if (target === 'view-calendar') renderCalendar();
                     }
                 });
             });
         });
 
-        // ── Storage Keys ──
+        // ── Assistant ──
+        const assistantBtn = document.getElementById('assistant-btn');
+        const assistantBubble = document.getElementById('assistant-bubble');
+        const assistantClose = document.getElementById('assistant-close');
+        const speechWrap = document.getElementById('assistant-speech-wrap');
+        const guideMessages = [
+            "Hii I'm PS. Tap me for tips! 👋",
+            "⏱️ Live clock + target countdown!",
+            "📅 Calendar shows festivals & tests!",
+            "🎨 Studio lets you customise timetable!",
+            "🔐 Your data syncs across devices via Google!",
+            "Stay productive! 🚀"
+        ];
+        let guideIdx = 0;
+
+        function handleAssistant() {
+            if (speechWrap.classList.contains('hidden')) {
+                speechWrap.classList.remove('hidden');
+                guideIdx = 0;
+                assistantBubble.innerHTML = guideMessages[0];
+                return;
+            }
+            guideIdx = (guideIdx + 1) % guideMessages.length;
+            assistantBubble.innerHTML = guideMessages[guideIdx];
+        }
+        assistantBtn.addEventListener('click', handleAssistant);
+        assistantBubble.addEventListener('click', handleAssistant);
+        assistantClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            speechWrap.classList.add('hidden');
+            showStickerToast("Assistant hidden. Tap the boy to reopen.");
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  4.  STORAGE KEYS & HELPERS
+        // ═══════════════════════════════════════════════════════════════
         const TIMETABLE_KEY = 'doodleTimetableData';
         const TESTS_KEY = 'doodleTestsData';
         const TARGET_KEY = 'doodleTargetExamData';
 
-        const getLocalDate = (d = new Date()) => {
+        function getLocalDate(d = new Date()) {
             const y = d.getFullYear();
             const m = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
             return `${y}-${m}-${day}`;
-        };
-
+        }
         const todayStr = getLocalDate();
         document.getElementById('today-heading').innerHTML = `<i class="fas fa-sun"></i> Today's Schedule (${todayStr})`;
-
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         document.getElementById('history-date-input').value = getLocalDate(yesterday);
 
-        // ── Festivals DB (2024–2030) ──
+        // ── Festivals DB ──
         const globalFestivals = {
-            "2024-01-01": "New Year's Day 🎉",
-            "2024-01-14": "Makar Sankranti 🌾",
-            "2024-01-26": "Republic Day 🇮🇳",
-            "2024-03-08": "Maha Shivaratri 🔱",
-            "2024-03-25": "Holi 🎨",
-            "2024-04-11": "Eid-ul-Fitr 🌙",
-            "2024-04-17": "Rama Navami 🏹",
-            "2024-06-17": "Eid-ul-Adha 🕌",
-            "2024-08-15": "Independence Day 🇮🇳",
-            "2024-08-19": "Raksha Bandhan 🎁",
-            "2024-08-26": "Janmashtami 🪈",
-            "2024-09-07": "Ganesh Chaturthi 🐘",
-            "2024-10-02": "Gandhi Jayanti 🕊️",
-            "2024-10-12": "Dussehra 🏹",
-            "2024-11-01": "Diwali 🪔",
-            "2024-11-15": "Guru Nanak Jayanti 🪔",
-            "2024-12-25": "Christmas 🎄",
-            "2025-01-01": "New Year's Day 🎉",
-            "2025-01-14": "Makar Sankranti 🌾",
-            "2025-01-26": "Republic Day 🇮🇳",
-            "2025-02-26": "Maha Shivaratri 🔱",
-            "2025-03-14": "Holi 🎨",
-            "2025-03-31": "Eid-ul-Fitr 🌙",
-            "2025-04-06": "Rama Navami 🏹",
-            "2025-06-07": "Eid-ul-Adha 🕌",
-            "2025-08-15": "Independence Day 🇮🇳",
-            "2025-08-09": "Raksha Bandhan 🎁",
-            "2025-08-16": "Janmashtami 🪈",
-            "2025-08-27": "Ganesh Chaturthi 🐘",
-            "2025-10-02": "Gandhi Jayanti 🕊️",
-            "2025-10-02": "Dussehra 🏹",
-            "2025-10-20": "Diwali 🪔",
-            "2025-11-05": "Guru Nanak Jayanti 🪔",
-            "2025-12-25": "Christmas 🎄",
-            "2026-01-01": "New Year's Day 🎉",
-            "2026-01-14": "Makar Sankranti 🌾",
-            "2026-01-26": "Republic Day 🇮🇳",
-            "2026-02-15": "Maha Shivaratri 🔱",
-            "2026-03-03": "Holi 🎨",
-            "2026-03-20": "Eid-ul-Fitr 🌙",
-            "2026-03-27": "Rama Navami 🏹",
-            "2026-05-28": "Eid-ul-Adha 🕌",
-            "2026-08-15": "Independence Day 🇮🇳",
-            "2026-08-28": "Raksha Bandhan 🎁",
-            "2026-09-04": "Janmashtami 🪈",
-            "2026-09-16": "Ganesh Chaturthi 🐘",
-            "2026-10-02": "Gandhi Jayanti 🕊️",
-            "2026-10-20": "Dussehra 🏹",
-            "2026-11-08": "Diwali 🪔",
-            "2026-11-24": "Guru Nanak Jayanti 🪔",
-            "2026-12-25": "Christmas 🎄",
-            "2027-01-01": "New Year's Day 🎉",
-            "2027-01-14": "Makar Sankranti 🌾",
-            "2027-01-26": "Republic Day 🇮🇳",
-            "2027-03-07": "Maha Shivaratri 🔱",
-            "2027-03-22": "Holi 🎨",
-            "2027-03-10": "Eid-ul-Fitr 🌙",
-            "2027-04-16": "Rama Navami 🏹",
-            "2027-05-18": "Eid-ul-Adha 🕌",
-            "2027-08-15": "Independence Day 🇮🇳",
-            "2027-08-17": "Raksha Bandhan 🎁",
-            "2027-08-24": "Janmashtami 🪈",
-            "2027-09-06": "Ganesh Chaturthi 🐘",
-            "2027-10-02": "Gandhi Jayanti 🕊️",
-            "2027-10-10": "Dussehra 🏹",
-            "2027-10-29": "Diwali 🪔",
-            "2027-11-13": "Guru Nanak Jayanti 🪔",
-            "2027-12-25": "Christmas 🎄",
-            "2028-01-01": "New Year's Day 🎉",
-            "2028-01-14": "Makar Sankranti 🌾",
-            "2028-01-21": "JEE Main 2028 Exam Date 🎯",
-            "2028-01-26": "Republic Day 🇮🇳",
-            "2028-02-25": "Maha Shivaratri 🔱",
-            "2028-03-11": "Holi 🎨",
-            "2028-02-28": "Eid-ul-Fitr 🌙",
-            "2028-04-04": "Rama Navami 🏹",
-            "2028-05-06": "Eid-ul-Adha 🕌",
-            "2028-08-15": "Independence Day 🇮🇳",
-            "2028-08-05": "Raksha Bandhan 🎁",
-            "2028-08-12": "Janmashtami 🪈",
-            "2028-08-24": "Ganesh Chaturthi 🐘",
-            "2028-10-02": "Gandhi Jayanti 🕊️",
-            "2028-09-29": "Dussehra 🏹",
-            "2028-10-17": "Diwali 🪔",
-            "2028-11-02": "Guru Nanak Jayanti 🪔",
-            "2028-12-25": "Christmas 🎄",
-            "2029-01-01": "New Year's Day 🎉",
-            "2029-01-14": "Makar Sankranti 🌾",
-            "2029-01-26": "Republic Day 🇮🇳",
-            "2029-03-15": "Maha Shivaratri 🔱",
-            "2029-03-31": "Holi 🎨",
-            "2029-02-17": "Eid-ul-Fitr 🌙",
-            "2029-08-15": "Independence Day 🇮🇳",
-            "2029-08-25": "Raksha Bandhan 🎁",
-            "2029-10-02": "Gandhi Jayanti 🕊️",
-            "2029-11-05": "Diwali 🪔",
-            "2029-12-25": "Christmas 🎄",
-            "2030-01-01": "New Year's Day 🎉",
-            "2030-01-14": "Makar Sankranti 🌾",
-            "2030-01-26": "Republic Day 🇮🇳",
-            "2030-03-04": "Maha Shivaratri 🔱",
-            "2030-03-20": "Holi 🎨",
-            "2030-02-07": "Eid-ul-Fitr 🌙",
-            "2030-08-15": "Independence Day 🇮🇳",
-            "2030-08-14": "Raksha Bandhan 🎁",
-            "2030-10-02": "Gandhi Jayanti 🕊️",
-            "2030-10-26": "Diwali 🪔",
-            "2030-12-25": "Christmas 🎄"
+            "2024-01-01":"New Year's Day 🎉","2024-01-14":"Makar Sankranti 🌾","2024-01-26":"Republic Day 🇮🇳","2024-03-08":"Maha Shivaratri 🔱","2024-03-25":"Holi 🎨","2024-04-11":"Eid-ul-Fitr 🌙","2024-04-17":"Rama Navami 🏹","2024-06-17":"Eid-ul-Adha 🕌","2024-08-15":"Independence Day 🇮🇳","2024-08-19":"Raksha Bandhan 🎁","2024-08-26":"Janmashtami 🪈","2024-09-07":"Ganesh Chaturthi 🐘","2024-10-02":"Gandhi Jayanti 🕊️","2024-10-12":"Dussehra 🏹","2024-11-01":"Diwali 🪔","2024-11-15":"Guru Nanak Jayanti 🪔","2024-12-25":"Christmas 🎄",
+            "2025-01-01":"New Year's Day 🎉","2025-01-14":"Makar Sankranti 🌾","2025-01-26":"Republic Day 🇮🇳","2025-02-26":"Maha Shivaratri 🔱","2025-03-14":"Holi 🎨","2025-03-31":"Eid-ul-Fitr 🌙","2025-04-06":"Rama Navami 🏹","2025-06-07":"Eid-ul-Adha 🕌","2025-08-15":"Independence Day 🇮🇳","2025-08-09":"Raksha Bandhan 🎁","2025-08-16":"Janmashtami 🪈","2025-08-27":"Ganesh Chaturthi 🐘","2025-10-02":"Gandhi Jayanti 🕊️","2025-10-02":"Dussehra 🏹","2025-10-20":"Diwali 🪔","2025-11-05":"Guru Nanak Jayanti 🪔","2025-12-25":"Christmas 🎄",
+            "2026-01-01":"New Year's Day 🎉","2026-01-14":"Makar Sankranti 🌾","2026-01-26":"Republic Day 🇮🇳","2026-02-15":"Maha Shivaratri 🔱","2026-03-03":"Holi 🎨","2026-03-20":"Eid-ul-Fitr 🌙","2026-03-27":"Rama Navami 🏹","2026-05-28":"Eid-ul-Adha 🕌","2026-08-15":"Independence Day 🇮🇳","2026-08-28":"Raksha Bandhan 🎁","2026-09-04":"Janmashtami 🪈","2026-09-16":"Ganesh Chaturthi 🐘","2026-10-02":"Gandhi Jayanti 🕊️","2026-10-20":"Dussehra 🏹","2026-11-08":"Diwali 🪔","2026-11-24":"Guru Nanak Jayanti 🪔","2026-12-25":"Christmas 🎄",
+            "2027-01-01":"New Year's Day 🎉","2027-01-14":"Makar Sankranti 🌾","2027-01-26":"Republic Day 🇮🇳","2027-03-07":"Maha Shivaratri 🔱","2027-03-22":"Holi 🎨","2027-03-10":"Eid-ul-Fitr 🌙","2027-04-16":"Rama Navami 🏹","2027-05-18":"Eid-ul-Adha 🕌","2027-08-15":"Independence Day 🇮🇳","2027-08-17":"Raksha Bandhan 🎁","2027-08-24":"Janmashtami 🪈","2027-09-06":"Ganesh Chaturthi 🐘","2027-10-02":"Gandhi Jayanti 🕊️","2027-10-10":"Dussehra 🏹","2027-10-29":"Diwali 🪔","2027-11-13":"Guru Nanak Jayanti 🪔","2027-12-25":"Christmas 🎄",
+            "2028-01-01":"New Year's Day 🎉","2028-01-14":"Makar Sankranti 🌾","2028-01-21":"JEE Main 2028 🎯","2028-01-26":"Republic Day 🇮🇳","2028-02-25":"Maha Shivaratri 🔱","2028-03-11":"Holi 🎨","2028-02-28":"Eid-ul-Fitr 🌙","2028-04-04":"Rama Navami 🏹","2028-05-06":"Eid-ul-Adha 🕌","2028-08-15":"Independence Day 🇮🇳","2028-08-05":"Raksha Bandhan 🎁","2028-08-12":"Janmashtami 🪈","2028-08-24":"Ganesh Chaturthi 🐘","2028-10-02":"Gandhi Jayanti 🕊️","2028-09-29":"Dussehra 🏹","2028-10-17":"Diwali 🪔","2028-11-02":"Guru Nanak Jayanti 🪔","2028-12-25":"Christmas 🎄",
+            "2029-01-01":"New Year's Day 🎉","2029-01-14":"Makar Sankranti 🌾","2029-01-26":"Republic Day 🇮🇳","2029-03-15":"Maha Shivaratri 🔱","2029-03-31":"Holi 🎨","2029-02-17":"Eid-ul-Fitr 🌙","2029-08-15":"Independence Day 🇮🇳","2029-08-25":"Raksha Bandhan 🎁","2029-10-02":"Gandhi Jayanti 🕊️","2029-11-05":"Diwali 🪔","2029-12-25":"Christmas 🎄",
+            "2030-01-01":"New Year's Day 🎉","2030-01-14":"Makar Sankranti 🌾","2030-01-26":"Republic Day 🇮🇳","2030-03-04":"Maha Shivaratri 🔱","2030-03-20":"Holi 🎨","2030-02-07":"Eid-ul-Fitr 🌙","2030-08-15":"Independence Day 🇮🇳","2030-08-14":"Raksha Bandhan 🎁","2030-10-02":"Gandhi Jayanti 🕊️","2030-10-26":"Diwali 🪔","2030-12-25":"Christmas 🎄"
         };
 
-        // ── Live Clock & Target ──
+        // ═══════════════════════════════════════════════════════════════
+        //  5.  LIVE CLOCK & TARGET
+        // ═══════════════════════════════════════════════════════════════
         function updateLiveWidgets() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            const dateString = now.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric',
-                year: 'numeric' });
-            const clockEl = document.getElementById('live-clock-display');
-            const dateEl = document.getElementById('live-date-display');
-            if (clockEl) clockEl.innerText = timeString;
-            if (dateEl) dateEl.innerText = dateString;
+            document.getElementById('live-clock-display').innerText = now.toLocaleTimeString();
+            document.getElementById('live-date-display').innerText = now.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric', year:'numeric' });
 
             let targetData = JSON.parse(localStorage.getItem(TARGET_KEY));
             if (!targetData) {
                 targetData = { name: "JEE 2028", date: "2028-01-21T09:00:00" };
                 localStorage.setItem(TARGET_KEY, JSON.stringify(targetData));
             }
-
             document.getElementById('target-name-label').innerText = targetData.name;
             const targetDate = new Date(targetData.date);
             const diff = targetDate - now;
-
-            const countdownEl = document.getElementById('target-countdown-display');
-            if (diff <= 0) {
-                countdownEl.innerText = "Target Reached! 🎉";
-            } else {
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                const minutes = Math.floor((diff / (1000 * 60)) % 60);
-                const seconds = Math.floor((diff / 1000) % 60);
-                countdownEl.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            const el = document.getElementById('target-countdown-display');
+            if (diff <= 0) el.innerText = "Target Reached! 🎉";
+            else {
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                el.innerText = `${d}d ${h}h ${m}m ${s}s`;
             }
         }
         setInterval(updateLiveWidgets, 1000);
         updateLiveWidgets();
 
-        // ── Target click ──
         document.getElementById('target-widget-box').addEventListener('click', async () => {
-            const current = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
+            const cur = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
             const html = `
                 <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted)">Event / Target Name:</label>
-                <input type="text" id="modal-target-name" value="${current.name}">
+                <input type="text" id="modal-target-name" value="${cur.name}">
                 <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted)">Target Date & Time:</label>
-                <input type="datetime-local" id="modal-target-date" value="${current.date}">
+                <input type="datetime-local" id="modal-target-date" value="${cur.date}">
             `;
-            const res = await openStickerModal("Set Exam / Target Stopwatch", "fas fa-bullseye", html);
+            const res = await openStickerModal("Set Exam / Target", "fas fa-bullseye", html);
             if (!res) return;
-
             const nameVal = document.getElementById('modal-target-name').value;
             const dateVal = document.getElementById('modal-target-date').value;
             if (!nameVal || !dateVal) return;
-
             const newTarget = { name: nameVal, date: dateVal };
             localStorage.setItem(TARGET_KEY, JSON.stringify(newTarget));
             showStickerToast(`🎯 Target updated to "${nameVal}"!`);
             updateLiveWidgets();
+            if (currentUser) syncTargetToCloud();
         });
 
-        // ── Startup ──
-        window.addEventListener('DOMContentLoaded', () => {
-            const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-            if (tests.length > 0) {
-                const todayDate = new Date(todayStr);
-                let upcoming = tests.map(t => {
-                    const diff = Math.ceil((new Date(t.date) - todayDate) / (1000 * 60 * 60 * 24));
-                    return { ...t, diff };
-                }).filter(t => t.diff >= 0);
+        // ═══════════════════════════════════════════════════════════════
+        //  6.  CLOUD SYNC FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════
+        async function syncAllToCloud() {
+            if (!currentUser || !isFirebaseReady) return;
+            try {
+                const uid = currentUser.uid;
+                const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
+                await db.collection('users').doc(uid).set({ timetables, tests, target, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                console.log('☁️ Data synced to cloud.');
+            } catch (e) { console.warn('Sync error:', e); }
+        }
 
-                if (upcoming.length > 0) {
-                    upcoming.sort((a, b) => a.diff - b.diff);
-                    const next = upcoming[0];
-                    if (next.diff === 0) showStickerToast(`🔥 Reminder: "${next.subject}" Test is TODAY! Best of Luck!`);
-                    else showStickerToast(`📌 Upcoming Event: "${next.subject}" in ${next.diff} day(s).`);
+        async function syncTimetableToCloud() {
+            if (!currentUser || !isFirebaseReady) return;
+            try {
+                const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                await db.collection('users').doc(currentUser.uid).set({ timetables, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            } catch (e) { console.warn('Timetable sync error:', e); }
+        }
+
+        async function syncTestsToCloud() {
+            if (!currentUser || !isFirebaseReady) return;
+            try {
+                const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                await db.collection('users').doc(currentUser.uid).set({ tests, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            } catch (e) { console.warn('Tests sync error:', e); }
+        }
+
+        async function syncTargetToCloud() {
+            if (!currentUser || !isFirebaseReady) return;
+            try {
+                const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
+                await db.collection('users').doc(currentUser.uid).set({ target, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            } catch (e) { console.warn('Target sync error:', e); }
+        }
+
+        async function loadFromCloud() {
+            if (!currentUser || !isFirebaseReady) return;
+            try {
+                const doc = await db.collection('users').doc(currentUser.uid).get();
+                if (!doc.exists) {
+                    showStickerToast("☁️ No cloud data found. Your local data will be backed up.");
+                    return;
                 }
-            } else if (globalFestivals[todayStr]) {
-                showStickerToast(`✨ Happy ${globalFestivals[todayStr]}! Enjoy your day!`);
+                const data = doc.data();
+                if (data.timetables) localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
+                if (data.tests) localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
+                if (data.target) localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
+                showStickerToast("☁️ Cloud data loaded! Welcome back.");
+                refreshAllViews();
+            } catch (e) {
+                console.warn('Load from cloud error:', e);
+                showStickerToast("⚠️ Could not load cloud data. Using local data.");
             }
+        }
+
+        function refreshAllViews() {
             loadTodayView();
-        });
+            renderCalendar();
+            updateLiveWidgets();
+            const histDate = document.getElementById('history-date-input').value;
+            if (histDate) loadHistory(histDate);
+        }
 
-        // ── Matrix Controls ──
-        const headerRow = document.getElementById('matrix-header-row');
-        const bodyRows = document.getElementById('matrix-body-rows');
-
-        document.getElementById('add-time-col').addEventListener('click', async () => {
-            const totalCols = headerRow.cells.length;
-            let optionsHtml = `<select id="modal-select-pos">`;
-            for (let i = 1; i <= totalCols; i++) optionsHtml += `<option value="${i}">Before Column ${i}</option>`;
-            optionsHtml += `<option value="end" selected>At the End</option></select>`;
-            optionsHtml += `<input type="text" id="modal-input-val" placeholder="Time Slot (e.g., 03:00 PM)" value="02:00 PM">`;
-
-            const res = await openStickerModal("Add Time Column", "fas fa-clock", optionsHtml);
-            if (!res) return;
-
-            const selectVal = document.getElementById('modal-select-pos').value;
-            const timeVal = document.getElementById('modal-input-val').value;
-            if (!timeVal) return;
-
-            const insertIndex = selectVal === 'end' ? totalCols : parseInt(selectVal) - 1;
-
-            const th = document.createElement('th');
-            th.innerHTML = `<input type="text" value="${timeVal}">`;
-            if (insertIndex >= totalCols) headerRow.appendChild(th);
-            else headerRow.insertBefore(th, headerRow.cells[insertIndex]);
-
-            Array.from(bodyRows.rows).forEach(row => {
-                const td = document.createElement('td');
-                td.innerHTML = `<input type="text" placeholder="Task">`;
-                if (insertIndex >= row.cells.length) row.appendChild(td);
-                else row.insertBefore(td, row.cells[insertIndex]);
-            });
-            showStickerToast("✨ Time column added successfully!");
-        });
-
-        document.getElementById('remove-time-col').addEventListener('click', async () => {
-            const totalCols = headerRow.cells.length - 1;
-            if (totalCols <= 1) { showStickerToast("⚠️ Minimum 1 time slot required!"); return; }
-
-            let optionsHtml = `<select id="modal-select-pos">`;
-            for (let i = 1; i <= totalCols; i++) {
-                const label = headerRow.cells[i].querySelector('input').value || `Col ${i}`;
-                optionsHtml += `<option value="${i}">Column ${i}: ${label}</option>`;
-            }
-            optionsHtml += `</select>`;
-
-            const res = await openStickerModal("Remove Time Column", "fas fa-trash-can", optionsHtml);
-            if (!res) return;
-
-            const removeIdx = parseInt(document.getElementById('modal-select-pos').value);
-            headerRow.deleteCell(removeIdx);
-            Array.from(bodyRows.rows).forEach(row => row.deleteCell(removeIdx));
-            showStickerToast("🗑️ Column removed successfully!");
-        });
-
-        document.getElementById('add-subject-row').addEventListener('click', async () => {
-            const totalRows = bodyRows.rows.length;
-            let optionsHtml = `<select id="modal-select-pos">`;
-            for (let i = 1; i <= totalRows; i++) optionsHtml += `<option value="${i-1}">Before Row ${i}</option>`;
-            optionsHtml += `<option value="end" selected>At the End</option></select>`;
-            optionsHtml += `<input type="text" id="modal-input-val" placeholder="Subject Name" value="Biology">`;
-
-            const res = await openStickerModal("Add Subject Row", "fas fa-book-open", optionsHtml);
-            if (!res) return;
-
-            const selectVal = document.getElementById('modal-select-pos').value;
-            const subName = document.getElementById('modal-input-val').value;
-            if (!subName) return;
-
-            const insertIndex = selectVal === 'end' ? totalRows : parseInt(selectVal);
-            const colCount = headerRow.cells.length;
-            const newRow = document.createElement('tr');
-
-            for (let i = 0; i < colCount; i++) {
-                const td = document.createElement('td');
-                td.innerHTML = i === 0 ? `<input type="text" value="${subName}">` : `<input type="text" placeholder="Task">`;
-                newRow.appendChild(td);
-            }
-
-            if (insertIndex >= totalRows) bodyRows.appendChild(newRow);
-            else bodyRows.insertBefore(newRow, bodyRows.rows[insertIndex]);
-            showStickerToast("✨ Subject row added successfully!");
-        });
-
-        document.getElementById('remove-subject-row').addEventListener('click', async () => {
-            const totalRows = bodyRows.rows.length;
-            if (totalRows <= 1) { showStickerToast("⚠️ Minimum 1 subject row required!"); return; }
-
-            let optionsHtml = `<select id="modal-select-pos">`;
-            for (let i = 0; i < totalRows; i++) {
-                const label = bodyRows.rows[i].cells[0].querySelector('input').value || `Row ${i+1}`;
-                optionsHtml += `<option value="${i}">Row ${i+1}: ${label}</option>`;
-            }
-            optionsHtml += `</select>`;
-
-            const res = await openStickerModal("Remove Subject Row", "fas fa-trash-can", optionsHtml);
-            if (!res) return;
-
-            const removeIdx = parseInt(document.getElementById('modal-select-pos').value);
-            bodyRows.deleteRow(removeIdx);
-            showStickerToast("🗑️ Subject row removed!");
-        });
-
-        // ── Save Timetable ──
-        document.getElementById('save-timetable-btn').addEventListener('click', () => {
-            const headers = Array.from(headerRow.cells).map(th => th.querySelector('input')?.value || th.innerText);
-            const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector('input')
-                ?.value || cell.innerText));
-
-            const payload = { date: todayStr, headers, rows };
-            let allData = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-            allData = allData.filter(d => d.date !== todayStr);
-            allData.push(payload);
-            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
-
-            showStickerToast("🎉 Timetable saved successfully for Today!");
-            loadTodayView();
-        });
-
-        function loadTodayView() {
-            const container = document.getElementById('today-container');
+        function loadHistory(dateVal) {
+            const container = document.getElementById('history-container');
             const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-            const todayObj = data.find(d => d.date === todayStr);
-
-            if (!todayObj) {
-                container.innerHTML =
-                    `<div class="card"><p>No custom timetable found for today. Design one in the <b>Studio</b> tab! ✨</p></div>`;
+            const found = data.find(d => d.date === dateVal);
+            container.innerHTML = '';
+            if (!found) {
+                container.innerHTML = `<div class="card"><p>No records for ${dateVal}.</p></div>`;
                 return;
             }
-            renderTable(todayObj, container);
+            renderTable(found, container);
         }
 
         document.getElementById('search-history-btn').addEventListener('click', () => {
             const dateVal = document.getElementById('history-date-input').value;
-            const container = document.getElementById('history-container');
-            const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-            const found = data.find(d => d.date === dateVal);
-
-            container.innerHTML = '';
-            if (!found) {
-                container.innerHTML = `<div class="card"><p>No archive records found for ${dateVal}.</p></div>`;
-                return;
-            }
-            renderTable(found, container);
+            if (dateVal) loadHistory(dateVal);
         });
 
+        // ═══════════════════════════════════════════════════════════════
+        //  7.  TABLE RENDER & MATRIX CONTROLS
+        // ═══════════════════════════════════════════════════════════════
         function renderTable(obj, target) {
             let html = `<div class="table-container"><table><thead><tr>`;
             obj.headers.forEach(h => html += `<th>${h}</th>`);
@@ -1505,130 +991,297 @@
             target.innerHTML = html;
         }
 
-        // ── Calendar ──
+        function loadTodayView() {
+            const container = document.getElementById('today-container');
+            const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            const todayObj = data.find(d => d.date === todayStr);
+            if (!todayObj) {
+                container.innerHTML = `<div class="card"><p>No custom timetable for today. Create one in <b>Studio</b>! ✨</p></div>`;
+                return;
+            }
+            renderTable(todayObj, container);
+        }
+
+        // Matrix controls
+        const headerRow = document.getElementById('matrix-header-row');
+        const bodyRows = document.getElementById('matrix-body-rows');
+
+        document.getElementById('add-time-col').addEventListener('click', async () => {
+            const total = headerRow.cells.length;
+            let opts = `<select id="modal-select-pos">`;
+            for (let i = 1; i <= total; i++) opts += `<option value="${i}">Before Col ${i}</option>`;
+            opts += `<option value="end" selected>At the End</option></select>`;
+            opts += `<input type="text" id="modal-input-val" placeholder="Time Slot" value="02:00 PM">`;
+            const res = await openStickerModal("Add Time Column", "fas fa-clock", opts);
+            if (!res) return;
+            const pos = document.getElementById('modal-select-pos').value;
+            const val = document.getElementById('modal-input-val').value;
+            if (!val) return;
+            const idx = pos === 'end' ? total : parseInt(pos) - 1;
+            const th = document.createElement('th');
+            th.innerHTML = `<input type="text" value="${val}">`;
+            if (idx >= total) headerRow.appendChild(th);
+            else headerRow.insertBefore(th, headerRow.cells[idx]);
+            Array.from(bodyRows.rows).forEach(row => {
+                const td = document.createElement('td');
+                td.innerHTML = `<input type="text" placeholder="Task">`;
+                if (idx >= row.cells.length) row.appendChild(td);
+                else row.insertBefore(td, row.cells[idx]);
+            });
+            showStickerToast("✨ Time column added!");
+        });
+
+        document.getElementById('remove-time-col').addEventListener('click', async () => {
+            const total = headerRow.cells.length - 1;
+            if (total <= 1) { showStickerToast("⚠️ Minimum 1 time slot!"); return; }
+            let opts = `<select id="modal-select-pos">`;
+            for (let i = 1; i <= total; i++) {
+                const label = headerRow.cells[i].querySelector('input')?.value || `Col ${i}`;
+                opts += `<option value="${i}">${i}: ${label}</option>`;
+            }
+            opts += `</select>`;
+            const res = await openStickerModal("Remove Time Column", "fas fa-trash-can", opts);
+            if (!res) return;
+            const idx = parseInt(document.getElementById('modal-select-pos').value);
+            headerRow.deleteCell(idx);
+            Array.from(bodyRows.rows).forEach(row => row.deleteCell(idx));
+            showStickerToast("🗑️ Column removed.");
+        });
+
+        document.getElementById('add-subject-row').addEventListener('click', async () => {
+            const total = bodyRows.rows.length;
+            let opts = `<select id="modal-select-pos">`;
+            for (let i = 1; i <= total; i++) opts += `<option value="${i-1}">Before Row ${i}</option>`;
+            opts += `<option value="end" selected>At the End</option></select>`;
+            opts += `<input type="text" id="modal-input-val" placeholder="Subject" value="Biology">`;
+            const res = await openStickerModal("Add Subject Row", "fas fa-book-open", opts);
+            if (!res) return;
+            const pos = document.getElementById('modal-select-pos').value;
+            const sub = document.getElementById('modal-input-val').value;
+            if (!sub) return;
+            const idx = pos === 'end' ? total : parseInt(pos);
+            const colCount = headerRow.cells.length;
+            const row = document.createElement('tr');
+            for (let i = 0; i < colCount; i++) {
+                const td = document.createElement('td');
+                td.innerHTML = i === 0 ? `<input type="text" value="${sub}">` : `<input type="text" placeholder="Task">`;
+                row.appendChild(td);
+            }
+            if (idx >= total) bodyRows.appendChild(row);
+            else bodyRows.insertBefore(row, bodyRows.rows[idx]);
+            showStickerToast("✨ Subject row added!");
+        });
+
+        document.getElementById('remove-subject-row').addEventListener('click', async () => {
+            const total = bodyRows.rows.length;
+            if (total <= 1) { showStickerToast("⚠️ Minimum 1 subject row!"); return; }
+            let opts = `<select id="modal-select-pos">`;
+            for (let i = 0; i < total; i++) {
+                const label = bodyRows.rows[i].cells[0].querySelector('input')?.value || `Row ${i+1}`;
+                opts += `<option value="${i}">${i+1}: ${label}</option>`;
+            }
+            opts += `</select>`;
+            const res = await openStickerModal("Remove Subject Row", "fas fa-trash-can", opts);
+            if (!res) return;
+            const idx = parseInt(document.getElementById('modal-select-pos').value);
+            bodyRows.deleteRow(idx);
+            showStickerToast("🗑️ Subject row removed.");
+        });
+
+        document.getElementById('save-timetable-btn').addEventListener('click', async () => {
+            const headers = Array.from(headerRow.cells).map(th => th.querySelector('input')?.value || th.innerText);
+            const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector('input')?.value || cell.innerText));
+            const payload = { date: todayStr, headers, rows };
+            let allData = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            allData = allData.filter(d => d.date !== todayStr);
+            allData.push(payload);
+            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
+            showStickerToast("🎉 Timetable saved!");
+            loadTodayView();
+            if (currentUser) syncTimetableToCloud();
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        //  8.  CALENDAR
+        // ═══════════════════════════════════════════════════════════════
         let currMonth = new Date().getMonth();
         let currYear = new Date().getFullYear();
 
         function renderCalendar() {
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
-                "November", "December"
-            ];
+            const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
             document.getElementById('calendar-month-year').innerText = `${months[currMonth]} ${currYear}`;
-
             const grid = document.getElementById('calendar-dates-grid');
             grid.innerHTML = '';
-
             const firstDay = new Date(currYear, currMonth, 1).getDay();
             const totalDays = new Date(currYear, currMonth + 1, 0).getDate();
-
             const savedTests = (JSON.parse(localStorage.getItem(TESTS_KEY)) || []).map(t => t.date);
-
             for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
-
             for (let day = 1; day <= totalDays; day++) {
                 const cell = document.createElement('div');
                 cell.className = 'calendar-date';
                 cell.innerText = day;
-
                 const mStr = String(currMonth + 1).padStart(2, '0');
                 const dStr = String(day).padStart(2, '0');
-                const dateKey = `${currYear}-${mStr}-${dStr}`;
-
-                const isFestival = !!globalFestivals[dateKey];
-                const isTest = savedTests.includes(dateKey);
-
-                if (isFestival) cell.classList.add('has-festival');
-                if (isTest) cell.classList.add('has-test');
-                if (dateKey === todayStr) cell.classList.add('selected');
-
+                const key = `${currYear}-${mStr}-${dStr}`;
+                if (globalFestivals[key]) cell.classList.add('has-festival');
+                if (savedTests.includes(key)) cell.classList.add('has-test');
+                if (key === todayStr) cell.classList.add('selected');
                 cell.addEventListener('click', () => {
                     document.querySelectorAll('.calendar-date').forEach(d => d.classList.remove('selected'));
                     cell.classList.add('selected');
-                    inspectDate(dateKey);
+                    inspectDate(key);
                 });
                 grid.appendChild(cell);
             }
             inspectDate(todayStr);
         }
 
-        document.getElementById('prev-month').addEventListener('click', () => {
-            currMonth--;
-            if (currMonth < 0) { currMonth = 11;
-                currYear--; }
-            renderCalendar();
-        });
-
-        document.getElementById('next-month').addEventListener('click', () => {
-            currMonth++;
-            if (currMonth > 11) { currMonth = 0;
-                currYear++; }
-            renderCalendar();
-        });
+        document.getElementById('prev-month').addEventListener('click', () => { currMonth--; if (currMonth < 0) { currMonth = 11; currYear--; } renderCalendar(); });
+        document.getElementById('next-month').addEventListener('click', () => { currMonth++; if (currMonth > 11) { currMonth = 0; currYear++; } renderCalendar(); });
 
         function inspectDate(dateStr) {
             const container = document.getElementById('calendar-selected-data');
             const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
             const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-
             const tMatch = timetables.find(d => d.date === dateStr);
             const testMatch = tests.find(t => t.date === dateStr);
-            const festivalMatch = globalFestivals[dateStr];
-
-            let html = `<h3>Date: ${dateStr}</h3>`;
-
-            if (festivalMatch) {
-                html += `<div class="card" style="border-color: var(--festival-color); background: rgba(114, 9, 183, 0.06);">
-                        <p style="color: var(--festival-color);"><b>🎉 Festival / Holiday:</b> ${festivalMatch}</p>
-                    </div>`;
+            const festMatch = globalFestivals[dateStr];
+            let html = `<h3 style="font-size:0.95rem;">📅 ${dateStr}</h3>`;
+            if (festMatch) {
+                html += `<div class="card" style="border-color:var(--festival-color);background:rgba(114,9,183,0.06);">
+                        <p style="color:var(--festival-color);"><b>🎉 Festival:</b> ${festMatch}</p></div>`;
             }
-
             if (testMatch) {
-                html += `<div class="card" style="border-color: var(--accent); background: rgba(230, 57, 70, 0.06);">
-                        <p style="color: var(--accent);"><b>📝 Test / Scheduled Event:</b> ${testMatch.subject}</p>
-                        <button class="btn danger" style="margin-top:8px; padding:6px 12px; font-size:0.75rem;" onclick="removeTest('${dateStr}')">Remove Event</button>
+                html += `<div class="card" style="border-color:var(--accent);background:rgba(230,57,70,0.06);">
+                        <p style="color:var(--accent);"><b>📝 Event:</b> ${testMatch.subject}</p>
+                        <button class="btn danger" style="margin-top:6px;padding:4px 10px;font-size:0.7rem;" onclick="removeTest('${dateStr}')">Remove</button>
                     </div>`;
             } else {
-                html +=
-                    `<button class="btn primary" style="width:100%; margin-bottom:10px;" onclick="promptAddTest('${dateStr}')"><i class="fas fa-plus"></i> Add Test / Event Here</button>`;
+                html += `<button class="btn primary" style="width:100%;margin-bottom:8px;" onclick="promptAddTest('${dateStr}')"><i class="fas fa-plus"></i> Add Event</button>`;
             }
-
             if (tMatch) {
                 html += `<div id="cal-table-box"></div>`;
             } else {
-                html += `<p style="color:var(--text-muted); font-size:0.8rem;">No custom timetable for this date.</p>`;
+                html += `<p style="color:var(--text-muted);font-size:0.75rem;">No timetable for this date.</p>`;
             }
-
             container.innerHTML = html;
             if (tMatch) renderTable(tMatch, document.getElementById('cal-table-box'));
         }
 
         window.promptAddTest = async function(dateStr) {
-            const html = `<input type="text" id="modal-test-input" placeholder="Event / Test Name" value="Physics Quiz">`;
+            const html = `<input type="text" id="modal-test-input" placeholder="Event / Test Name" value="Quiz">`;
             const res = await openStickerModal("Schedule Event", "fas fa-bookmark", html);
             if (!res) return;
-
             const subject = document.getElementById('modal-test-input').value;
             if (!subject) return;
-
             let tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
             tests = tests.filter(t => t.date !== dateStr);
             tests.push({ date: dateStr, subject });
             localStorage.setItem(TESTS_KEY, JSON.stringify(tests));
-
-            showStickerToast("📝 Test event scheduled!");
+            showStickerToast("📝 Event scheduled!");
             renderCalendar();
             inspectDate(dateStr);
+            if (currentUser) syncTestsToCloud();
         }
 
         window.removeTest = function(dateStr) {
             let tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
             tests = tests.filter(t => t.date !== dateStr);
             localStorage.setItem(TESTS_KEY, JSON.stringify(tests));
-            showStickerToast("Event record deleted.");
+            showStickerToast("Event deleted.");
             renderCalendar();
             inspectDate(dateStr);
+            if (currentUser) syncTestsToCloud();
         }
-    </script>
 
+        // ═══════════════════════════════════════════════════════════════
+        //  9.  FIREBASE AUTH
+        // ═══════════════════════════════════════════════════════════════
+        function setUser(user) {
+            currentUser = user;
+            if (user) {
+                loginOverlay.classList.add('hidden');
+                userBadge.style.display = 'flex';
+                userAvatar.src = user.photoURL || 'https://ui-avatars.com/api/?name=User&background=4361ee&color=fff';
+                userAvatar.alt = user.displayName || 'User';
+                userNameDisplay.innerText = user.displayName ? user.displayName.split(' ')[0] : 'User';
+                appTitle.innerText = `📚 ${user.displayName ? user.displayName.split(' ')[0] : 'Student'}'s T-T`;
+                showStickerToast(`👋 Welcome ${user.displayName || 'Student'}!`);
+                loadFromCloud().then(() => refreshAllViews());
+            } else {
+                loginOverlay.classList.remove('hidden');
+                userBadge.style.display = 'none';
+                appTitle.innerText = 'SELF STUDY T-T';
+            }
+        }
+
+        userBadge.addEventListener('click', async () => {
+            if (auth && currentUser) {
+                try {
+                    await auth.signOut();
+                    setUser(null);
+                    showStickerToast("👋 Signed out. Your data stays on this device.");
+                } catch (e) { console.warn('Sign out error:', e); }
+            }
+        });
+
+        googleBtn.addEventListener('click', async () => {
+            if (!isFirebaseReady) {
+                showStickerToast("⚠️ Firebase not configured. Please set up your config.");
+                return;
+            }
+            loginLoader.classList.add('show');
+            googleBtn.disabled = true;
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                const result = await auth.signInWithPopup(provider);
+                setUser(result.user);
+                await syncAllToCloud();
+            } catch (e) {
+                console.warn('Login error:', e);
+                showStickerToast(`⚠️ Login failed: ${e.message}`);
+            } finally {
+                loginLoader.classList.remove('show');
+                googleBtn.disabled = false;
+            }
+        });
+
+        if (isFirebaseReady) {
+            auth.onAuthStateChanged((user) => {
+                if (user) setUser(user);
+                else setUser(null);
+            });
+        } else {
+            // Fallback: local only
+            loginOverlay.querySelector('h2').innerHTML = '📚 Study Time-Table';
+            loginOverlay.querySelector('p').innerHTML = '⚠️ Firebase not configured. Data stored locally only.';
+            googleBtn.innerHTML = '<i class="fas fa-database"></i> Use Local Mode';
+            googleBtn.addEventListener('click', () => {
+                loginOverlay.classList.add('hidden');
+                showStickerToast("📁 Local mode active. Data is stored on this device only.");
+                appTitle.innerText = '📁 LOCAL MODE';
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  10. STARTUP
+        // ═══════════════════════════════════════════════════════════════
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTodayView();
+            renderCalendar();
+            const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+            const todayEvent = tests.find(t => t.date === todayStr);
+            if (todayEvent) {
+                setTimeout(() => showStickerToast(`📌 Today: "${todayEvent.subject}"`), 800);
+            } else if (globalFestivals[todayStr]) {
+                setTimeout(() => showStickerToast(`✨ ${globalFestivals[todayStr]}`), 800);
+            }
+        });
+
+        // Expose sync to console for debugging
+        window.syncAll = syncAllToCloud;
+        window.loadCloud = loadFromCloud;
+    </script>
 </body>
 </html>
