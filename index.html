@@ -6,8 +6,6 @@
     <title>Time Table · Sync</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
-
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
     </script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js">
@@ -16,9 +14,6 @@
     </script>
 
     <style>
-        /* ─── All styles same as before ─── */
-        /* (I'll include the full styles again for completeness, but they are unchanged) */
-        /* ─── Root Variables ─── */
         :root {
             --bg-base: #f4f6fc;
             --bg-card: #ffffff;
@@ -106,8 +101,6 @@
             z-index: 10;
             overflow: hidden;
         }
-
-        /* ─── Login Overlay ─── */
         #login-overlay {
             position: absolute;
             inset: 0;
@@ -130,7 +123,6 @@
         #login-overlay .login-icon { font-size: 3rem; color: var(--primary); margin-bottom: 6px; }
         #login-overlay h2 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; margin-bottom: 2px; }
         #login-overlay p { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 12px; max-width: 300px; }
-
         .login-methods {
             display: flex;
             flex-direction: column;
@@ -173,7 +165,6 @@
         }
         .btn-google:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); }
         .btn-google i { font-size: 1.1rem; color: #ea4335; }
-
         .btn-guest {
             background: var(--bg-base);
             border: 2px solid var(--border);
@@ -191,7 +182,6 @@
             width: 100%;
         }
         .btn-guest:hover { border-color: var(--primary); background: var(--bg-card); }
-
         .input-group {
             display: flex;
             flex-direction: column;
@@ -239,7 +229,6 @@
             margin-top: 1px;
         }
         .forgot-link:hover { text-decoration: underline; }
-
         .login-loader {
             margin-top: 8px;
             font-size: 0.75rem;
@@ -252,7 +241,6 @@
         .login-loader.show { display: flex; }
         .login-loader i { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .guest-badge {
             font-size: 0.55rem;
             background: var(--accent);
@@ -261,8 +249,6 @@
             border-radius: 20px;
             margin-left: 4px;
         }
-
-        /* ─── Toast ─── */
         #sticker-toast {
             position: absolute;
             top: 10px;
@@ -285,8 +271,6 @@
         }
         #sticker-toast.show { transform: translateX(-50%) translateY(0); }
         #sticker-toast i { color: var(--accent); font-size: 0.9rem; }
-
-        /* ─── Modal ─── */
         .modal-overlay {
             position: absolute;
             inset: 0;
@@ -323,7 +307,8 @@
             align-items: center;
             gap: 8px;
         }
-        .modal-box input, .modal-box select {
+        .modal-box input,
+        .modal-box select {
             width: 100%;
             padding: 10px 14px;
             background: var(--bg-base);
@@ -335,10 +320,9 @@
             margin-bottom: 12px;
             outline: none;
         }
-        .modal-box input:focus, .modal-box select:focus { border-color: var(--primary); }
+        .modal-box input:focus,
+        .modal-box select:focus { border-color: var(--primary); }
         .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-
-        /* ─── Header ─── */
         header {
             background: var(--bg-card);
             padding: 8px 14px;
@@ -365,13 +349,23 @@
             animation: bounceMascot 2s ease-in-out infinite;
         }
         @keyframes bounceMascot { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-        header h1 { font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.3px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        header h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         .header-controls { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
         .icon-btn {
             background: var(--bg-base);
             border: 2px solid var(--border);
             color: var(--text-main);
-            width: 30px; height: 30px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
@@ -381,7 +375,6 @@
             flex-shrink: 0;
         }
         .icon-btn:hover { border-color: var(--primary); color: var(--primary); transform: scale(1.05); }
-
         .user-badge {
             display: flex;
             align-items: center;
@@ -394,35 +387,168 @@
             position: relative;
             flex-shrink: 0;
         }
-        .user-badge img { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--primary); }
-        .user-badge .user-name { font-size: 0.65rem; font-weight: 600; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-main); }
-        .user-badge .logout-tip { font-size: 0.5rem; color: var(--text-muted); opacity: 0.6; }
+        .user-badge img { width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--primary); }
+        .user-badge .user-name {
+            font-size: 0.65rem;
+            font-weight: 600;
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text-main);
+        }
+        .user-badge .logout-tip { font-size: 0.5rem;
+            color: var(--text-muted);
+            opacity: 0.6; }
         .user-badge .logout-tip i { font-size: 0.5rem; }
-
-        /* ─── Main ─── */
-        main { flex: 1; overflow-y: auto; padding: 10px 12px 90px 12px; }
-        .view-section { display: none; animation: fadeInView 0.3s ease-in-out; }
+        main { flex: 1;
+            overflow-y: auto;
+            padding: 10px 12px 90px 12px; }
+        .view-section { display: none;
+            animation: fadeInView 0.3s ease-in-out; }
         .view-section.active { display: block; }
-        @keyframes fadeInView { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        h2 { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
-        .card { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 10px; margin-bottom: 8px; position: relative; overflow: hidden; }
-        .card::before { content: '⭐'; position: absolute; top: 5px; right: 6px; font-size: 0.65rem; opacity: 0.3; }
-        .home-widgets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .widget-box { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 8px; text-align: center; position: relative; }
-        .widget-title { font-size: 0.6rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1px; display: flex; align-items: center; justify-content: center; gap: 3px; }
-        .widget-value { font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--primary); }
-        .countdown-sub { font-size: 0.55rem; color: var(--text-muted); margin-top: 1px; }
-        .search-box { display: flex; gap: 6px; margin-bottom: 10px; }
-        .search-box input { flex: 1; padding: 6px 10px; background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-weight: 600; font-size: 0.8rem; outline: none; }
+        @keyframes fadeInView { from { opacity: 0;
+                transform: scale(0.98); }
+            to { opacity: 1;
+                transform: scale(1); } }
+        h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .card {
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '⭐';
+            position: absolute;
+            top: 5px;
+            right: 6px;
+            font-size: 0.65rem;
+            opacity: 0.3;
+        }
+        .home-widgets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .widget-box {
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px;
+            text-align: center;
+            position: relative;
+        }
+        .widget-title {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+        .widget-value {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .countdown-sub {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+        .search-box {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.8rem;
+            outline: none;
+        }
         .search-box input:focus { border-color: var(--primary); }
-        .table-container { overflow-x: auto; border-radius: var(--radius-md); border: 2px solid var(--border); background: var(--bg-card); margin-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; text-align: center; min-width: 340px; }
-        th, td { border: 2px solid var(--border); padding: 4px 3px; font-size: 0.7rem; }
-        th { background-color: var(--bg-base); color: var(--primary); font-family: 'Fredoka', sans-serif; font-weight: 600; }
-        td:first-child { background-color: var(--bg-base); font-weight: 700; color: var(--secondary); }
-        td input, th input { width: 100%; border: none; background: transparent; text-align: center; font-size: 0.7rem; font-weight: 600; outline: none; color: var(--text-main); padding: 2px; border-radius: 4px; }
-        td input:focus, th input:focus { background: var(--bg-base); box-shadow: 0 0 0 2px var(--primary); }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            min-width: 340px;
+        }
+        th,
+        td {
+            border: 2px solid var(--border);
+            padding: 4px 3px;
+            font-size: 0.7rem;
+        }
+        th {
+            background-color: var(--bg-base);
+            color: var(--primary);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+        }
+        td:first-child {
+            background-color: var(--bg-base);
+            font-weight: 700;
+            color: var(--secondary);
+        }
+        td input,
+        th input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            outline: none;
+            color: var(--text-main);
+            padding: 2px;
+            border-radius: 4px;
+        }
+        td input:focus,
+        th input:focus {
+            background: var(--bg-base);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
         .btn {
             padding: 6px 10px;
             border-radius: var(--radius-sm);
@@ -441,14 +567,56 @@
             transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
         .btn:hover { transform: translateY(-2px); }
-        .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
-        .btn.primary { background: var(--primary); color: white; border-color: var(--primary-hover); box-shadow: 0 3px 0 var(--primary-hover); }
-        .btn.danger { background: #ff6b6b; color: white; border-color: #ee5253; box-shadow: 0 3px 0 #d63031; }
-        .calendar-card { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 8px; }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.85rem; }
-        .calendar-header button { background: var(--bg-card); border: 2px solid var(--border); color: var(--text-main); width: 26px; height: 26px; border-radius: 50%; cursor: pointer; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
-        .calendar-day-name { font-size: 0.55rem; font-weight: 700; color: var(--text-muted); padding-bottom: 2px; }
+        .btn:active { transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--border); }
+        .btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-hover);
+            box-shadow: 0 3px 0 var(--primary-hover);
+        }
+        .btn.danger {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ee5253;
+            box-shadow: 0 3px 0 #d63031;
+        }
+        .calendar-card {
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .calendar-header button {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            color: var(--text-main);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+        }
+        .calendar-day-name {
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding-bottom: 2px;
+        }
         .calendar-date {
             aspect-ratio: 1;
             display: flex;
@@ -463,13 +631,46 @@
             border: 1px solid var(--border);
         }
         .calendar-date:hover { border-color: var(--primary); }
-        .calendar-date.selected { background-color: var(--primary) !important; color: white !important; border-color: var(--primary-hover) !important; }
-        .calendar-date.has-festival { background-color: rgba(114, 9, 183, 0.15); border-color: var(--festival-color); color: var(--festival-color); }
-        .calendar-date.has-test { background-color: rgba(230, 57, 70, 0.15); border-color: var(--accent); color: var(--accent); }
-        .calendar-date.has-festival.has-test { background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(230, 57, 70, 0.2)); border-color: var(--accent); }
-        .assistant-widget { position: absolute; bottom: 68px; right: 8px; z-index: 150; display: flex; align-items: flex-end; gap: 5px; pointer-events: auto; }
-        .assistant-speech-wrap { position: relative; opacity: 1; transform: scale(1); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .assistant-speech-wrap.hidden { opacity: 0; transform: scale(0); pointer-events: none; }
+        .calendar-date.selected {
+            background-color: var(--primary) !important;
+            color: white !important;
+            border-color: var(--primary-hover) !important;
+        }
+        .calendar-date.has-festival {
+            background-color: rgba(114, 9, 183, 0.15);
+            border-color: var(--festival-color);
+            color: var(--festival-color);
+        }
+        .calendar-date.has-test {
+            background-color: rgba(230, 57, 70, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .calendar-date.has-festival.has-test {
+            background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(230, 57, 70, 0.2));
+            border-color: var(--accent);
+        }
+        .assistant-widget {
+            position: absolute;
+            bottom: 68px;
+            right: 8px;
+            z-index: 150;
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            pointer-events: auto;
+        }
+        .assistant-speech-wrap {
+            position: relative;
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .assistant-speech-wrap.hidden {
+            opacity: 0;
+            transform: scale(0);
+            pointer-events: none;
+        }
         .assistant-speech {
             background: var(--bg-card);
             border: 2px solid var(--primary);
@@ -498,7 +699,8 @@
             position: absolute;
             top: -7px;
             left: -7px;
-            width: 16px; height: 16px;
+            width: 16px;
+            height: 16px;
             background: var(--accent);
             color: white;
             border: 2px solid var(--bg-card);
@@ -541,7 +743,12 @@
             padding: 3px 0 1px 0;
             flex-shrink: 0;
         }
-        .nav-items-row { display: flex; justify-content: space-around; align-items: center; padding: 0 4px; }
+        .nav-items-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 4px;
+        }
         .nav-item {
             background: none;
             border: none;
@@ -558,7 +765,10 @@
             padding: 3px 0;
         }
         .nav-item i { font-size: 1rem; }
-        .nav-item.active { color: var(--primary); transform: scale(1.05); }
+        .nav-item.active {
+            color: var(--primary);
+            transform: scale(1.05);
+        }
         .footer-credit {
             text-align: center;
             font-size: 0.5rem;
@@ -568,23 +778,63 @@
             border-top: 1px solid var(--border);
             margin: 1px 10px 0 10px;
         }
-        .footer-credit a { color: var(--primary); text-decoration: none; font-weight: 700; font-family: 'Fredoka', sans-serif; letter-spacing: 0.5px; transition: color 0.2s, text-shadow 0.2s; }
-        .footer-credit a:hover { color: var(--secondary); text-shadow: 0 0 12px rgba(67, 97, 238, 0.35); text-decoration: underline; }
-        .footer-credit .heart { color: var(--accent); display: inline-block; animation: pulseHeart 1.6s ease-in-out infinite; }
+        .footer-credit a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            letter-spacing: 0.5px;
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+        .footer-credit a:hover {
+            color: var(--secondary);
+            text-shadow: 0 0 12px rgba(67, 97, 238, 0.35);
+            text-decoration: underline;
+        }
+        .footer-credit .heart {
+            color: var(--accent);
+            display: inline-block;
+            animation: pulseHeart 1.6s ease-in-out infinite;
+        }
         @keyframes pulseHeart { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
         @media (max-width: 480px) {
-            .app-container { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
+            .app-container { height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                border: none; }
             main { padding: 8px 8px 80px 8px; }
             .home-widgets-grid { gap: 5px; }
             .widget-value { font-size: 0.75rem; }
             header h1 { font-size: 0.8rem; }
-            .user-badge .user-name { max-width: 45px; font-size: 0.55rem; }
+            .user-badge .user-name { max-width: 45px;
+                font-size: 0.55rem; }
         }
+        .sync-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .sync-btn:hover { transform: scale(1.1); }
+        .sync-btn:active { transform: scale(0.9); }
+        .sync-btn i { color: white; }
     </style>
 </head>
 <body>
 
-    <!-- Decorations -->
     <div class="bg-decor">
         <div class="floating-item">📚</div>
         <div class="floating-item">✏️</div>
@@ -595,13 +845,11 @@
         <div class="floating-item">⭐</div>
     </div>
 
-    <!-- Toast -->
     <div id="sticker-toast">
         <i class="fas fa-sparkles"></i>
         <span id="toast-text">Ready!</span>
     </div>
 
-    <!-- Custom Modal -->
     <div class="modal-overlay" id="custom-modal">
         <div class="modal-box">
             <h3 id="modal-title"><i class="fas fa-pencil-alt"></i> Sticker Note</h3>
@@ -613,24 +861,17 @@
         </div>
     </div>
 
-    <!-- App Container -->
     <div class="app-container" id="appContainer">
 
-        <!-- Login Overlay (No Phone) -->
         <div id="login-overlay">
             <div class="login-icon"><i class="fas fa-user-graduate"></i></div>
             <h2>Study Time-Table</h2>
             <p>Sign in to sync your timetable across devices.</p>
-
             <div class="login-methods">
-                <!-- Google -->
                 <button class="btn-google" id="google-login-btn">
                     <i class="fab fa-google"></i> Sign in with Google
                 </button>
-
                 <div class="method-divider">or</div>
-
-                <!-- Email / Password -->
                 <div class="input-group">
                     <input type="email" id="email-input" placeholder="Email address" />
                     <input type="password" id="password-input" placeholder="Password" />
@@ -640,26 +881,19 @@
                     </div>
                     <div class="forgot-link" id="forgot-password-link">Forgot password?</div>
                 </div>
-
                 <div class="method-divider">or</div>
-
-                <!-- Guest -->
                 <button class="btn-guest" id="guest-login-btn">
                     <i class="fas fa-user-astronaut"></i> Continue as Guest
                 </button>
             </div>
-
-            <!-- Loader -->
             <div class="login-loader" id="login-loader">
                 <i class="fas fa-spinner"></i> Please wait...
             </div>
-
             <div style="margin-top:10px; font-size:0.55rem; color:var(--text-muted); opacity:0.7;">
                 <i class="fas fa-lock"></i> Guest data stays on this device only.
             </div>
         </div>
 
-        <!-- Header -->
         <header>
             <div class="logo-area">
                 <div class="mascot-avatar"><i class="fas fa-cat"></i></div>
@@ -676,7 +910,6 @@
             </div>
         </header>
 
-        <!-- Main -->
         <main>
             <div id="view-today" class="view-section active">
                 <div class="home-widgets-grid">
@@ -755,7 +988,11 @@
             </div>
         </main>
 
-        <!-- Assistant -->
+        <!-- Force Sync Button (Floating) -->
+        <button class="sync-btn" id="force-sync-btn" title="Force Sync Data">
+            <i class="fas fa-cloud-upload-alt"></i>
+        </button>
+
         <div class="assistant-widget" id="assistant-widget">
             <div class="assistant-speech-wrap" id="assistant-speech-wrap">
                 <button class="assistant-close-btn" id="assistant-close" title="Hide"><i class="fas fa-times"></i></button>
@@ -764,7 +1001,6 @@
             <div class="assistant-avatar-btn" id="assistant-btn" title="Tap for guide"><i class="fas fa-child-reaching"></i></div>
         </div>
 
-        <!-- Bottom Nav -->
         <nav class="bottom-nav">
             <div class="nav-items-row">
                 <button class="nav-item active" data-target="view-today"><i class="fas fa-house-chimney"></i><span>Today</span></button>
@@ -780,7 +1016,6 @@
 
     </div>
 
-    <!-- ─── Script ─── -->
     <script>
         // ─── Firebase Config ───
         const firebaseConfig = {
@@ -793,11 +1028,9 @@
             measurementId: "G-X4W2ZJ8YHC"
         };
 
-        // ─── Init Firebase ───
         let firebaseApp, auth, db;
         let currentUser = null;
         let isFirebaseReady = false;
-        let isSyncing = false; // prevent multiple syncs
 
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -825,6 +1058,7 @@
         const userNameDisplay = document.getElementById('user-name-display');
         const userTypeBadge = document.getElementById('user-type-badge');
         const appTitle = document.getElementById('app-title');
+        const forceSyncBtn = document.getElementById('force-sync-btn');
 
         const toast = document.getElementById('sticker-toast');
         const toastText = document.getElementById('toast-text');
@@ -913,6 +1147,7 @@
             "📅 Calendar shows festivals & tests!",
             "🎨 Studio lets you customise timetable!",
             "🔐 Your data syncs across devices via Google!",
+            "🔄 Tap the cloud button on bottom-right to force sync!",
             "Stay productive! 🚀"
         ];
         let guideIdx = 0;
@@ -1123,7 +1358,13 @@
                 await db.collection('users').doc(uid).set({ timetables, tests, target,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
                 console.log('☁️ Synced to cloud.');
-            } catch (e) { console.warn('Sync error:', e); }
+                showStickerToast('✅ Data synced to cloud!');
+                return true;
+            } catch (e) {
+                console.warn('Sync error:', e);
+                showStickerToast(`⚠️ Sync failed: ${e.message}`);
+                return false;
+            }
         }
         async function syncTimetableToCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
@@ -1151,43 +1392,57 @@
             } catch (e) { console.warn('Target sync error:', e); }
         }
 
-        // ─── Improved loadFromCloud – won't overwrite with empty data ───
+        // ─── Improved loadFromCloud – always loads cloud data if exists ───
         async function loadFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
                 const doc = await db.collection('users').doc(currentUser.uid).get();
                 if (!doc.exists) {
-                    // Cloud has no data – but we have local data, so push local to cloud
+                    // Cloud has no data – push local to cloud
                     const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                     const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                     const localTarget = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
                         date: "2028-01-21T09:00:00" };
-                    if (localTimetables.length > 0 || localTests.length > 0) {
+                    if (localTimetables.length > 0 || localTests.length > 0 || localTarget) {
                         await syncAllToCloud();
                         showStickerToast("☁️ Local data backed up to cloud.");
                     } else {
-                        showStickerToast("☁️ No cloud data found. Your local data will be backed up.");
+                        showStickerToast("☁️ No cloud data found. Start adding your timetable!");
                     }
                     return;
                 }
                 const data = doc.data();
-                // Only overwrite if cloud has actual data (non-empty arrays)
-                if (data.timetables && data.timetables.length > 0) {
+                // ALWAYS load cloud data (even if empty) – this ensures cross-device sync
+                if (data.timetables !== undefined) {
                     localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
                 }
-                if (data.tests && data.tests.length > 0) {
+                if (data.tests !== undefined) {
                     localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
                 }
-                if (data.target && Object.keys(data.target).length > 0) {
+                if (data.target !== undefined) {
                     localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
                 }
                 showStickerToast("☁️ Cloud data loaded! Welcome back.");
                 refreshAllViews();
+                return true;
             } catch (e) {
                 console.warn('Load from cloud error:', e);
                 showStickerToast("⚠️ Could not load cloud data. Using local data.");
+                return false;
             }
         }
+
+        // ─── Force Sync Button ───
+        forceSyncBtn.addEventListener('click', async () => {
+            if (!currentUser || currentUser.isAnonymous) {
+                showStickerToast("⚠️ Please login with Google or Email to sync.");
+                return;
+            }
+            showStickerToast("🔄 Syncing data...");
+            await syncAllToCloud();
+            await loadFromCloud();
+            refreshAllViews();
+        });
 
         function refreshAllViews() {
             loadTodayView();
@@ -1434,7 +1689,6 @@
         };
 
         // ─── Auth Handlers ───
-
         function setUser(user) {
             currentUser = user;
             if (user) {
@@ -1453,7 +1707,10 @@
                 appTitle.innerText = user.isAnonymous ? '📁 GUEST MODE' : `📚 ${name.split(' ')[0] || 'Student'}'s T-T`;
                 showStickerToast(user.isAnonymous ? '👤 Logged in as Guest' : `👋 Welcome ${name}!`);
                 if (!user.isAnonymous) {
-                    loadFromCloud().then(() => refreshAllViews());
+                    // Load cloud data and then refresh
+                    loadFromCloud().then(() => {
+                        refreshAllViews();
+                    });
                 } else {
                     refreshAllViews();
                 }
@@ -1517,7 +1774,7 @@
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await auth.signInWithPopup(provider);
                 setUser(result.user);
-                // sync local data to cloud if any
+                // After login, sync local data to cloud if any
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 if (localTimetables.length > 0 || localTests.length > 0) {
@@ -1561,7 +1818,6 @@
             try {
                 const result = await auth.signInWithEmailAndPassword(email, password);
                 setUser(result.user);
-                // sync local data to cloud if any
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 if (localTimetables.length > 0 || localTests.length > 0) {
@@ -1590,7 +1846,6 @@
             try {
                 const result = await auth.createUserWithEmailAndPassword(email, password);
                 setUser(result.user);
-                // sync any existing local data (if any)
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 if (localTimetables.length > 0 || localTests.length > 0) {
@@ -1640,7 +1895,6 @@
                 currentUser = { isAnonymous: true, uid: 'local' };
                 refreshAllViews();
             });
-            // Hide email & guest if Firebase not ready
             document.querySelector('.input-group').style.display = 'none';
             guestBtn.style.display = 'none';
         }
@@ -1660,6 +1914,13 @@
 
         window.syncAll = syncAllToCloud;
         window.loadCloud = loadFromCloud;
+        window.forceSync = () => {
+            if (currentUser && !currentUser.isAnonymous) {
+                syncAllToCloud().then(() => loadFromCloud().then(() => refreshAllViews()));
+            } else {
+                showStickerToast("⚠️ Please login with Google or Email.");
+            }
+        };
     </script>
 </body>
 </html>
