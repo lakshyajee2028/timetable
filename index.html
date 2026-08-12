@@ -16,6 +16,8 @@
     </script>
 
     <style>
+        /* ─── All styles same as before ─── */
+        /* (I'll include the full styles again for completeness, but they are unchanged) */
         /* ─── Root Variables ─── */
         :root {
             --bg-base: #f4f6fc;
@@ -795,6 +797,7 @@
         let firebaseApp, auth, db;
         let currentUser = null;
         let isFirebaseReady = false;
+        let isSyncing = false; // prevent multiple syncs
 
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -1148,18 +1151,36 @@
             } catch (e) { console.warn('Target sync error:', e); }
         }
 
+        // ─── Improved loadFromCloud – won't overwrite with empty data ───
         async function loadFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
             try {
                 const doc = await db.collection('users').doc(currentUser.uid).get();
                 if (!doc.exists) {
-                    showStickerToast("☁️ No cloud data found. Your local data will be backed up.");
+                    // Cloud has no data – but we have local data, so push local to cloud
+                    const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                    const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                    const localTarget = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
+                        date: "2028-01-21T09:00:00" };
+                    if (localTimetables.length > 0 || localTests.length > 0) {
+                        await syncAllToCloud();
+                        showStickerToast("☁️ Local data backed up to cloud.");
+                    } else {
+                        showStickerToast("☁️ No cloud data found. Your local data will be backed up.");
+                    }
                     return;
                 }
                 const data = doc.data();
-                if (data.timetables) localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
-                if (data.tests) localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
-                if (data.target) localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
+                // Only overwrite if cloud has actual data (non-empty arrays)
+                if (data.timetables && data.timetables.length > 0) {
+                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
+                }
+                if (data.tests && data.tests.length > 0) {
+                    localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
+                }
+                if (data.target && Object.keys(data.target).length > 0) {
+                    localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
+                }
                 showStickerToast("☁️ Cloud data loaded! Welcome back.");
                 refreshAllViews();
             } catch (e) {
@@ -1218,7 +1239,7 @@
             renderTable(todayObj, container);
         }
 
-        // Matrix controls
+        // Matrix controls (same as before)
         const headerRow = document.getElementById('matrix-header-row');
         const bodyRows = document.getElementById('matrix-body-rows');
         document.getElementById('add-time-col').addEventListener('click', async () => {
@@ -1496,7 +1517,12 @@
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await auth.signInWithPopup(provider);
                 setUser(result.user);
-                await syncAllToCloud();
+                // sync local data to cloud if any
+                const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0) {
+                    await syncAllToCloud();
+                }
             } catch (e) {
                 console.warn('Google login error:', e);
                 showStickerToast(`⚠️ ${e.message}`);
@@ -1535,7 +1561,12 @@
             try {
                 const result = await auth.signInWithEmailAndPassword(email, password);
                 setUser(result.user);
-                await syncAllToCloud();
+                // sync local data to cloud if any
+                const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0) {
+                    await syncAllToCloud();
+                }
                 emailInput.value = '';
                 passwordInput.value = '';
             } catch (e) {
@@ -1559,7 +1590,12 @@
             try {
                 const result = await auth.createUserWithEmailAndPassword(email, password);
                 setUser(result.user);
-                await syncAllToCloud();
+                // sync any existing local data (if any)
+                const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0) {
+                    await syncAllToCloud();
+                }
                 emailInput.value = '';
                 passwordInput.value = '';
                 showStickerToast('✅ Account created and signed in!');
