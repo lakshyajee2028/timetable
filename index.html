@@ -2036,7 +2036,6 @@
 
                 console.log('⬆️ Push successful.');
                 updateCloudStatus('online');
-                // Silent push — no toast
                 return true;
             } catch (e) {
                 console.warn('Push error:', e);
@@ -2116,7 +2115,6 @@
                 }
 
                 updateCloudStatus('online');
-                // Silent pull — no toast
                 return true;
             } catch (e) {
                 console.warn('Pull error:', e);
@@ -2155,7 +2153,6 @@
             const pushed = await syncAllToCloud();
             if (pushed) {
                 refreshAllViews();
-                // Silent full sync — no toast
                 return true;
             }
             return true;
@@ -2406,9 +2403,7 @@
                         await new Promise(r => setTimeout(r, 1000));
                     }
                 }
-                if (success) {
-                    // Silent success — no toast for cloud sync
-                } else {
+                if (!success) {
                     showStickerToast("⚠️ Saved locally but cloud push failed. Use 'Push to Cloud' button.");
                 }
             } else {
@@ -2878,9 +2873,18 @@
             }
         });
 
-        // ─── Guest Sign-In ───
+        // ─── Guest Sign-In with fallback to local mode ───
         guestBtn.addEventListener('click', async () => {
-            if (!isFirebaseReady) { showStickerToast('⚠️ Firebase not ready.'); return; }
+            // If Firebase is not ready, go directly to local mode
+            if (!isFirebaseReady) {
+                loginOverlay.classList.add('hidden');
+                showStickerToast("📁 Local mode active.");
+                appTitle.innerText = '📁 LOCAL MODE';
+                currentUser = { isAnonymous: true, uid: 'local' };
+                refreshAllViews();
+                updateCloudStatus('offline');
+                return;
+            }
             loginLoader.classList.add('show');
             guestBtn.disabled = true;
             try {
@@ -2889,7 +2893,17 @@
                 showStickerToast('👤 Guest mode active. Data stored locally.');
             } catch (e) {
                 console.warn('Guest login error:', e);
-                showStickerToast(`⚠️ ${e.message}`);
+                // If anonymous auth is disabled, fallback to local mode
+                if (e.code === 'auth/admin-restricted-operation') {
+                    loginOverlay.classList.add('hidden');
+                    showStickerToast("📁 Local mode active (anonymous auth disabled).");
+                    appTitle.innerText = '📁 LOCAL MODE';
+                    currentUser = { isAnonymous: true, uid: 'local' };
+                    refreshAllViews();
+                    updateCloudStatus('offline');
+                } else {
+                    showStickerToast(`⚠️ ${e.message}`);
+                }
             } finally {
                 loginLoader.classList.remove('show');
                 guestBtn.disabled = false;
