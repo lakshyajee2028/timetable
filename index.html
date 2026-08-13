@@ -1344,10 +1344,11 @@
             background: rgba(230, 57, 70, 0.1);
             opacity: 1;
         }
+        /* Add task row always at top */
         .task-add-row {
             display: flex;
             gap: 5px;
-            margin-top: 2px;
+            margin-bottom: 8px;
         }
         .task-add-row input {
             flex: 1;
@@ -2559,13 +2560,34 @@
             localStorage.setItem(TASKS_KEY, JSON.stringify(all));
         }
 
+        // Helper to check if all tasks are completed and show celebration
+        function checkAndCelebrateAllDone(dateStr) {
+            const tasks = getTasksForDate(dateStr);
+            if (tasks.length === 0) return;
+            const allDone = tasks.every(t => t.completed);
+            if (allDone) {
+                // Show a celebratory toast with a special message
+                showStickerToast("🎉 Yay! All tasks complete! 🎉", "🎉");
+                // Also play a subtle animation? Not needed.
+            }
+        }
+
         function renderTodayTasks() {
             const container = document.getElementById('today-tasks-container');
             const tasks = getTasksForDate(todayStr);
 
             let html = '';
+
+            // Always show the add row at the top
+            html += `
+                    <div class="task-add-row">
+                        <input type="text" id="task-input-field" placeholder="Add a task..." maxlength="200" />
+                        <button class="btn primary" id="task-add-btn"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                `;
+
             if (tasks.length === 0) {
-                html = `<div class="no-tasks-msg">No tasks for today. Add one below.</div>`;
+                html += `<div class="no-tasks-msg">No tasks for today. Add one above.</div>`;
             } else {
                 const completed = tasks.filter(t => t.completed).length;
                 const total = tasks.length;
@@ -2594,12 +2616,6 @@
                 html += `</ul>`;
             }
 
-            html += `
-                    <div class="task-add-row">
-                        <input type="text" id="task-input-field" placeholder="Add a task..." maxlength="200" />
-                        <button class="btn primary" id="task-add-btn"><i class="fas fa-plus"></i> Add</button>
-                    </div>
-                `;
             container.innerHTML = html;
 
             // Event listeners
@@ -2631,6 +2647,8 @@
                         saveTasksForDate(todayStr, tasksList);
                         renderTodayTasks();
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                        // Check if all tasks are now completed
+                        checkAndCelebrateAllDone(todayStr);
                     }
                 });
             });
@@ -2645,6 +2663,8 @@
                         renderTodayTasks();
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
                         showStickerToast('🗑️ Task deleted.');
+                        // After deletion, check if all remaining are completed (could be all completed)
+                        checkAndCelebrateAllDone(todayStr);
                     }
                 });
             });
