@@ -75,16 +75,56 @@
             opacity: 0.35;
             animation: floatAnim 9s ease-in-out infinite alternate;
         }
-        .floating-item:nth-child(1) { top: 8%; left: 6%; animation-delay: 0s; font-size: 2.4rem; }
-        .floating-item:nth-child(2) { top: 15%; right: 8%; animation-delay: 1.2s; font-size: 2.2rem; }
-        .floating-item:nth-child(3) { top: 40%; left: 4%; animation-delay: 2.5s; font-size: 2.5rem; }
-        .floating-item:nth-child(4) { top: 55%; right: 5%; animation-delay: 1.8s; font-size: 2.1rem; }
-        .floating-item:nth-child(5) { bottom: 12%; left: 10%; animation-delay: 3.2s; font-size: 2.6rem; }
-        .floating-item:nth-child(6) { bottom: 18%; right: 12%; animation-delay: 2.1s; font-size: 2.3rem; }
-        .floating-item:nth-child(7) { top: 28%; left: 45%; animation-delay: 4s; font-size: 1.8rem; opacity: 0.25; }
+        .floating-item:nth-child(1) {
+            top: 8%;
+            left: 6%;
+            animation-delay: 0s;
+            font-size: 2.4rem;
+        }
+        .floating-item:nth-child(2) {
+            top: 15%;
+            right: 8%;
+            animation-delay: 1.2s;
+            font-size: 2.2rem;
+        }
+        .floating-item:nth-child(3) {
+            top: 40%;
+            left: 4%;
+            animation-delay: 2.5s;
+            font-size: 2.5rem;
+        }
+        .floating-item:nth-child(4) {
+            top: 55%;
+            right: 5%;
+            animation-delay: 1.8s;
+            font-size: 2.1rem;
+        }
+        .floating-item:nth-child(5) {
+            bottom: 12%;
+            left: 10%;
+            animation-delay: 3.2s;
+            font-size: 2.6rem;
+        }
+        .floating-item:nth-child(6) {
+            bottom: 18%;
+            right: 12%;
+            animation-delay: 2.1s;
+            font-size: 2.3rem;
+        }
+        .floating-item:nth-child(7) {
+            top: 28%;
+            left: 45%;
+            animation-delay: 4s;
+            font-size: 1.8rem;
+            opacity: 0.25;
+        }
         @keyframes floatAnim {
-            0% { transform: translateY(0px) rotate(0deg) scale(1); }
-            100% { transform: translateY(-20px) rotate(12deg) scale(1.08); }
+            0% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+            }
+            100% {
+                transform: translateY(-20px) rotate(12deg) scale(1.08);
+            }
         }
         .app-container {
             width: 100%;
@@ -120,9 +160,22 @@
             pointer-events: none;
             transform: scale(0.95);
         }
-        #login-overlay .login-icon { font-size: 3rem; color: var(--primary); margin-bottom: 6px; }
-        #login-overlay h2 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; margin-bottom: 2px; }
-        #login-overlay p { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 12px; max-width: 300px; }
+        #login-overlay .login-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        #login-overlay h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 2px;
+        }
+        #login-overlay p {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+            max-width: 300px;
+        }
         .login-methods {
             display: flex;
             flex-direction: column;
@@ -163,8 +216,14 @@
             transition: 0.2s;
             width: 100%;
         }
-        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); }
-        .btn-google i { font-size: 1.1rem; color: #ea4335; }
+        .btn-google:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+        .btn-google i {
+            font-size: 1.1rem;
+            color: #ea4335;
+        }
         .btn-guest {
             background: var(--bg-base);
             border: 2px solid var(--border);
@@ -181,7 +240,10 @@
             transition: 0.2s;
             width: 100%;
         }
-        .btn-guest:hover { border-color: var(--primary); background: var(--bg-card); }
+        .btn-guest:hover {
+            border-color: var(--primary);
+            background: var(--bg-card);
+        }
         .input-group {
             display: flex;
             flex-direction: column;
@@ -198,13 +260,17 @@
             font-size: 0.85rem;
             outline: none;
         }
-        .input-group input:focus { border-color: var(--primary); }
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
         .email-actions {
             display: flex;
             gap: 5px;
             margin-top: 2px;
         }
-        .email-actions .btn-action { flex: 1; }
+        .email-actions .btn-action {
+            flex: 1;
+        }
         .btn-action {
             padding: 8px 14px;
             border-radius: var(--radius-sm);
@@ -217,10 +283,19 @@
             white-space: nowrap;
             font-size: 0.8rem;
         }
-        .btn-action:hover { opacity: 0.85; }
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-action.primary { background: var(--primary); }
-        .btn-action.danger { background: var(--accent); }
+        .btn-action:hover {
+            opacity: 0.85;
+        }
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-action.primary {
+            background: var(--primary);
+        }
+        .btn-action.danger {
+            background: var(--accent);
+        }
         .forgot-link {
             font-size: 0.65rem;
             color: var(--primary);
@@ -228,7 +303,9 @@
             text-align: right;
             margin-top: 1px;
         }
-        .forgot-link:hover { text-decoration: underline; }
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
         .login-loader {
             margin-top: 8px;
             font-size: 0.75rem;
@@ -238,9 +315,17 @@
             gap: 5px;
             justify-content: center;
         }
-        .login-loader.show { display: flex; }
-        .login-loader i { animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .login-loader.show {
+            display: flex;
+        }
+        .login-loader i {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
         .guest-badge {
             font-size: 0.55rem;
             background: var(--accent);
@@ -269,8 +354,13 @@
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-width: 90%;
         }
-        #sticker-toast.show { transform: translateX(-50%) translateY(0); }
-        #sticker-toast i { color: var(--accent); font-size: 0.9rem; }
+        #sticker-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        #sticker-toast i {
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
         .modal-overlay {
             position: absolute;
             inset: 0;
@@ -284,7 +374,10 @@
             pointer-events: none;
             transition: opacity 0.25s ease;
         }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
         .modal-box {
             background: var(--bg-card);
             border: 3px solid var(--primary);
@@ -297,7 +390,9 @@
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
         }
-        .modal-overlay.active .modal-box { transform: scale(1); }
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
         .modal-box h3 {
             font-family: 'Fredoka', sans-serif;
             font-size: 1.2rem;
@@ -321,8 +416,14 @@
             outline: none;
         }
         .modal-box input:focus,
-        .modal-box select:focus { border-color: var(--primary); }
-        .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+        .modal-box select:focus {
+            border-color: var(--primary);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
         header {
             background: var(--bg-card);
             padding: 8px 14px;
@@ -333,7 +434,13 @@
             flex-shrink: 0;
             gap: 6px;
         }
-        .logo-area { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
         .mascot-avatar {
             width: 32px;
             height: 32px;
@@ -348,7 +455,15 @@
             flex-shrink: 0;
             animation: bounceMascot 2s ease-in-out infinite;
         }
-        @keyframes bounceMascot { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        @keyframes bounceMascot {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-4px);
+            }
+        }
         header h1 {
             font-family: 'Fredoka', sans-serif;
             font-size: 0.95rem;
@@ -359,7 +474,12 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .header-controls { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
         .icon-btn {
             background: var(--bg-base);
             border: 2px solid var(--border);
@@ -374,7 +494,11 @@
             font-size: 0.75rem;
             flex-shrink: 0;
         }
-        .icon-btn:hover { border-color: var(--primary); color: var(--primary); transform: scale(1.05); }
+        .icon-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: scale(1.05);
+        }
         .user-badge {
             display: flex;
             align-items: center;
@@ -387,10 +511,12 @@
             position: relative;
             flex-shrink: 0;
         }
-        .user-badge img { width: 24px;
+        .user-badge img {
+            width: 24px;
             height: 24px;
             border-radius: 50%;
-            border: 2px solid var(--primary); }
+            border: 2px solid var(--primary);
+        }
         .user-badge .user-name {
             font-size: 0.65rem;
             font-weight: 600;
@@ -400,20 +526,36 @@
             white-space: nowrap;
             color: var(--text-main);
         }
-        .user-badge .logout-tip { font-size: 0.5rem;
+        .user-badge .logout-tip {
+            font-size: 0.5rem;
             color: var(--text-muted);
-            opacity: 0.6; }
-        .user-badge .logout-tip i { font-size: 0.5rem; }
-        main { flex: 1;
+            opacity: 0.6;
+        }
+        .user-badge .logout-tip i {
+            font-size: 0.5rem;
+        }
+        main {
+            flex: 1;
             overflow-y: auto;
-            padding: 10px 12px 90px 12px; }
-        .view-section { display: none;
-            animation: fadeInView 0.3s ease-in-out; }
-        .view-section.active { display: block; }
-        @keyframes fadeInView { from { opacity: 0;
-                transform: scale(0.98); }
-            to { opacity: 1;
-                transform: scale(1); } }
+            padding: 10px 12px 90px 12px;
+        }
+        .view-section {
+            display: none;
+            animation: fadeInView 0.3s ease-in-out;
+        }
+        .view-section.active {
+            display: block;
+        }
+        @keyframes fadeInView {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
         h2 {
             font-family: 'Fredoka', sans-serif;
             font-size: 1rem;
@@ -494,7 +636,9 @@
             font-size: 0.8rem;
             outline: none;
         }
-        .search-box input:focus { border-color: var(--primary); }
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
         .table-container {
             overflow-x: auto;
             border-radius: var(--radius-md);
@@ -566,9 +710,13 @@
             box-shadow: 0 3px 0 var(--border);
             transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
-        .btn:hover { transform: translateY(-2px); }
-        .btn:active { transform: translateY(2px);
-            box-shadow: 0 1px 0 var(--border); }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--border);
+        }
         .btn.primary {
             background: var(--primary);
             color: white;
@@ -630,7 +778,9 @@
             background-color: var(--bg-card);
             border: 1px solid var(--border);
         }
-        .calendar-date:hover { border-color: var(--primary); }
+        .calendar-date:hover {
+            border-color: var(--primary);
+        }
         .calendar-date.selected {
             background-color: var(--primary) !important;
             color: white !important;
@@ -729,7 +879,14 @@
             animation: floatBoy 2.5s ease-in-out infinite alternate;
             flex-shrink: 0;
         }
-        @keyframes floatBoy { 0% { transform: translateY(0); } 100% { transform: translateY(-4px); } }
+        @keyframes floatBoy {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-4px);
+            }
+        }
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -764,7 +921,9 @@
             font-size: 0.5rem;
             padding: 3px 0;
         }
-        .nav-item i { font-size: 1rem; }
+        .nav-item i {
+            font-size: 1rem;
+        }
         .nav-item.active {
             color: var(--primary);
             transform: scale(1.05);
@@ -796,18 +955,38 @@
             display: inline-block;
             animation: pulseHeart 1.6s ease-in-out infinite;
         }
-        @keyframes pulseHeart { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        @keyframes pulseHeart {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
         @media (max-width: 480px) {
-            .app-container { height: 100vh;
+            .app-container {
+                height: 100vh;
                 max-height: 100vh;
                 border-radius: 0;
-                border: none; }
-            main { padding: 8px 8px 80px 8px; }
-            .home-widgets-grid { gap: 5px; }
-            .widget-value { font-size: 0.75rem; }
-            header h1 { font-size: 0.8rem; }
-            .user-badge .user-name { max-width: 45px;
-                font-size: 0.55rem; }
+                border: none;
+            }
+            main {
+                padding: 8px 8px 80px 8px;
+            }
+            .home-widgets-grid {
+                gap: 5px;
+            }
+            .widget-value {
+                font-size: 0.75rem;
+            }
+            header h1 {
+                font-size: 0.8rem;
+            }
+            .user-badge .user-name {
+                max-width: 45px;
+                font-size: 0.55rem;
+            }
         }
         .sync-btn {
             position: fixed;
@@ -828,9 +1007,43 @@
             justify-content: center;
             transition: 0.2s;
         }
-        .sync-btn:hover { transform: scale(1.1); }
-        .sync-btn:active { transform: scale(0.9); }
-        .sync-btn i { color: white; }
+        .sync-btn:hover {
+            transform: scale(1.1);
+        }
+        .sync-btn:active {
+            transform: scale(0.9);
+        }
+        .sync-btn i {
+            color: white;
+        }
+        .cloud-status {
+            position: absolute;
+            bottom: 100px;
+            left: 12px;
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 2px solid var(--border);
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .cloud-status i {
+            font-size: 0.6rem;
+        }
+        .cloud-status.online {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        .cloud-status.offline {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -992,6 +1205,9 @@
         <button class="sync-btn" id="force-sync-btn" title="Force Sync Data">
             <i class="fas fa-cloud-upload-alt"></i>
         </button>
+        <div class="cloud-status" id="cloud-status">
+            <i class="fas fa-circle"></i> <span id="cloud-status-text">Checking...</span>
+        </div>
 
         <div class="assistant-widget" id="assistant-widget">
             <div class="assistant-speech-wrap" id="assistant-speech-wrap">
@@ -1031,6 +1247,7 @@
         let firebaseApp, auth, db;
         let currentUser = null;
         let isFirebaseReady = false;
+        let syncInProgress = false;
 
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -1059,15 +1276,17 @@
         const userTypeBadge = document.getElementById('user-type-badge');
         const appTitle = document.getElementById('app-title');
         const forceSyncBtn = document.getElementById('force-sync-btn');
+        const cloudStatus = document.getElementById('cloud-status');
+        const cloudStatusText = document.getElementById('cloud-status-text');
 
         const toast = document.getElementById('sticker-toast');
         const toastText = document.getElementById('toast-text');
 
-        function showStickerToast(msg) {
+        function showStickerToast(msg, icon = '✨') {
             toastText.innerText = msg;
             toast.classList.add('show');
             clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => toast.classList.remove('show'), 3500);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 4000);
         }
 
         // ─── Theme ───
@@ -1170,7 +1389,7 @@
             showStickerToast("Assistant hidden. Tap the boy to reopen.");
         });
 
-        // ─── Storage keys ───
+        // ─── Storage Keys ───
         const TIMETABLE_KEY = 'doodleTimetableData';
         const TESTS_KEY = 'doodleTestsData';
         const TARGET_KEY = 'doodleTargetExamData';
@@ -1187,7 +1406,7 @@
         yesterday.setDate(yesterday.getDate() - 1);
         document.getElementById('history-date-input').value = getLocalDate(yesterday);
 
-        // ─── Festivals DB ───
+        // ─── Festivals DB (unchanged) ───
         const globalFestivals = {
             "2024-01-01": "New Year's Day 🎉",
             "2024-01-14": "Makar Sankranti 🌾",
@@ -1196,7 +1415,7 @@
             "2024-03-25": "Holi 🎨",
             "2024-04-11": "Eid-ul-Fitr 🌙",
             "2024-04-17": "Rama Navami 🏹",
-            "2024-06-17": "Eid-ul-Adha 🕌",
+            "2024-06-17": "Eid-ul-Adha 🕋",
             "2024-08-15": "Independence Day 🇮🇳",
             "2024-08-19": "Raksha Bandhan 🎁",
             "2024-08-26": "Janmashtami 🪈",
@@ -1213,7 +1432,7 @@
             "2025-03-14": "Holi 🎨",
             "2025-03-31": "Eid-ul-Fitr 🌙",
             "2025-04-06": "Rama Navami 🏹",
-            "2025-06-07": "Eid-ul-Adha 🕌",
+            "2025-06-07": "Eid-ul-Adha 🕋",
             "2025-08-15": "Independence Day 🇮🇳",
             "2025-08-09": "Raksha Bandhan 🎁",
             "2025-08-16": "Janmashtami 🪈",
@@ -1230,7 +1449,7 @@
             "2026-03-03": "Holi 🎨",
             "2026-03-20": "Eid-ul-Fitr 🌙",
             "2026-03-27": "Rama Navami 🏹",
-            "2026-05-28": "Eid-ul-Adha 🕌",
+            "2026-05-28": "Eid-ul-Adha 🕋",
             "2026-08-15": "Independence Day 🇮🇳",
             "2026-08-28": "Raksha Bandhan 🎁",
             "2026-09-04": "Janmashtami 🪈",
@@ -1247,7 +1466,7 @@
             "2027-03-22": "Holi 🎨",
             "2027-03-10": "Eid-ul-Fitr 🌙",
             "2027-04-16": "Rama Navami 🏹",
-            "2027-05-18": "Eid-ul-Adha 🕌",
+            "2027-05-18": "Eid-ul-Adha 🕋",
             "2027-08-15": "Independence Day 🇮🇳",
             "2027-08-17": "Raksha Bandhan 🎁",
             "2027-08-24": "Janmashtami 🪈",
@@ -1265,7 +1484,7 @@
             "2028-03-11": "Holi 🎨",
             "2028-02-28": "Eid-ul-Fitr 🌙",
             "2028-04-04": "Rama Navami 🏹",
-            "2028-05-06": "Eid-ul-Adha 🕌",
+            "2028-05-06": "Eid-ul-Adha 🕋",
             "2028-08-15": "Independence Day 🇮🇳",
             "2028-08-05": "Raksha Bandhan 🎁",
             "2028-08-12": "Janmashtami 🪈",
@@ -1329,11 +1548,11 @@
         document.getElementById('target-widget-box').addEventListener('click', async () => {
             const cur = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028", date: "2028-01-21T09:00:00" };
             const html = `
-                <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted)">Event / Target Name:</label>
-                <input type="text" id="modal-target-name" value="${cur.name}">
-                <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted)">Target Date & Time:</label>
-                <input type="datetime-local" id="modal-target-date" value="${cur.date}">
-            `;
+                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted)">Event / Target Name:</label>
+                    <input type="text" id="modal-target-name" value="${cur.name}">
+                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted)">Target Date & Time:</label>
+                    <input type="datetime-local" id="modal-target-date" value="${cur.date}">
+                `;
             const res = await openStickerModal("Set Exam / Target", "fas fa-bullseye", html);
             if (!res) return;
             const nameVal = document.getElementById('modal-target-name').value;
@@ -1346,99 +1565,141 @@
             if (currentUser && !currentUser.isAnonymous) await syncAllToCloud();
         });
 
-        // ─── Cloud Sync Functions ───
+        // ─── Cloud Sync Functions (FIXED) ───
         async function syncAllToCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
                 console.warn('Cannot sync: not logged in or Firebase not ready.');
                 return false;
             }
+            if (syncInProgress) {
+                console.log('Sync already in progress, skipping.');
+                return true;
+            }
+            syncInProgress = true;
             try {
                 const uid = currentUser.uid;
                 const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
                 date: "2028-01-21T09:00:00" };
-                console.log('☁️ Uploading to cloud:', { timetables, tests, target });
-                await db.collection('users').doc(uid).set({ timetables, tests, target,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                console.log('☁️ Uploading to cloud:', { timetables: timetables.length, tests: tests.length, target });
+                await db.collection('users').doc(uid).set({
+                    timetables,
+                    tests,
+                    target,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
                 console.log('☁️ Upload successful.');
+                updateCloudStatus(true);
                 showStickerToast('✅ Data synced to cloud!');
                 return true;
             } catch (e) {
                 console.warn('Sync error:', e);
+                updateCloudStatus(false);
                 showStickerToast(`⚠️ Sync failed: ${e.message}`);
                 return false;
+            } finally {
+                syncInProgress = false;
             }
         }
 
-        // ─── Aggressive load from cloud ───
         async function loadFromCloud() {
-            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) return;
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
+                console.log('Skipping cloud load: not logged in or Firebase not ready.');
+                return false;
+            }
+            if (syncInProgress) {
+                console.log('Sync in progress, waiting...');
+                await new Promise(r => setTimeout(r, 500));
+                return loadFromCloud();
+            }
             try {
                 const docRef = db.collection('users').doc(currentUser.uid);
                 const doc = await docRef.get();
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 const localTarget = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
-                date: "2028-01-21T09:00:00" };
+                    date: "2028-01-21T09:00:00" };
 
                 console.log('📥 Loading cloud data...');
 
                 if (!doc.exists) {
-                    console.log('📭 No cloud document. Uploading local data if any.');
+                    console.log('📭 No cloud document. Creating with local data if any.');
                     if (localTimetables.length > 0 || localTests.length > 0) {
                         await syncAllToCloud();
                         showStickerToast("☁️ Local data backed up to cloud.");
                     } else {
-                        showStickerToast("☁️ No data found. Start adding your timetable!");
+                        // Initialize empty document
+                        await db.collection('users').doc(currentUser.uid).set({
+                            timetables: [],
+                            tests: [],
+                            target: localTarget,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                        showStickerToast("☁️ Cloud ready. Start adding your timetable!");
                     }
-                    return;
+                    return true;
                 }
 
                 const data = doc.data();
-                console.log('📦 Cloud data:', data);
+                console.log('📦 Cloud data:', { timetables: data.timetables?.length || 0, tests: data.tests?.length || 0 });
 
-                // Always prefer cloud data if it has timetables (even empty)
-                if (data.timetables !== undefined) {
-                    if (data.timetables.length > 0) {
+                // --- TIMETABLES: cloud wins, but local never overwritten with empty if cloud is empty and local has data ---
+                if (data.timetables !== undefined && data.timetables !== null) {
+                    if (Array.isArray(data.timetables) && data.timetables.length > 0) {
                         localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
-                        console.log('☁️ Loaded timetables from cloud:', data.timetables);
+                        console.log('☁️ Loaded timetables from cloud:', data.timetables.length);
                     } else {
-                        // Cloud has empty array – if local has data, upload local
+                        // Cloud has empty array — keep local if it has data, otherwise set empty
                         if (localTimetables.length > 0) {
-                            console.log('☁️ Cloud is empty, uploading local timetables.');
+                            console.log('☁️ Cloud is empty, preserving local timetables and uploading.');
                             await syncAllToCloud();
-                            // re-fetch after upload
+                            // Re-fetch to confirm
                             const updatedDoc = await docRef.get();
-                            if (updatedDoc.exists && updatedDoc.data().timetables) {
+                            if (updatedDoc.exists && updatedDoc.data().timetables && updatedDoc.data().timetables.length >
+                                0) {
                                 localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedDoc.data().timetables));
+                            } else {
+                                // If upload failed, keep local
+                                localStorage.setItem(TIMETABLE_KEY, JSON.stringify(localTimetables));
                             }
                         } else {
-                            // Both empty, keep empty
                             localStorage.setItem(TIMETABLE_KEY, JSON.stringify([]));
                         }
                     }
                 } else {
-                    // No timetables field – upload local if any
+                    // No timetables field — upload local if any
                     if (localTimetables.length > 0) {
                         await syncAllToCloud();
                         const updatedDoc = await docRef.get();
                         if (updatedDoc.exists && updatedDoc.data().timetables) {
                             localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedDoc.data().timetables));
+                        } else {
+                            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(localTimetables));
                         }
+                    } else {
+                        // Initialize empty
+                        await db.collection('users').doc(currentUser.uid).set({
+                            timetables: [],
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                        localStorage.setItem(TIMETABLE_KEY, JSON.stringify([]));
                     }
                 }
 
-                // Same for tests
-                if (data.tests !== undefined) {
-                    if (data.tests.length > 0) {
+                // --- TESTS: same logic ---
+                if (data.tests !== undefined && data.tests !== null) {
+                    if (Array.isArray(data.tests) && data.tests.length > 0) {
                         localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
+                        console.log('☁️ Loaded tests from cloud:', data.tests.length);
                     } else {
                         if (localTests.length > 0) {
                             await syncAllToCloud();
                             const updatedDoc = await docRef.get();
-                            if (updatedDoc.exists && updatedDoc.data().tests) {
+                            if (updatedDoc.exists && updatedDoc.data().tests && updatedDoc.data().tests.length > 0) {
                                 localStorage.setItem(TESTS_KEY, JSON.stringify(updatedDoc.data().tests));
+                            } else {
+                                localStorage.setItem(TESTS_KEY, JSON.stringify(localTests));
                             }
                         } else {
                             localStorage.setItem(TESTS_KEY, JSON.stringify([]));
@@ -1450,28 +1711,47 @@
                         const updatedDoc = await docRef.get();
                         if (updatedDoc.exists && updatedDoc.data().tests) {
                             localStorage.setItem(TESTS_KEY, JSON.stringify(updatedDoc.data().tests));
+                        } else {
+                            localStorage.setItem(TESTS_KEY, JSON.stringify(localTests));
                         }
+                    } else {
+                        await db.collection('users').doc(currentUser.uid).set({
+                            tests: [],
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                        localStorage.setItem(TESTS_KEY, JSON.stringify([]));
                     }
                 }
 
-                // Target
+                // --- TARGET ---
                 if (data.target) {
                     localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
                 } else if (localTarget) {
                     await syncAllToCloud();
                 }
 
+                updateCloudStatus(true);
                 showStickerToast("☁️ Cloud sync complete.");
-                refreshAllViews();
                 return true;
             } catch (e) {
                 console.warn('Load from cloud error:', e);
+                updateCloudStatus(false);
                 showStickerToast("⚠️ Could not load cloud data. Using local data.");
                 return false;
             }
         }
 
-        // ─── Force Sync Button ───
+        function updateCloudStatus(online) {
+            if (online) {
+                cloudStatus.className = 'cloud-status online';
+                cloudStatusText.innerText = 'Synced';
+            } else {
+                cloudStatus.className = 'cloud-status offline';
+                cloudStatusText.innerText = 'Offline';
+            }
+        }
+
+        // ─── Force Sync ───
         forceSyncBtn.addEventListener('click', async () => {
             if (!currentUser || currentUser.isAnonymous) {
                 showStickerToast("⚠️ Please login with Google or Email to sync.");
@@ -1481,6 +1761,7 @@
             await syncAllToCloud();
             await loadFromCloud();
             refreshAllViews();
+            showStickerToast("✅ Sync completed!");
         });
 
         function refreshAllViews() {
@@ -1533,9 +1814,10 @@
             renderTable(todayObj, container);
         }
 
-        // Matrix controls (same as before)
+        // Matrix controls
         const headerRow = document.getElementById('matrix-header-row');
         const bodyRows = document.getElementById('matrix-body-rows');
+
         document.getElementById('add-time-col').addEventListener('click', async () => {
             const total = headerRow.cells.length;
             let opts = `<select id="modal-select-pos">`;
@@ -1560,6 +1842,7 @@
             });
             showStickerToast("✨ Time column added!");
         });
+
         document.getElementById('remove-time-col').addEventListener('click', async () => {
             const total = headerRow.cells.length - 1;
             if (total <= 1) { showStickerToast("⚠️ Minimum 1 time slot!"); return; }
@@ -1576,6 +1859,7 @@
             Array.from(bodyRows.rows).forEach(row => row.deleteCell(idx));
             showStickerToast("🗑️ Column removed.");
         });
+
         document.getElementById('add-subject-row').addEventListener('click', async () => {
             const total = bodyRows.rows.length;
             let opts = `<select id="modal-select-pos">`;
@@ -1599,6 +1883,7 @@
             else bodyRows.insertBefore(row, bodyRows.rows[idx]);
             showStickerToast("✨ Subject row added!");
         });
+
         document.getElementById('remove-subject-row').addEventListener('click', async () => {
             const total = bodyRows.rows.length;
             if (total <= 1) { showStickerToast("⚠️ Minimum 1 subject row!"); return; }
@@ -1614,22 +1899,37 @@
             bodyRows.deleteRow(idx);
             showStickerToast("🗑️ Subject row removed.");
         });
+
+        // ─── SAVE TIMETABLE (FIXED) ───
         document.getElementById('save-timetable-btn').addEventListener('click', async () => {
             const headers = Array.from(headerRow.cells).map(th => th.querySelector('input')?.value || th.innerText);
             const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector(
                 'input')?.value || cell.innerText));
             const payload = { date: todayStr, headers, rows };
             let allData = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            // Remove any existing entry for today
             allData = allData.filter(d => d.date !== todayStr);
             allData.push(payload);
             localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
             showStickerToast("🎉 Timetable saved locally!");
             loadTodayView();
-            // Sync to cloud if logged in
+
+            // Sync to cloud if logged in (with retry)
             if (currentUser && !currentUser.isAnonymous) {
-                const success = await syncAllToCloud();
+                let success = false;
+                let attempts = 0;
+                while (!success && attempts < 3) {
+                    attempts++;
+                    success = await syncAllToCloud();
+                    if (!success && attempts < 3) {
+                        console.log(`Retry sync attempt ${attempts+1}...`);
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                }
                 if (!success) {
                     showStickerToast("⚠️ Timetable saved locally but cloud sync failed. Tap cloud button to retry.");
+                } else {
+                    showStickerToast("✅ Timetable saved & synced to cloud!");
                 }
             } else {
                 showStickerToast("💾 Timetable saved locally (guest mode).");
@@ -1670,6 +1970,7 @@
             }
             inspectDate(todayStr);
         }
+
         document.getElementById('prev-month').addEventListener('click', () => { currMonth--;
             if (currMonth < 0) { currMonth = 11;
                 currYear--; }
@@ -1689,13 +1990,13 @@
             let html = `<h3 style="font-size:0.85rem;">📅 ${dateStr}</h3>`;
             if (festMatch) {
                 html += `<div class="card" style="border-color:var(--festival-color);background:rgba(114,9,183,0.06);">
-                        <p style="color:var(--festival-color);"><b>🎉 Festival:</b> ${festMatch}</p></div>`;
+                            <p style="color:var(--festival-color);"><b>🎉 Festival:</b> ${festMatch}</p></div>`;
             }
             if (testMatch) {
                 html += `<div class="card" style="border-color:var(--accent);background:rgba(230,57,70,0.06);">
-                        <p style="color:var(--accent);"><b>📝 Event:</b> ${testMatch.subject}</p>
-                        <button class="btn danger" style="margin-top:4px;padding:3px 8px;font-size:0.65rem;" onclick="removeTest('${dateStr}')">Remove</button>
-                    </div>`;
+                            <p style="color:var(--accent);"><b>📝 Event:</b> ${testMatch.subject}</p>
+                            <button class="btn danger" style="margin-top:4px;padding:3px 8px;font-size:0.65rem;" onclick="removeTest('${dateStr}')">Remove</button>
+                        </div>`;
             } else {
                 html +=
                     `<button class="btn primary" style="width:100%;margin-bottom:6px;padding:5px;" onclick="promptAddTest('${dateStr}')"><i class="fas fa-plus"></i> Add Event</button>`;
@@ -1754,7 +2055,6 @@
                 appTitle.innerText = user.isAnonymous ? '📁 GUEST MODE' : `📚 ${name.split(' ')[0] || 'Student'}'s T-T`;
                 showStickerToast(user.isAnonymous ? '👤 Logged in as Guest' : `👋 Welcome ${name}!`);
                 if (!user.isAnonymous) {
-                    // Load cloud data and then refresh
                     loadFromCloud().then(() => {
                         refreshAllViews();
                     });
@@ -1777,15 +2077,15 @@
             overlay.style.inset = '0';
             overlay.style.zIndex = '3000';
             overlay.innerHTML = `
-                <div class="modal-box">
-                    <h3><i class="fas fa-sign-out-alt"></i> Confirm Logout</h3>
-                    <p style="margin-bottom:16px;">Are you sure you want to sign out?</p>
-                    <div class="modal-actions">
-                        <button class="btn" id="temp-logout-cancel">Cancel</button>
-                        <button class="btn danger" id="temp-logout-confirm">Logout</button>
+                    <div class="modal-box">
+                        <h3><i class="fas fa-sign-out-alt"></i> Confirm Logout</h3>
+                        <p style="margin-bottom:16px;">Are you sure you want to sign out?</p>
+                        <div class="modal-actions">
+                            <button class="btn" id="temp-logout-cancel">Cancel</button>
+                            <button class="btn danger" id="temp-logout-confirm">Logout</button>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
             document.getElementById('appContainer').appendChild(overlay);
 
             const result = await new Promise((resolve) => {
@@ -1821,7 +2121,7 @@
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await auth.signInWithPopup(provider);
                 setUser(result.user);
-                // After login, sync local data to cloud if any
+                // After login, sync local data to cloud
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 if (localTimetables.length > 0 || localTests.length > 0) {
