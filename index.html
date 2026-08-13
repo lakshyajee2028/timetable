@@ -1637,7 +1637,27 @@
             if (currentUser && !currentUser.isAnonymous) await syncAllToCloud();
         });
 
-        // ─── CLOUD SYNC — STRICTLY FIXED ───
+        // ─── FIX: Firestore nested arrays conversion ───
+        function convertRowsForFirestore(timetables) {
+            // timetables: [{ date, headers, rows }] where rows is array of arrays
+            // Convert rows to [{ cells: [...] }] to avoid nested arrays
+            return timetables.map(entry => ({
+                date: entry.date,
+                headers: entry.headers,
+                rows: entry.rows.map(row => ({ cells: row }))
+            }));
+        }
+
+        function convertRowsFromFirestore(timetables) {
+            // Convert back from [{ cells: [...] }] to array of arrays
+            return timetables.map(entry => ({
+                date: entry.date,
+                headers: entry.headers,
+                rows: entry.rows.map(rowObj => rowObj.cells)
+            }));
+        }
+
+        // ─── CLOUD SYNC FUNCTIONS ───
         function updateCloudStatus(state) {
             cloudStatus.className = 'cloud-status';
             if (state === 'online') {
@@ -1654,7 +1674,6 @@
             }
         }
 
-        // PUSH: Upload local data to cloud (overwrites cloud with local)
         async function syncAllToCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
                 console.warn('Cannot push: not logged in or Firebase not ready.');
@@ -1668,15 +1687,18 @@
             updateCloudStatus('syncing');
             try {
                 const uid = currentUser.uid;
-                const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                const rawTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
                     date: "2028-01-21T09:00:00" };
 
-                console.log('⬆️ PUSH to cloud:', { timetables: timetables.length, tests: tests.length });
+                // Convert timetables to Firestore-safe format
+                const timetablesForFirestore = convertRowsForFirestore(rawTimetables);
+
+                console.log('⬆️ PUSH to cloud:', { timetables: timetablesForFirestore.length, tests: tests.length });
 
                 await db.collection('users').doc(uid).set({
-                    timetables,
+                    timetables: timetablesForFirestore,
                     tests,
                     target,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1696,7 +1718,6 @@
             }
         }
 
-        // PULL: Fetch cloud data and OVERWRITE local data with cloud data
         async function pullFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
                 console.warn('Cannot pull: not logged in or Firebase not ready.');
@@ -1716,7 +1737,8 @@
 
                 if (!doc.exists) {
                     console.log('📭 No cloud document found.');
-                    updateCloudStatus('offline');
+                    // Still consider it online (connection works)
+                    updateCloudStatus('online');
                     showStickerToast('📭 No data in cloud. Push your local data first.');
                     syncInProgress = false;
                     return false;
@@ -1726,12 +1748,12 @@
                 console.log('⬇️ PULL from cloud:', { timetables: data.timetables?.length || 0, tests: data.tests?.length ||
                         0 });
 
-                // OVERWRITE local with cloud data
+                // Convert back from Firestore format
                 if (data.timetables !== undefined && data.timetables !== null) {
-                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables || []));
-                    console.log('⬇️ Loaded timetables from cloud:', data.timetables?.length || 0);
+                    const converted = convertRowsFromFirestore(data.timetables);
+                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(converted));
+                    console.log('⬇️ Loaded timetables from cloud:', converted.length);
                 } else {
-                    // If cloud has no timetables field, set empty
                     localStorage.setItem(TIMETABLE_KEY, JSON.stringify([]));
                     // Also push empty to cloud to keep it consistent
                     await db.collection('users').doc(currentUser.uid).set({
@@ -1768,7 +1790,6 @@
             }
         }
 
-        // Full sync: pull then push (merge strategy)
         async function fullSync() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
                 showStickerToast('⚠️ Please login with Google or Email to sync.');
@@ -1781,10 +1802,8 @@
             showStickerToast('🔄 Syncing...', '🔄');
             updateCloudStatus('syncing');
 
-            // First pull from cloud to get latest
             const pulled = await pullFromCloud();
             if (!pulled) {
-                // If pull failed, try to push local data
                 const pushed = await syncAllToCloud();
                 if (pushed) {
                     refreshAllViews();
@@ -1795,10 +1814,7 @@
                 return false;
             }
 
-            // After pull, refresh UI
             refreshAllViews();
-
-            // Then push any local changes (in case there are updates)
             const pushed = await syncAllToCloud();
             if (pushed) {
                 refreshAllViews();
@@ -1855,7 +1871,6 @@
             updateLiveWidgets();
             const histDate = document.getElementById('history-date-input').value;
             if (histDate) loadHistory(histDate);
-            // Update the studio matrix to reflect current data if it's today's data
             loadMatrixFromToday();
         }
 
@@ -1910,12 +1925,10 @@
             const headerRow = document.getElementById('matrix-header-row');
             const bodyRows = document.getElementById('matrix-body-rows');
 
-            // Clear existing rows (keep header)
             while (bodyRows.rows.length > 0) {
                 bodyRows.deleteRow(0);
             }
 
-            // Set headers
             headerRow.innerHTML = '';
             todayObj.headers.forEach(h => {
                 const th = document.createElement('th');
@@ -1923,7 +1936,6 @@
                 headerRow.appendChild(th);
             });
 
-            // Set rows
             todayObj.rows.forEach(rowData => {
                 const tr = document.createElement('tr');
                 rowData.forEach(cellData => {
@@ -2034,7 +2046,6 @@
             showStickerToast("🎉 Timetable saved locally!");
             loadTodayView();
 
-            // Push to cloud if logged in
             if (currentUser && !currentUser.isAnonymous) {
                 let success = false;
                 let attempts = 0;
@@ -2245,7 +2256,6 @@
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await auth.signInWithPopup(provider);
                 setUser(result.user);
-                // After login, push local data if any
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 if (localTimetables.length > 0 || localTests.length > 0) {
@@ -2391,7 +2401,7 @@
         window.pullFromCloud = pullFromCloud;
         window.syncAllToCloud = syncAllToCloud;
 
-        console.log('📚 Study Time-Table loaded.');
+        console.log('📚 Study Time-Table loaded (Firestore nested-array fix applied).');
         console.log('📌 Commands: pullFromCloud() | syncAllToCloud() | fullSync() | refreshViews()');
     </script>
 </body>
