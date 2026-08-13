@@ -729,6 +729,12 @@
             border-color: #ee5253;
             box-shadow: 0 3px 0 #d63031;
         }
+        .btn.success {
+            background: var(--success);
+            color: white;
+            border-color: #1a9e8e;
+            box-shadow: 0 3px 0 #1a9e8e;
+        }
         .calendar-card {
             background: var(--bg-base);
             border: 2px solid var(--border);
@@ -1030,8 +1036,9 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            opacity: 0.7;
+            opacity: 0.85;
             pointer-events: none;
+            transition: all 0.3s ease;
         }
         .cloud-status i {
             font-size: 0.6rem;
@@ -1043,6 +1050,59 @@
         .cloud-status.offline {
             border-color: var(--accent);
             color: var(--accent);
+        }
+        .cloud-status.syncing {
+            border-color: var(--primary);
+            color: var(--primary);
+            animation: pulseStatus 0.8s ease-in-out infinite alternate;
+        }
+        @keyframes pulseStatus {
+            0% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        .pull-btn {
+            position: fixed;
+            bottom: 160px;
+            right: 12px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .pull-btn:hover {
+            transform: scale(1.08);
+        }
+        .pull-btn:active {
+            transform: scale(0.92);
+        }
+        .pull-btn i {
+            color: white;
+        }
+        .sync-actions {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .sync-actions .btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 4px 8px;
+            font-size: 0.65rem;
         }
     </style>
 </head>
@@ -1137,6 +1197,10 @@
                         <div class="countdown-sub">Tap to set 🎯</div>
                     </div>
                 </div>
+                <div class="sync-actions">
+                    <button class="btn success" id="pull-cloud-btn" style="flex:1;"><i class="fas fa-cloud-download-alt"></i> Pull from Cloud</button>
+                    <button class="btn primary" id="push-cloud-btn" style="flex:1;"><i class="fas fa-cloud-upload-alt"></i> Push to Cloud</button>
+                </div>
                 <h2 id="today-heading"><i class="fas fa-sun"></i> Today's Schedule</h2>
                 <div id="today-container"></div>
             </div>
@@ -1175,7 +1239,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="btn primary" id="save-timetable-btn" style="width:100%;"><i class="fas fa-cloud-arrow-up"></i> SAVE TIMETABLE</button>
+                <button class="btn primary" id="save-timetable-btn" style="width:100%;"><i class="fas fa-cloud-arrow-up"></i> SAVE & SYNC</button>
             </div>
 
             <div id="view-calendar" class="view-section">
@@ -1202,8 +1266,11 @@
         </main>
 
         <!-- Force Sync Button (Floating) -->
-        <button class="sync-btn" id="force-sync-btn" title="Force Sync Data">
+        <button class="sync-btn" id="force-sync-btn" title="Force Sync Data (Push + Pull)">
             <i class="fas fa-cloud-upload-alt"></i>
+        </button>
+        <button class="pull-btn" id="pull-sync-btn" title="Pull from Cloud">
+            <i class="fas fa-cloud-download-alt"></i>
         </button>
         <div class="cloud-status" id="cloud-status">
             <i class="fas fa-circle"></i> <span id="cloud-status-text">Checking...</span>
@@ -1276,8 +1343,11 @@
         const userTypeBadge = document.getElementById('user-type-badge');
         const appTitle = document.getElementById('app-title');
         const forceSyncBtn = document.getElementById('force-sync-btn');
+        const pullSyncBtn = document.getElementById('pull-sync-btn');
         const cloudStatus = document.getElementById('cloud-status');
         const cloudStatusText = document.getElementById('cloud-status-text');
+        const pullCloudBtn = document.getElementById('pull-cloud-btn');
+        const pushCloudBtn = document.getElementById('push-cloud-btn');
 
         const toast = document.getElementById('sticker-toast');
         const toastText = document.getElementById('toast-text');
@@ -1367,6 +1437,8 @@
             "🎨 Studio lets you customise timetable!",
             "🔐 Your data syncs across devices via Google!",
             "🔄 Tap the cloud button on bottom-right to force sync!",
+            "⬇️ Use 'Pull from Cloud' to get latest data!",
+            "⬆️ Use 'Push to Cloud' to upload your data!",
             "Stay productive! 🚀"
         ];
         let guideIdx = 0;
@@ -1406,7 +1478,7 @@
         yesterday.setDate(yesterday.getDate() - 1);
         document.getElementById('history-date-input').value = getLocalDate(yesterday);
 
-        // ─── Festivals DB (unchanged) ───
+        // ─── Festivals DB ───
         const globalFestivals = {
             "2024-01-01": "New Year's Day 🎉",
             "2024-01-14": "Makar Sankranti 🌾",
@@ -1565,211 +1637,226 @@
             if (currentUser && !currentUser.isAnonymous) await syncAllToCloud();
         });
 
-        // ─── Cloud Sync Functions (FIXED) ───
+        // ─── CLOUD SYNC — STRICTLY FIXED ───
+        function updateCloudStatus(state) {
+            cloudStatus.className = 'cloud-status';
+            if (state === 'online') {
+                cloudStatus.classList.add('online');
+                cloudStatusText.innerText = 'Synced';
+            } else if (state === 'offline') {
+                cloudStatus.classList.add('offline');
+                cloudStatusText.innerText = 'Offline';
+            } else if (state === 'syncing') {
+                cloudStatus.classList.add('syncing');
+                cloudStatusText.innerText = 'Syncing...';
+            } else {
+                cloudStatusText.innerText = 'Checking...';
+            }
+        }
+
+        // PUSH: Upload local data to cloud (overwrites cloud with local)
         async function syncAllToCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
-                console.warn('Cannot sync: not logged in or Firebase not ready.');
+                console.warn('Cannot push: not logged in or Firebase not ready.');
                 return false;
             }
             if (syncInProgress) {
-                console.log('Sync already in progress, skipping.');
+                console.log('Sync already in progress, skipping push.');
                 return true;
             }
             syncInProgress = true;
+            updateCloudStatus('syncing');
             try {
                 const uid = currentUser.uid;
                 const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
-                date: "2028-01-21T09:00:00" };
-                console.log('☁️ Uploading to cloud:', { timetables: timetables.length, tests: tests.length, target });
+                    date: "2028-01-21T09:00:00" };
+
+                console.log('⬆️ PUSH to cloud:', { timetables: timetables.length, tests: tests.length });
+
                 await db.collection('users').doc(uid).set({
                     timetables,
                     tests,
                     target,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
-                console.log('☁️ Upload successful.');
-                updateCloudStatus(true);
-                showStickerToast('✅ Data synced to cloud!');
+
+                console.log('⬆️ Push successful.');
+                updateCloudStatus('online');
+                showStickerToast('✅ Data pushed to cloud!');
                 return true;
             } catch (e) {
-                console.warn('Sync error:', e);
-                updateCloudStatus(false);
-                showStickerToast(`⚠️ Sync failed: ${e.message}`);
+                console.warn('Push error:', e);
+                updateCloudStatus('offline');
+                showStickerToast(`⚠️ Push failed: ${e.message}`);
                 return false;
             } finally {
                 syncInProgress = false;
             }
         }
 
-        async function loadFromCloud() {
+        // PULL: Fetch cloud data and OVERWRITE local data with cloud data
+        async function pullFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
-                console.log('Skipping cloud load: not logged in or Firebase not ready.');
+                console.warn('Cannot pull: not logged in or Firebase not ready.');
+                showStickerToast('⚠️ Please login with Google or Email to pull data.');
                 return false;
             }
             if (syncInProgress) {
                 console.log('Sync in progress, waiting...');
-                await new Promise(r => setTimeout(r, 500));
-                return loadFromCloud();
+                await new Promise(r => setTimeout(r, 600));
+                return pullFromCloud();
             }
+            syncInProgress = true;
+            updateCloudStatus('syncing');
             try {
                 const docRef = db.collection('users').doc(currentUser.uid);
                 const doc = await docRef.get();
-                const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-                const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-                const localTarget = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
-                    date: "2028-01-21T09:00:00" };
-
-                console.log('📥 Loading cloud data...');
 
                 if (!doc.exists) {
-                    console.log('📭 No cloud document. Creating with local data if any.');
-                    if (localTimetables.length > 0 || localTests.length > 0) {
-                        await syncAllToCloud();
-                        showStickerToast("☁️ Local data backed up to cloud.");
-                    } else {
-                        // Initialize empty document
-                        await db.collection('users').doc(currentUser.uid).set({
-                            timetables: [],
-                            tests: [],
-                            target: localTarget,
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        }, { merge: true });
-                        showStickerToast("☁️ Cloud ready. Start adding your timetable!");
-                    }
-                    return true;
+                    console.log('📭 No cloud document found.');
+                    updateCloudStatus('offline');
+                    showStickerToast('📭 No data in cloud. Push your local data first.');
+                    syncInProgress = false;
+                    return false;
                 }
 
                 const data = doc.data();
-                console.log('📦 Cloud data:', { timetables: data.timetables?.length || 0, tests: data.tests?.length || 0 });
+                console.log('⬇️ PULL from cloud:', { timetables: data.timetables?.length || 0, tests: data.tests?.length ||
+                        0 });
 
-                // --- TIMETABLES: cloud wins, but local never overwritten with empty if cloud is empty and local has data ---
+                // OVERWRITE local with cloud data
                 if (data.timetables !== undefined && data.timetables !== null) {
-                    if (Array.isArray(data.timetables) && data.timetables.length > 0) {
-                        localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables));
-                        console.log('☁️ Loaded timetables from cloud:', data.timetables.length);
-                    } else {
-                        // Cloud has empty array — keep local if it has data, otherwise set empty
-                        if (localTimetables.length > 0) {
-                            console.log('☁️ Cloud is empty, preserving local timetables and uploading.');
-                            await syncAllToCloud();
-                            // Re-fetch to confirm
-                            const updatedDoc = await docRef.get();
-                            if (updatedDoc.exists && updatedDoc.data().timetables && updatedDoc.data().timetables.length >
-                                0) {
-                                localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedDoc.data().timetables));
-                            } else {
-                                // If upload failed, keep local
-                                localStorage.setItem(TIMETABLE_KEY, JSON.stringify(localTimetables));
-                            }
-                        } else {
-                            localStorage.setItem(TIMETABLE_KEY, JSON.stringify([]));
-                        }
-                    }
+                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(data.timetables || []));
+                    console.log('⬇️ Loaded timetables from cloud:', data.timetables?.length || 0);
                 } else {
-                    // No timetables field — upload local if any
-                    if (localTimetables.length > 0) {
-                        await syncAllToCloud();
-                        const updatedDoc = await docRef.get();
-                        if (updatedDoc.exists && updatedDoc.data().timetables) {
-                            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(updatedDoc.data().timetables));
-                        } else {
-                            localStorage.setItem(TIMETABLE_KEY, JSON.stringify(localTimetables));
-                        }
-                    } else {
-                        // Initialize empty
-                        await db.collection('users').doc(currentUser.uid).set({
-                            timetables: [],
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        }, { merge: true });
-                        localStorage.setItem(TIMETABLE_KEY, JSON.stringify([]));
-                    }
+                    // If cloud has no timetables field, set empty
+                    localStorage.setItem(TIMETABLE_KEY, JSON.stringify([]));
+                    // Also push empty to cloud to keep it consistent
+                    await db.collection('users').doc(currentUser.uid).set({
+                        timetables: [],
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
                 }
 
-                // --- TESTS: same logic ---
                 if (data.tests !== undefined && data.tests !== null) {
-                    if (Array.isArray(data.tests) && data.tests.length > 0) {
-                        localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests));
-                        console.log('☁️ Loaded tests from cloud:', data.tests.length);
-                    } else {
-                        if (localTests.length > 0) {
-                            await syncAllToCloud();
-                            const updatedDoc = await docRef.get();
-                            if (updatedDoc.exists && updatedDoc.data().tests && updatedDoc.data().tests.length > 0) {
-                                localStorage.setItem(TESTS_KEY, JSON.stringify(updatedDoc.data().tests));
-                            } else {
-                                localStorage.setItem(TESTS_KEY, JSON.stringify(localTests));
-                            }
-                        } else {
-                            localStorage.setItem(TESTS_KEY, JSON.stringify([]));
-                        }
-                    }
+                    localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests || []));
+                    console.log('⬇️ Loaded tests from cloud:', data.tests?.length || 0);
                 } else {
-                    if (localTests.length > 0) {
-                        await syncAllToCloud();
-                        const updatedDoc = await docRef.get();
-                        if (updatedDoc.exists && updatedDoc.data().tests) {
-                            localStorage.setItem(TESTS_KEY, JSON.stringify(updatedDoc.data().tests));
-                        } else {
-                            localStorage.setItem(TESTS_KEY, JSON.stringify(localTests));
-                        }
-                    } else {
-                        await db.collection('users').doc(currentUser.uid).set({
-                            tests: [],
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        }, { merge: true });
-                        localStorage.setItem(TESTS_KEY, JSON.stringify([]));
-                    }
+                    localStorage.setItem(TESTS_KEY, JSON.stringify([]));
+                    await db.collection('users').doc(currentUser.uid).set({
+                        tests: [],
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
                 }
 
-                // --- TARGET ---
                 if (data.target) {
                     localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
-                } else if (localTarget) {
-                    await syncAllToCloud();
                 }
 
-                updateCloudStatus(true);
-                showStickerToast("☁️ Cloud sync complete.");
+                updateCloudStatus('online');
+                showStickerToast('✅ Data pulled from cloud!');
                 return true;
             } catch (e) {
-                console.warn('Load from cloud error:', e);
-                updateCloudStatus(false);
-                showStickerToast("⚠️ Could not load cloud data. Using local data.");
+                console.warn('Pull error:', e);
+                updateCloudStatus('offline');
+                showStickerToast(`⚠️ Pull failed: ${e.message}`);
+                return false;
+            } finally {
+                syncInProgress = false;
+            }
+        }
+
+        // Full sync: pull then push (merge strategy)
+        async function fullSync() {
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
+                showStickerToast('⚠️ Please login with Google or Email to sync.');
                 return false;
             }
-        }
-
-        function updateCloudStatus(online) {
-            if (online) {
-                cloudStatus.className = 'cloud-status online';
-                cloudStatusText.innerText = 'Synced';
-            } else {
-                cloudStatus.className = 'cloud-status offline';
-                cloudStatusText.innerText = 'Offline';
+            if (syncInProgress) {
+                showStickerToast('⏳ Sync already in progress...');
+                return false;
             }
+            showStickerToast('🔄 Syncing...', '🔄');
+            updateCloudStatus('syncing');
+
+            // First pull from cloud to get latest
+            const pulled = await pullFromCloud();
+            if (!pulled) {
+                // If pull failed, try to push local data
+                const pushed = await syncAllToCloud();
+                if (pushed) {
+                    refreshAllViews();
+                    return true;
+                }
+                updateCloudStatus('offline');
+                showStickerToast('⚠️ Sync failed. Check your connection.');
+                return false;
+            }
+
+            // After pull, refresh UI
+            refreshAllViews();
+
+            // Then push any local changes (in case there are updates)
+            const pushed = await syncAllToCloud();
+            if (pushed) {
+                refreshAllViews();
+                showStickerToast('✅ Full sync complete!');
+                return true;
+            }
+            return true;
         }
 
-        // ─── Force Sync ───
-        forceSyncBtn.addEventListener('click', async () => {
+        // ─── Buttons ───
+        pullCloudBtn.addEventListener('click', async () => {
             if (!currentUser || currentUser.isAnonymous) {
-                showStickerToast("⚠️ Please login with Google or Email to sync.");
+                showStickerToast('⚠️ Please login with Google or Email to pull data.');
                 return;
             }
-            showStickerToast("🔄 Syncing data...");
-            await syncAllToCloud();
-            await loadFromCloud();
-            refreshAllViews();
-            showStickerToast("✅ Sync completed!");
+            const success = await pullFromCloud();
+            if (success) refreshAllViews();
         });
 
+        pushCloudBtn.addEventListener('click', async () => {
+            if (!currentUser || currentUser.isAnonymous) {
+                showStickerToast('⚠️ Please login with Google or Email to push data.');
+                return;
+            }
+            const success = await syncAllToCloud();
+            if (success) refreshAllViews();
+        });
+
+        forceSyncBtn.addEventListener('click', async () => {
+            await fullSync();
+        });
+
+        pullSyncBtn.addEventListener('click', async () => {
+            if (!currentUser || currentUser.isAnonymous) {
+                showStickerToast('⚠️ Please login with Google or Email to pull data.');
+                return;
+            }
+            const success = await pullFromCloud();
+            if (success) refreshAllViews();
+        });
+
+        // ─── Auto-sync on visibility change ───
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && currentUser && !currentUser.isAnonymous) {
+                console.log('📱 App became visible — auto-pulling from cloud.');
+                pullFromCloud().then(() => refreshAllViews());
+            }
+        });
+
+        // ─── Refresh Views ───
         function refreshAllViews() {
             loadTodayView();
             renderCalendar();
             updateLiveWidgets();
             const histDate = document.getElementById('history-date-input').value;
             if (histDate) loadHistory(histDate);
+            // Update the studio matrix to reflect current data if it's today's data
+            loadMatrixFromToday();
         }
 
         function loadHistory(dateVal) {
@@ -1788,7 +1875,7 @@
             if (dateVal) loadHistory(dateVal);
         });
 
-        // ─── Table Render & Matrix Controls ───
+        // ─── Table Render ───
         function renderTable(obj, target) {
             let html = `<div class="table-container"><table><thead><tr>`;
             obj.headers.forEach(h => html += `<th>${h}</th>`);
@@ -1814,7 +1901,41 @@
             renderTable(todayObj, container);
         }
 
-        // Matrix controls
+        // ─── Load today's data into studio matrix ───
+        function loadMatrixFromToday() {
+            const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            const todayObj = data.find(d => d.date === todayStr);
+            if (!todayObj) return;
+
+            const headerRow = document.getElementById('matrix-header-row');
+            const bodyRows = document.getElementById('matrix-body-rows');
+
+            // Clear existing rows (keep header)
+            while (bodyRows.rows.length > 0) {
+                bodyRows.deleteRow(0);
+            }
+
+            // Set headers
+            headerRow.innerHTML = '';
+            todayObj.headers.forEach(h => {
+                const th = document.createElement('th');
+                th.innerHTML = `<input type="text" value="${h}">`;
+                headerRow.appendChild(th);
+            });
+
+            // Set rows
+            todayObj.rows.forEach(rowData => {
+                const tr = document.createElement('tr');
+                rowData.forEach(cellData => {
+                    const td = document.createElement('td');
+                    td.innerHTML = `<input type="text" value="${cellData}">`;
+                    tr.appendChild(td);
+                });
+                bodyRows.appendChild(tr);
+            });
+        }
+
+        // ─── Matrix Controls ───
         const headerRow = document.getElementById('matrix-header-row');
         const bodyRows = document.getElementById('matrix-body-rows');
 
@@ -1900,21 +2021,20 @@
             showStickerToast("🗑️ Subject row removed.");
         });
 
-        // ─── SAVE TIMETABLE (FIXED) ───
+        // ─── SAVE & SYNC ───
         document.getElementById('save-timetable-btn').addEventListener('click', async () => {
             const headers = Array.from(headerRow.cells).map(th => th.querySelector('input')?.value || th.innerText);
             const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector(
                 'input')?.value || cell.innerText));
             const payload = { date: todayStr, headers, rows };
             let allData = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-            // Remove any existing entry for today
             allData = allData.filter(d => d.date !== todayStr);
             allData.push(payload);
             localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
             showStickerToast("🎉 Timetable saved locally!");
             loadTodayView();
 
-            // Sync to cloud if logged in (with retry)
+            // Push to cloud if logged in
             if (currentUser && !currentUser.isAnonymous) {
                 let success = false;
                 let attempts = 0;
@@ -1922,14 +2042,13 @@
                     attempts++;
                     success = await syncAllToCloud();
                     if (!success && attempts < 3) {
-                        console.log(`Retry sync attempt ${attempts+1}...`);
                         await new Promise(r => setTimeout(r, 1000));
                     }
                 }
-                if (!success) {
-                    showStickerToast("⚠️ Timetable saved locally but cloud sync failed. Tap cloud button to retry.");
-                } else {
+                if (success) {
                     showStickerToast("✅ Timetable saved & synced to cloud!");
+                } else {
+                    showStickerToast("⚠️ Saved locally but cloud push failed. Use 'Push to Cloud' button.");
                 }
             } else {
                 showStickerToast("💾 Timetable saved locally (guest mode).");
@@ -2054,21 +2173,26 @@
                 userNameDisplay.innerText = name.split(' ')[0] || 'User';
                 appTitle.innerText = user.isAnonymous ? '📁 GUEST MODE' : `📚 ${name.split(' ')[0] || 'Student'}'s T-T`;
                 showStickerToast(user.isAnonymous ? '👤 Logged in as Guest' : `👋 Welcome ${name}!`);
+
                 if (!user.isAnonymous) {
-                    loadFromCloud().then(() => {
+                    // Auto-pull from cloud on login
+                    pullFromCloud().then(() => {
                         refreshAllViews();
+                        updateCloudStatus('online');
                     });
                 } else {
                     refreshAllViews();
+                    updateCloudStatus('offline');
                 }
             } else {
                 loginOverlay.classList.remove('hidden');
                 userBadge.style.display = 'none';
                 appTitle.innerText = 'SELF STUDY T-T';
+                updateCloudStatus('offline');
             }
         }
 
-        // ─── Sign-out with confirmation ───
+        // ─── Sign-out ───
         userBadge.addEventListener('click', async () => {
             if (!auth || !currentUser) return;
             const overlay = document.createElement('div');
@@ -2121,7 +2245,7 @@
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await auth.signInWithPopup(provider);
                 setUser(result.user);
-                // After login, sync local data to cloud
+                // After login, push local data if any
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 if (localTimetables.length > 0 || localTests.length > 0) {
@@ -2259,15 +2383,16 @@
             }
         });
 
+        // ─── Expose for debugging ───
         window.syncAll = syncAllToCloud;
-        window.loadCloud = loadFromCloud;
-        window.forceSync = () => {
-            if (currentUser && !currentUser.isAnonymous) {
-                syncAllToCloud().then(() => loadFromCloud().then(() => refreshAllViews()));
-            } else {
-                showStickerToast("⚠️ Please login with Google or Email.");
-            }
-        };
+        window.pullAll = pullFromCloud;
+        window.fullSync = fullSync;
+        window.refreshViews = refreshAllViews;
+        window.pullFromCloud = pullFromCloud;
+        window.syncAllToCloud = syncAllToCloud;
+
+        console.log('📚 Study Time-Table loaded.');
+        console.log('📌 Commands: pullFromCloud() | syncAllToCloud() | fullSync() | refreshViews()');
     </script>
 </body>
 </html>
