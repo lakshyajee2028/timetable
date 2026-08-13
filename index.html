@@ -2036,7 +2036,7 @@
 
                 console.log('⬆️ Push successful.');
                 updateCloudStatus('online');
-                showStickerToast('✅ Data pushed to cloud!');
+                // Silent push — no toast
                 return true;
             } catch (e) {
                 console.warn('Push error:', e);
@@ -2116,7 +2116,7 @@
                 }
 
                 updateCloudStatus('online');
-                showStickerToast('✅ Data pulled from cloud!');
+                // Silent pull — no toast
                 return true;
             } catch (e) {
                 console.warn('Pull error:', e);
@@ -2137,7 +2137,6 @@
                 showStickerToast('⏳ Sync already in progress...');
                 return false;
             }
-            showStickerToast('🔄 Syncing...', '🔄');
             updateCloudStatus('syncing');
 
             const pulled = await pullFromCloud();
@@ -2156,7 +2155,7 @@
             const pushed = await syncAllToCloud();
             if (pushed) {
                 refreshAllViews();
-                showStickerToast('✅ Full sync complete!');
+                // Silent full sync — no toast
                 return true;
             }
             return true;
@@ -2408,7 +2407,7 @@
                     }
                 }
                 if (success) {
-                    showStickerToast("✅ Timetable saved & synced to cloud!");
+                    // Silent success — no toast for cloud sync
                 } else {
                     showStickerToast("⚠️ Saved locally but cloud push failed. Use 'Push to Cloud' button.");
                 }
@@ -2566,9 +2565,7 @@
             if (tasks.length === 0) return;
             const allDone = tasks.every(t => t.completed);
             if (allDone) {
-                // Show a celebratory toast with a special message
                 showStickerToast("🎉 Yay! All tasks complete! 🎉", "🎉");
-                // Also play a subtle animation? Not needed.
             }
         }
 
@@ -2647,7 +2644,6 @@
                         saveTasksForDate(todayStr, tasksList);
                         renderTodayTasks();
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                        // Check if all tasks are now completed
                         checkAndCelebrateAllDone(todayStr);
                     }
                 });
@@ -2663,7 +2659,6 @@
                         renderTodayTasks();
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
                         showStickerToast('🗑️ Task deleted.');
-                        // After deletion, check if all remaining are completed (could be all completed)
                         checkAndCelebrateAllDone(todayStr);
                     }
                 });
