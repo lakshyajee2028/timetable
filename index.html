@@ -1187,7 +1187,6 @@
             padding: 4px 8px;
             font-size: 0.65rem;
         }
-        /* History delete button row */
         .history-delete-row {
             display: flex;
             justify-content: flex-end;
@@ -1199,7 +1198,6 @@
             font-size: 0.6rem;
             padding: 3px 12px;
         }
-        /* long-press hint tooltip */
         .long-press-hint {
             font-size: 0.5rem;
             color: var(--text-muted);
@@ -1207,6 +1205,213 @@
             text-align: center;
             margin-top: 2px;
             font-style: italic;
+        }
+
+        /* ─── TASKS STYLES ─── */
+        .tasks-section {
+            margin-top: 12px;
+            border-top: 2px dashed var(--border);
+            padding-top: 10px;
+        }
+        .tasks-section h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .task-progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .task-progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .task-progress-bar .fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .task-progress-text {
+            font-weight: 600;
+            white-space: nowrap;
+            font-size: 0.65rem;
+            min-width: 40px;
+            text-align: right;
+        }
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 8px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px 6px 6px;
+            transition: border-color 0.2s, opacity 0.3s;
+            animation: slideIn 0.25s ease;
+        }
+        .task-item.completed {
+            opacity: 0.6;
+            border-color: var(--success);
+        }
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .task-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--bg-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+            font-size: 0.65rem;
+            color: transparent;
+        }
+        .task-check:hover {
+            transform: scale(1.08);
+            border-color: var(--primary);
+        }
+        .task-check.checked {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        .task-check.checked i {
+            color: white;
+        }
+        .task-text {
+            flex: 1;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-main);
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        .task-delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: color 0.2s, background 0.2s;
+            flex-shrink: 0;
+            opacity: 0.4;
+        }
+        .task-delete-btn:hover {
+            color: var(--accent);
+            background: rgba(230, 57, 70, 0.1);
+            opacity: 1;
+        }
+        .task-add-row {
+            display: flex;
+            gap: 5px;
+            margin-top: 2px;
+        }
+        .task-add-row input {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.75rem;
+            font-weight: 600;
+            outline: none;
+        }
+        .task-add-row input:focus {
+            border-color: var(--primary);
+        }
+        .task-add-row .btn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            box-shadow: none;
+            border-radius: var(--radius-sm);
+        }
+        .history-tasks-section {
+            margin-top: 10px;
+            border-top: 2px dashed var(--border);
+            padding-top: 10px;
+        }
+        .history-tasks-section h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .history-tasks-section .task-item {
+            padding: 4px 8px 4px 4px;
+        }
+        .history-tasks-section .task-item .task-text {
+            font-size: 0.7rem;
+        }
+        .history-tasks-section .task-check {
+            width: 18px;
+            height: 18px;
+            font-size: 0.5rem;
+        }
+        .no-tasks-msg {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-style: italic;
+            padding: 4px 0;
+        }
+        /* tasks in calendar */
+        .calendar-date.has-tasks {
+            border-color: var(--secondary);
+            background-color: rgba(0, 129, 167, 0.12);
+        }
+        .calendar-date.has-tasks.has-festival {
+            background: linear-gradient(135deg, rgba(114, 9, 183, 0.15), rgba(0, 129, 167, 0.15));
+        }
+        .calendar-date.has-tasks.has-test {
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.15), rgba(0, 129, 167, 0.15));
         }
     </style>
 </head>
@@ -1307,6 +1512,12 @@
                 </div>
                 <h2 id="today-heading"><i class="fas fa-sun"></i> Today's Schedule</h2>
                 <div id="today-container"></div>
+
+                <!-- ─── TASKS SECTION (TODAY) ─── -->
+                <div class="tasks-section" id="today-tasks-section">
+                    <h3><i class="fas fa-list-check"></i> Today's Tasks</h3>
+                    <div id="today-tasks-container"></div>
+                </div>
             </div>
 
             <div id="view-yesterday" class="view-section">
@@ -1318,6 +1529,12 @@
                 <div id="history-container"></div>
                 <div id="history-delete-area"></div>
                 <div class="long-press-hint"><i class="fas fa-hand-pointer"></i> Long press on timetable to delete</div>
+
+                <!-- ─── TASKS IN HISTORY ─── -->
+                <div class="history-tasks-section" id="history-tasks-section" style="display:none;">
+                    <h4><i class="fas fa-list-check"></i> Tasks for this day</h4>
+                    <div id="history-tasks-container"></div>
+                </div>
             </div>
 
             <div id="view-create" class="view-section">
@@ -1550,6 +1767,7 @@
             "⬇️ Use 'Pull from Cloud' to get latest data!",
             "⬆️ Use 'Push to Cloud' to upload your data!",
             "🗑️ Long-press on history timetable to delete!",
+            "✅ Tasks: add, tick, and track progress!",
             "Stay productive! 🚀"
         ];
         let guideIdx = 0;
@@ -1576,6 +1794,7 @@
         const TIMETABLE_KEY = 'doodleTimetableData';
         const TESTS_KEY = 'doodleTestsData';
         const TARGET_KEY = 'doodleTargetExamData';
+        const TASKS_KEY = 'doodleTasksData';
 
         function getLocalDate(d = new Date()) {
             const y = d.getFullYear();
@@ -1765,7 +1984,7 @@
             }));
         }
 
-        // ─── CLOUD SYNC FUNCTIONS ───
+        // ─── CLOUD SYNC FUNCTIONS (with tasks) ───
         function updateCloudStatus(state) {
             cloudStatus.className = 'cloud-status';
             if (state === 'online') {
@@ -1799,15 +2018,18 @@
                 const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
                 const target = JSON.parse(localStorage.getItem(TARGET_KEY)) || { name: "JEE 2028",
                     date: "2028-01-21T09:00:00" };
+                const tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
 
                 const timetablesForFirestore = convertRowsForFirestore(rawTimetables);
 
-                console.log('⬆️ PUSH to cloud:', { timetables: timetablesForFirestore.length, tests: tests.length });
+                console.log('⬆️ PUSH to cloud:', { timetables: timetablesForFirestore.length, tests: tests.length,
+                    tasks: tasks.length });
 
                 await db.collection('users').doc(uid).set({
                     timetables: timetablesForFirestore,
                     tests,
                     target,
+                    tasks,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
@@ -1852,7 +2074,7 @@
 
                 const data = doc.data();
                 console.log('⬇️ PULL from cloud:', { timetables: data.timetables?.length || 0, tests: data.tests?.length ||
-                        0 });
+                        0, tasks: data.tasks?.length || 0 });
 
                 if (data.timetables !== undefined && data.timetables !== null) {
                     const converted = convertRowsFromFirestore(data.timetables);
@@ -1879,6 +2101,17 @@
 
                 if (data.target) {
                     localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
+                }
+
+                if (data.tasks !== undefined && data.tasks !== null) {
+                    localStorage.setItem(TASKS_KEY, JSON.stringify(data.tasks || []));
+                    console.log('⬇️ Loaded tasks from cloud:', data.tasks?.length || 0);
+                } else {
+                    localStorage.setItem(TASKS_KEY, JSON.stringify([]));
+                    await db.collection('users').doc(currentUser.uid).set({
+                        tasks: [],
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
                 }
 
                 updateCloudStatus('online');
@@ -1928,11 +2161,10 @@
             return true;
         }
 
-        // ─── DELETE TIMETABLE FUNCTION (NEW) ───
+        // ─── DELETE TIMETABLE ───
         async function deleteTimetable(dateStr) {
             if (!dateStr) return false;
 
-            // Confirmation
             const confirmHtml = `
                     <p style="margin-bottom:8px;">Are you sure you want to delete the timetable for <b style="color:var(--accent);">${dateStr}</b>?</p>
                     <p style="color:var(--text-muted);font-size:0.75rem;">This will also remove it from the cloud. This action cannot be undone.</p>
@@ -1940,18 +2172,14 @@
             const confirmed = await openStickerModal("Delete Timetable", "fas fa-trash-can", confirmHtml);
             if (!confirmed) return false;
 
-            // Remove from localStorage
             let allData = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-            const originalLength = allData.length;
             allData = allData.filter(d => d.date !== dateStr);
             localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
 
-            // Update Firebase if logged in
             if (currentUser && !currentUser.isAnonymous) {
                 await syncAllToCloud();
             }
 
-            // Refresh views
             const histDate = document.getElementById('history-date-input').value;
             if (histDate) loadHistory(histDate);
             loadTodayView();
@@ -1993,7 +2221,7 @@
             if (success) refreshAllViews();
         });
 
-        // ─── Auto-sync on visibility change ───
+        // ─── Auto-sync ───
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && currentUser && !currentUser.isAnonymous) {
                 console.log('📱 App became visible — auto-pulling from cloud.');
@@ -2009,98 +2237,10 @@
             const histDate = document.getElementById('history-date-input').value;
             if (histDate) loadHistory(histDate);
             loadMatrixFromToday();
+            renderTodayTasks();
         }
 
-        // ─── History with Delete Support ───
-        function loadHistory(dateVal) {
-            const container = document.getElementById('history-container');
-            const deleteArea = document.getElementById('history-delete-area');
-            const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-            const found = data.find(d => d.date === dateVal);
-
-            container.innerHTML = '';
-            deleteArea.innerHTML = '';
-
-            if (!found) {
-                container.innerHTML = `<div class="card"><p>No records for ${dateVal}.</p></div>`;
-                return;
-            }
-
-            // Render the table with a wrapper for long-press detection
-            const wrapper = document.createElement('div');
-            wrapper.className = 'history-timetable-wrapper';
-            wrapper.style.position = 'relative';
-
-            // Render table
-            renderTable(found, wrapper);
-
-            // Add delete hint
-            const hint = document.createElement('div');
-            hint.className = 'delete-hint';
-            hint.innerHTML = '<i class="fas fa-trash-can"></i> long-press to delete';
-            wrapper.querySelector('.table-container')?.appendChild(hint);
-
-            container.appendChild(wrapper);
-
-            // Add a delete button row below the table
-            const btnRow = document.createElement('div');
-            btnRow.className = 'history-delete-row';
-            const delBtn = document.createElement('button');
-            delBtn.className = 'btn danger';
-            delBtn.innerHTML = '<i class="fas fa-trash-can"></i> Delete this timetable';
-            delBtn.style.fontSize = '0.65rem';
-            delBtn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                await deleteTimetable(dateVal);
-            });
-            btnRow.appendChild(delBtn);
-            deleteArea.appendChild(btnRow);
-
-            // ─── LONG PRESS DETECTION ───
-            const tableEl = wrapper.querySelector('.table-container');
-            if (tableEl) {
-                let pressTimer = null;
-                let isLongPressTriggered = false;
-
-                const startPress = (e) => {
-                    isLongPressTriggered = false;
-                    // Don't trigger if clicking on input inside table
-                    if (e.target.closest('input')) return;
-                    pressTimer = setTimeout(() => {
-                        isLongPressTriggered = true;
-                        tableEl.classList.add('long-press-active');
-                        // Vibrate if supported
-                        if (navigator.vibrate) navigator.vibrate(30);
-                        deleteTimetable(dateVal).then(() => {
-                            tableEl.classList.remove('long-press-active');
-                        });
-                    }, 550);
-                };
-
-                const endPress = () => {
-                    clearTimeout(pressTimer);
-                    tableEl.classList.remove('long-press-active');
-                };
-
-                tableEl.addEventListener('mousedown', startPress);
-                tableEl.addEventListener('mouseup', endPress);
-                tableEl.addEventListener('mouseleave', endPress);
-                tableEl.addEventListener('touchstart', startPress, { passive: true });
-                tableEl.addEventListener('touchend', endPress, { passive: true });
-                tableEl.addEventListener('touchmove', endPress, { passive: true });
-
-                // Add cursor style and title
-                tableEl.style.cursor = 'pointer';
-                tableEl.title = 'Long press to delete this timetable';
-            }
-        }
-
-        document.getElementById('search-history-btn').addEventListener('click', () => {
-            const dateVal = document.getElementById('history-date-input').value;
-            if (dateVal) loadHistory(dateVal);
-        });
-
-        // ─── Table Render ───
+        // ─── TABLE RENDER ───
         function renderTable(obj, target) {
             let html = `<div class="table-container"><table><thead><tr>`;
             obj.headers.forEach(h => html += `<th>${h}</th>`);
@@ -2126,7 +2266,7 @@
             renderTable(todayObj, container);
         }
 
-        // ─── Load today's data into studio matrix ───
+        // ─── Load matrix ───
         function loadMatrixFromToday() {
             const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
             const todayObj = data.find(d => d.date === todayStr);
@@ -2157,7 +2297,7 @@
             });
         }
 
-        // ─── Matrix Controls ───
+        // ─── MATRIX CONTROLS ───
         const headerRow = document.getElementById('matrix-header-row');
         const bodyRows = document.getElementById('matrix-body-rows');
 
@@ -2276,7 +2416,7 @@
             }
         });
 
-        // ─── Calendar ───
+        // ─── CALENDAR ───
         let currMonth = new Date().getMonth();
         let currYear = new Date().getFullYear();
 
@@ -2290,6 +2430,8 @@
             const firstDay = new Date(currYear, currMonth, 1).getDay();
             const totalDays = new Date(currYear, currMonth + 1, 0).getDate();
             const savedTests = (JSON.parse(localStorage.getItem(TESTS_KEY)) || []).map(t => t.date);
+            const tasksData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+            const taskDates = tasksData.map(t => t.date);
             for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
             for (let day = 1; day <= totalDays; day++) {
                 const cell = document.createElement('div');
@@ -2300,6 +2442,7 @@
                 const key = `${currYear}-${mStr}-${dStr}`;
                 if (globalFestivals[key]) cell.classList.add('has-festival');
                 if (savedTests.includes(key)) cell.classList.add('has-test');
+                if (taskDates.includes(key)) cell.classList.add('has-tasks');
                 if (key === todayStr) cell.classList.add('selected');
                 cell.addEventListener('click', () => {
                     document.querySelectorAll('.calendar-date').forEach(d => d.classList.remove('selected'));
@@ -2346,6 +2489,30 @@
             } else {
                 html += `<p style="color:var(--text-muted);font-size:0.7rem;">No timetable for this date.</p>`;
             }
+
+            // Tasks for this date in calendar
+            const tasksData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+            const dateTasks = tasksData.find(t => t.date === dateStr);
+            if (dateTasks && dateTasks.tasks && dateTasks.tasks.length > 0) {
+                const completed = dateTasks.tasks.filter(t => t.completed).length;
+                const total = dateTasks.tasks.length;
+                html += `<div style="margin-top:8px;border-top:2px dashed var(--border);padding-top:6px;">
+                            <p style="font-size:0.7rem;font-weight:600;color:var(--secondary);">
+                                <i class="fas fa-list-check"></i> Tasks: ${completed}/${total} done
+                            </p>
+                            <ul style="list-style:none;padding:0;margin:4px 0 0 0;display:flex;flex-direction:column;gap:2px;">
+                `;
+                dateTasks.tasks.forEach(t => {
+                    html += `<li style="display:flex;align-items:center;gap:6px;font-size:0.65rem;padding:2px 4px;border-radius:6px;background:var(--bg-base);border:1px solid var(--border);">
+                                <span style="color:${t.completed ? 'var(--success)' : 'var(--text-muted)'};font-size:0.55rem;">
+                                    <i class="fas ${t.completed ? 'fa-circle-check' : 'fa-circle'}"></i>
+                                </span>
+                                <span style="${t.completed ? 'text-decoration:line-through;color:var(--text-muted);' : ''}">${t.text}</span>
+                            </li>`;
+                });
+                html += `</ul></div>`;
+            }
+
             container.innerHTML = html;
             if (tMatch) renderTable(tMatch, document.getElementById('cal-table-box'));
         }
@@ -2376,7 +2543,223 @@
             if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
         };
 
-        // ─── Auth Handlers ───
+        // ─── TASKS FUNCTIONS ───
+        function getTasksForDate(dateStr) {
+            const all = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+            const found = all.find(d => d.date === dateStr);
+            return found ? found.tasks : [];
+        }
+
+        function saveTasksForDate(dateStr, tasks) {
+            let all = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+            all = all.filter(d => d.date !== dateStr);
+            if (tasks && tasks.length > 0) {
+                all.push({ date: dateStr, tasks: tasks });
+            }
+            localStorage.setItem(TASKS_KEY, JSON.stringify(all));
+        }
+
+        function renderTodayTasks() {
+            const container = document.getElementById('today-tasks-container');
+            const tasks = getTasksForDate(todayStr);
+
+            let html = '';
+            if (tasks.length === 0) {
+                html = `<div class="no-tasks-msg">No tasks for today. Add one below.</div>`;
+            } else {
+                const completed = tasks.filter(t => t.completed).length;
+                const total = tasks.length;
+                const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+                html += `
+                        <div class="task-progress-wrap">
+                            <span style="font-size:0.65rem;font-weight:600;">${completed}/${total}</span>
+                            <div class="task-progress-bar"><div class="fill" style="width:${pct}%;"></div></div>
+                            <span class="task-progress-text">${pct}%</span>
+                        </div>
+                        <ul class="task-list">
+                    `;
+                tasks.forEach((t, idx) => {
+                    const checked = t.completed ? 'checked' : '';
+                    const icon = t.completed ? 'fa-circle-check' : 'fa-circle';
+                    html += `
+                            <li class="task-item ${t.completed ? 'completed' : ''}" data-idx="${idx}">
+                                <button class="task-check ${checked}" data-idx="${idx}" title="Toggle complete">
+                                    <i class="fas ${icon}"></i>
+                                </button>
+                                <span class="task-text">${t.text}</span>
+                                <button class="task-delete-btn" data-idx="${idx}" title="Delete task"><i class="fas fa-times"></i></button>
+                            </li>
+                        `;
+                });
+                html += `</ul>`;
+            }
+
+            html += `
+                    <div class="task-add-row">
+                        <input type="text" id="task-input-field" placeholder="Add a task..." maxlength="200" />
+                        <button class="btn primary" id="task-add-btn"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                `;
+            container.innerHTML = html;
+
+            // Event listeners
+            const addBtn = document.getElementById('task-add-btn');
+            const inputField = document.getElementById('task-input-field');
+            if (addBtn && inputField) {
+                const addTask = () => {
+                    const text = inputField.value.trim();
+                    if (!text) { showStickerToast('⚠️ Please enter a task.'); return; }
+                    const current = getTasksForDate(todayStr);
+                    current.push({ id: Date.now().toString(), text, completed: false });
+                    saveTasksForDate(todayStr, current);
+                    inputField.value = '';
+                    renderTodayTasks();
+                    if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                    showStickerToast('✅ Task added!');
+                };
+                addBtn.addEventListener('click', addTask);
+                inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
+            }
+
+            // Toggle and delete listeners
+            container.querySelectorAll('.task-check').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.dataset.idx);
+                    const tasksList = getTasksForDate(todayStr);
+                    if (tasksList[idx]) {
+                        tasksList[idx].completed = !tasksList[idx].completed;
+                        saveTasksForDate(todayStr, tasksList);
+                        renderTodayTasks();
+                        if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                    }
+                });
+            });
+
+            container.querySelectorAll('.task-delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.dataset.idx);
+                    const tasksList = getTasksForDate(todayStr);
+                    if (tasksList[idx]) {
+                        tasksList.splice(idx, 1);
+                        saveTasksForDate(todayStr, tasksList);
+                        renderTodayTasks();
+                        if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                        showStickerToast('🗑️ Task deleted.');
+                    }
+                });
+            });
+        }
+
+        // ─── HISTORY with tasks ───
+        function loadHistory(dateVal) {
+            const container = document.getElementById('history-container');
+            const deleteArea = document.getElementById('history-delete-area');
+            const tasksContainer = document.getElementById('history-tasks-container');
+            const tasksSection = document.getElementById('history-tasks-section');
+            const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            const found = data.find(d => d.date === dateVal);
+
+            container.innerHTML = '';
+            deleteArea.innerHTML = '';
+
+            if (!found) {
+                container.innerHTML = `<div class="card"><p>No records for ${dateVal}.</p></div>`;
+                tasksSection.style.display = 'none';
+                return;
+            }
+
+            // Render table
+            const wrapper = document.createElement('div');
+            wrapper.className = 'history-timetable-wrapper';
+            wrapper.style.position = 'relative';
+            renderTable(found, wrapper);
+
+            const hint = document.createElement('div');
+            hint.className = 'delete-hint';
+            hint.innerHTML = '<i class="fas fa-trash-can"></i> long-press to delete';
+            wrapper.querySelector('.table-container')?.appendChild(hint);
+            container.appendChild(wrapper);
+
+            // Delete button
+            const btnRow = document.createElement('div');
+            btnRow.className = 'history-delete-row';
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn danger';
+            delBtn.innerHTML = '<i class="fas fa-trash-can"></i> Delete this timetable';
+            delBtn.style.fontSize = '0.65rem';
+            delBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await deleteTimetable(dateVal);
+            });
+            btnRow.appendChild(delBtn);
+            deleteArea.appendChild(btnRow);
+
+            // Long press
+            const tableEl = wrapper.querySelector('.table-container');
+            if (tableEl) {
+                let pressTimer = null;
+                const startPress = (e) => {
+                    if (e.target.closest('input')) return;
+                    pressTimer = setTimeout(() => {
+                        tableEl.classList.add('long-press-active');
+                        if (navigator.vibrate) navigator.vibrate(30);
+                        deleteTimetable(dateVal).then(() => {
+                            tableEl.classList.remove('long-press-active');
+                        });
+                    }, 550);
+                };
+                const endPress = () => {
+                    clearTimeout(pressTimer);
+                    tableEl.classList.remove('long-press-active');
+                };
+                tableEl.addEventListener('mousedown', startPress);
+                tableEl.addEventListener('mouseup', endPress);
+                tableEl.addEventListener('mouseleave', endPress);
+                tableEl.addEventListener('touchstart', startPress, { passive: true });
+                tableEl.addEventListener('touchend', endPress, { passive: true });
+                tableEl.addEventListener('touchmove', endPress, { passive: true });
+                tableEl.style.cursor = 'pointer';
+                tableEl.title = 'Long press to delete this timetable';
+            }
+
+            // ─── SHOW TASKS FOR THIS DATE ───
+            const tasks = getTasksForDate(dateVal);
+            if (tasks.length > 0) {
+                tasksSection.style.display = 'block';
+                const completed = tasks.filter(t => t.completed).length;
+                const total = tasks.length;
+                const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+                let tHtml = `
+                        <div class="task-progress-wrap" style="margin-bottom:4px;">
+                            <span style="font-size:0.65rem;font-weight:600;">${completed}/${total}</span>
+                            <div class="task-progress-bar"><div class="fill" style="width:${pct}%;"></div></div>
+                            <span class="task-progress-text">${pct}%</span>
+                        </div>
+                        <ul class="task-list" style="max-height:150px;">
+                    `;
+                tasks.forEach(t => {
+                    tHtml += `
+                            <li class="task-item ${t.completed ? 'completed' : ''}" style="padding:4px 8px 4px 4px;">
+                                <span class="task-check ${t.completed ? 'checked' : ''}" style="width:18px;height:18px;font-size:0.5rem;pointer-events:none;">
+                                    <i class="fas ${t.completed ? 'fa-circle-check' : 'fa-circle'}"></i>
+                                </span>
+                                <span class="task-text" style="font-size:0.7rem;">${t.text}</span>
+                            </li>
+                        `;
+                });
+                tHtml += `</ul>`;
+                tasksContainer.innerHTML = tHtml;
+            } else {
+                tasksSection.style.display = 'none';
+            }
+        }
+
+        document.getElementById('search-history-btn').addEventListener('click', () => {
+            const dateVal = document.getElementById('history-date-input').value;
+            if (dateVal) loadHistory(dateVal);
+        });
+
+        // ─── AUTH ───
         function setUser(user) {
             currentUser = user;
             if (user) {
@@ -2467,7 +2850,8 @@
                 setUser(result.user);
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-                if (localTimetables.length > 0 || localTests.length > 0) {
+                const localTasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0 || localTasks.length > 0) {
                     await syncAllToCloud();
                 }
             } catch (e) {
@@ -2497,7 +2881,7 @@
             }
         });
 
-        // ─── Email/Password Sign-In ───
+        // ─── Email/Password ───
         emailSigninBtn.addEventListener('click', async () => {
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
@@ -2510,7 +2894,8 @@
                 setUser(result.user);
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-                if (localTimetables.length > 0 || localTests.length > 0) {
+                const localTasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0 || localTasks.length > 0) {
                     await syncAllToCloud();
                 }
                 emailInput.value = '';
@@ -2524,7 +2909,6 @@
             }
         });
 
-        // ─── Email/Password Sign-Up ───
         emailSignupBtn.addEventListener('click', async () => {
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
@@ -2538,7 +2922,8 @@
                 setUser(result.user);
                 const localTimetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
                 const localTests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
-                if (localTimetables.length > 0 || localTests.length > 0) {
+                const localTasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+                if (localTimetables.length > 0 || localTests.length > 0 || localTasks.length > 0) {
                     await syncAllToCloud();
                 }
                 emailInput.value = '';
@@ -2553,7 +2938,6 @@
             }
         });
 
-        // ─── Forgot Password ───
         forgotPasswordLink.addEventListener('click', async () => {
             const email = emailInput.value.trim();
             if (!email) { showStickerToast('⚠️ Enter your email address first.'); return; }
@@ -2594,6 +2978,7 @@
             renderCalendar();
             const histDate = document.getElementById('history-date-input').value;
             if (histDate) loadHistory(histDate);
+            renderTodayTasks();
             const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
             const todayEvent = tests.find(t => t.date === todayStr);
             if (todayEvent) {
@@ -2603,7 +2988,7 @@
             }
         });
 
-        // ─── Expose for debugging ───
+        // ─── Expose ───
         window.syncAll = syncAllToCloud;
         window.pullAll = pullFromCloud;
         window.fullSync = fullSync;
@@ -2611,9 +2996,10 @@
         window.pullFromCloud = pullFromCloud;
         window.syncAllToCloud = syncAllToCloud;
         window.deleteTimetable = deleteTimetable;
+        window.renderTodayTasks = renderTodayTasks;
 
-        console.log('📚 Study Time-Table loaded with long-press delete feature.');
-        console.log('📌 Commands: deleteTimetable("2025-01-01") | pullFromCloud() | syncAllToCloud()');
+        console.log('📚 Study Time-Table loaded with tasks feature.');
+        console.log('📌 Tasks are stored date-wise and sync to cloud.');
     </script>
 </body>
 </html>
