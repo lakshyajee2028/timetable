@@ -30,11 +30,6 @@
             --radius-md: 16px;
             --radius-sm: 12px;
             --shadow: 0 12px 30px rgba(67, 97, 238, 0.12);
-            --analytics-green: #2ec4b6;
-            --analytics-blue: #4361ee;
-            --analytics-purple: #7209b7;
-            --analytics-orange: #f77f00;
-            --analytics-red: #e63946;
             --insight-bg: rgba(67, 97, 238, 0.08);
             --task-bg: #f8f9fa;
             --input-bg: #ffffff;
@@ -58,36 +53,10 @@
             --input-bg: #2d314d;
             --modal-overlay: rgba(0,0,0,0.7);
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Quicksand', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-        .bg-decor {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .floating-item {
-            position: absolute;
-            font-size: 2rem;
-            opacity: 0.3;
-            animation: floatAnim 9s ease-in-out infinite alternate;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Quicksand', sans-serif; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        body { background-color: var(--bg-base); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; position: relative; }
+        .bg-decor { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+        .floating-item { position: absolute; font-size: 2rem; opacity: 0.3; animation: floatAnim 9s ease-in-out infinite alternate; }
         .floating-item:nth-child(1) { top: 8%; left: 6%; animation-delay: 0s; font-size: 2.4rem; }
         .floating-item:nth-child(2) { top: 15%; right: 8%; animation-delay: 1.2s; font-size: 2.2rem; }
         .floating-item:nth-child(3) { top: 40%; left: 4%; animation-delay: 2.5s; font-size: 2.5rem; }
@@ -96,39 +65,9 @@
         .floating-item:nth-child(6) { bottom: 18%; right: 12%; animation-delay: 2.1s; font-size: 2.3rem; }
         .floating-item:nth-child(7) { top: 28%; left: 45%; animation-delay: 4s; font-size: 1.8rem; opacity: 0.2; }
         [data-theme="dark"] .floating-item { opacity: 0.25; }
-        @keyframes floatAnim {
-            0% { transform: translateY(0px) rotate(0deg) scale(1); }
-            100% { transform: translateY(-20px) rotate(12deg) scale(1.08); }
-        }
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            height: 94vh;
-            max-height: 960px;
-            background-color: var(--bg-card);
-            border-radius: var(--radius-lg);
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--shadow);
-            border: 3px solid var(--border);
-            position: relative;
-            z-index: 10;
-            overflow: hidden;
-        }
-        #login-overlay {
-            position: absolute;
-            inset: 0;
-            background: var(--bg-card);
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 16px 14px;
-            text-align: center;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            overflow-y: auto;
-        }
+        @keyframes floatAnim { 0% { transform: translateY(0px) rotate(0deg) scale(1); } 100% { transform: translateY(-20px) rotate(12deg) scale(1.08); } }
+        .app-container { width: 100%; max-width: 480px; height: 94vh; max-height: 960px; background-color: var(--bg-card); border-radius: var(--radius-lg); display: flex; flex-direction: column; box-shadow: var(--shadow); border: 3px solid var(--border); position: relative; z-index: 10; overflow: hidden; }
+        #login-overlay { position: absolute; inset: 0; background: var(--bg-card); z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 16px 14px; text-align: center; transition: opacity 0.5s ease, transform 0.5s ease; overflow-y: auto; }
         #login-overlay.hidden { opacity: 0; pointer-events: none; transform: scale(0.95); }
         #login-overlay .login-icon { font-size: 3rem; color: var(--primary); margin-bottom: 6px; }
         #login-overlay h2 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; margin-bottom: 2px; color: var(--text-main); }
@@ -242,16 +181,6 @@
         .calendar-date.has-tasks { border-color: var(--secondary); background-color: rgba(0,129,167,0.12); }
         .calendar-date.has-timetable { border-color: var(--success); background-color: rgba(46,196,182,0.1); }
         .calendar-date.has-tasks.has-timetable { background: linear-gradient(135deg, rgba(0,129,167,0.1), rgba(46,196,182,0.1)); }
-        .assistant-widget { position: absolute; bottom: 68px; right: 8px; z-index: 150; display: flex; align-items: flex-end; gap: 5px; pointer-events: auto; }
-        .assistant-speech-wrap { position: relative; opacity: 1; transform: scale(1); transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
-        .assistant-speech-wrap.hidden { opacity: 0; transform: scale(0); pointer-events: none; }
-        .assistant-speech { background: var(--bg-card); border: 2px solid var(--primary); padding: 6px 10px; border-radius: 14px; font-family: 'Fredoka', sans-serif; font-size: 0.8rem; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 150px; cursor: pointer; position: relative; line-height: 1.3; }
-        .assistant-speech::after { content: ''; position: absolute; right: -6px; bottom: 5px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 6px solid var(--primary); }
-        .assistant-close-btn { position: absolute; top: -7px; left: -7px; width: 16px; height: 16px; background: var(--accent); color: white; border: 2px solid var(--bg-card); border-radius: 50%; font-size: 0.45rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 155; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.2s; }
-        .assistant-close-btn:hover { transform: scale(1.1); }
-        .assistant-avatar-btn { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; border: 3px solid var(--bg-card); display: flex; justify-content: center; align-items: center; color: white; font-size: 1rem; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.2); animation: floatBoy 2.5s ease-in-out infinite alternate; flex-shrink: 0; transition: 0.2s; }
-        .assistant-avatar-btn:hover { transform: scale(1.05); }
-        @keyframes floatBoy { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
         .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; background: var(--bg-card); border-top: 2px dashed var(--border); z-index: 100; display: flex; flex-direction: column; padding: 4px 0 2px 0; flex-shrink: 0; }
         .nav-items-row { display: flex; justify-content: space-around; align-items: center; padding: 0 4px; }
         .nav-item { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 1px; flex: 1; color: var(--text-muted); font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.7rem; padding: 6px 0 4px 0; border-radius: 12px; transition: color 0.2s, transform 0.1s; min-height: 48px; justify-content: center; -webkit-tap-highlight-color: transparent; }
@@ -277,7 +206,6 @@
             .nav-item { font-size: 0.6rem; min-height: 44px; padding: 4px 0 2px 0; }
             .nav-item i { font-size: 1.2rem; }
             .nav-item span { font-size: 0.55rem; }
-            .assistant-speech { font-size: 0.7rem; max-width: 120px; padding: 5px 8px; }
         }
         .sync-btn { position: fixed; bottom: 100px; right: 12px; background: var(--primary); color: white; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 120; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .sync-btn:hover { transform: scale(1.1); }
@@ -297,11 +225,9 @@
             margin-top: 12px;
             border-top: 2px dashed var(--border);
             padding-top: 10px;
-            flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 0;
-            padding-bottom: 12px;
+            flex-shrink: 0;
         }
         .tasks-section h3 {
             font-family: 'Fredoka', sans-serif;
@@ -353,10 +279,7 @@
             flex-direction: column;
             gap: 4px;
             overflow-y: auto;
-            flex: 1;
-            min-height: 0;
-            max-height: none;
-            padding-bottom: 4px;
+            max-height: 200px;
         }
         .task-item {
             display: flex;
@@ -378,10 +301,7 @@
             text-decoration: line-through;
             color: var(--text-muted);
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-12px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
         .task-check {
             width: 22px;
             height: 22px;
@@ -397,43 +317,12 @@
             font-size: 0.65rem;
             color: transparent;
         }
-        .task-check:hover {
-            transform: scale(1.08);
-            border-color: var(--primary);
-        }
-        .task-check.checked {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-        }
-        .task-check.checked i {
-            color: white;
-        }
-        .task-text {
-            flex: 1;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-main);
-            word-break: break-word;
-            line-height: 1.3;
-        }
-        .task-delete-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.7rem;
-            padding: 2px 4px;
-            border-radius: 4px;
-            transition: color 0.2s, background 0.2s;
-            flex-shrink: 0;
-            opacity: 0.4;
-        }
-        .task-delete-btn:hover {
-            color: var(--accent);
-            background: rgba(230,57,70,0.1);
-            opacity: 1;
-        }
+        .task-check:hover { transform: scale(1.08); border-color: var(--primary); }
+        .task-check.checked { background: var(--success); border-color: var(--success); color: white; }
+        .task-check.checked i { color: white; }
+        .task-text { flex: 1; font-size: 0.75rem; font-weight: 600; color: var(--text-main); word-break: break-word; line-height: 1.3; }
+        .task-delete-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; transition: color 0.2s, background 0.2s; flex-shrink: 0; opacity: 0.4; }
+        .task-delete-btn:hover { color: var(--accent); background: rgba(230,57,70,0.1); opacity: 1; }
         .task-add-row {
             display: flex;
             gap: 5px;
@@ -451,26 +340,18 @@
             font-weight: 600;
             outline: none;
         }
-        .task-add-row input:focus {
-            border-color: var(--primary);
-        }
-        .task-add-row input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.6;
-        }
-        .task-add-row .btn {
-            padding: 6px 12px;
-            font-size: 0.7rem;
-            flex-shrink: 0;
-            box-shadow: none;
-            border-radius: var(--radius-sm);
-        }
-        .history-tasks-section {
+        .task-add-row input:focus { border-color: var(--primary); }
+        .task-add-row input::placeholder { color: var(--text-muted); opacity: 0.6; }
+        .task-add-row .btn { padding: 6px 12px; font-size: 0.7rem; flex-shrink: 0; box-shadow: none; border-radius: var(--radius-sm); }
+        .no-tasks-msg { color: var(--text-muted); font-size: 0.7rem; font-style: italic; padding: 4px 0; }
+
+        /* ─── CALENDAR TASKS ─── */
+        .calendar-tasks-section {
             margin-top: 10px;
             border-top: 2px dashed var(--border);
             padding-top: 10px;
         }
-        .history-tasks-section h4 {
+        .calendar-tasks-section h4 {
             font-family: 'Fredoka', sans-serif;
             font-size: 0.8rem;
             font-weight: 600;
@@ -480,55 +361,16 @@
             align-items: center;
             gap: 6px;
         }
-        .history-tasks-section .task-item {
-            padding: 4px 8px 4px 4px;
-        }
-        .history-tasks-section .task-item .task-text {
-            font-size: 0.7rem;
-        }
-        .history-tasks-section .task-check {
-            width: 18px;
-            height: 18px;
-            font-size: 0.5rem;
-        }
-        .no-tasks-msg {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-style: italic;
-            padding: 4px 0;
-        }
+        .calendar-tasks-section .task-list { max-height: 150px; }
+        .calendar-tasks-section .task-item { padding: 4px 8px 4px 4px; }
+        .calendar-tasks-section .task-item .task-text { font-size: 0.7rem; }
+        .calendar-tasks-section .task-check { width: 18px; height: 18px; font-size: 0.5rem; }
 
         /* ─── STUDIO TAB ─── */
-        .studio-date-selector {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-        }
-        .studio-date-selector input[type="date"] {
-            flex: 1;
-            padding: 6px 10px;
-            background: var(--input-bg);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-main);
-            font-size: 0.75rem;
-            font-weight: 600;
-            outline: none;
-            min-width: 130px;
-        }
-        .studio-date-selector input[type="date"]:focus {
-            border-color: var(--primary);
-        }
-        .studio-date-selector .btn {
-            padding: 6px 12px;
-            font-size: 0.7rem;
-            flex-shrink: 0;
-            box-shadow: none;
-            border-radius: var(--radius-sm);
-        }
+        .studio-date-selector { display: flex; gap: 6px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+        .studio-date-selector input[type="date"] { flex: 1; padding: 6px 10px; background: var(--input-bg); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.75rem; font-weight: 600; outline: none; min-width: 130px; }
+        .studio-date-selector input[type="date"]:focus { border-color: var(--primary); }
+        .studio-date-selector .btn { padding: 6px 12px; font-size: 0.7rem; flex-shrink: 0; box-shadow: none; border-radius: var(--radius-sm); }
         .studio-tasks-section {
             margin-top: 12px;
             border-top: 2px solid var(--border);
@@ -550,176 +392,60 @@
             margin-bottom: 6px;
             flex-shrink: 0;
         }
-        .studio-tasks-section .task-list {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-            max-height: none;
-            padding-bottom: 4px;
-        }
-        .studio-tasks-section .future-date-label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            padding: 4px 0;
-            flex-shrink: 0;
-        }
-        .studio-tasks-section .task-add-row {
-            flex-shrink: 0;
-        }
-        .studio-tasks-section .task-progress-wrap {
-            flex-shrink: 0;
-        }
+        .studio-tasks-section .task-list { flex: 1; overflow-y: auto; min-height: 0; max-height: 300px; }
+        .studio-tasks-section .future-date-label { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); padding: 4px 0; flex-shrink: 0; }
+        .studio-tasks-section .task-add-row { flex-shrink: 0; }
+        .studio-tasks-section .task-progress-wrap { flex-shrink: 0; }
 
-        #view-today {
+        #view-today .tasks-section { flex-shrink: 0; }
+        #view-today .tasks-section .task-list { max-height: 200px; }
+
+        #view-create { display: none; flex-direction: column; height: 100%; }
+        #view-create.active { display: flex; flex-direction: column; }
+        #view-create > *:not(.studio-tasks-section) { flex-shrink: 0; }
+        #view-create .studio-tasks-section { flex: 1; min-height: 0; padding-bottom: 16px; }
+
+        /* ─── INSIGHTS TAB ─── */
+        #view-insights {
             display: none;
             flex-direction: column;
             height: 100%;
         }
-        #view-today.active {
+        #view-insights.active {
             display: flex;
             flex-direction: column;
         }
-        #view-today > *:not(.tasks-section) {
-            flex-shrink: 0;
-        }
-        #view-today .tasks-section {
-            flex: 1;
-            min-height: 0;
-            padding-bottom: 16px;
-        }
-
-        #view-create {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
-        #view-create.active {
-            display: flex;
-            flex-direction: column;
-        }
-        #view-create > *:not(.studio-tasks-section) {
-            flex-shrink: 0;
-        }
-        #view-create .studio-tasks-section {
-            flex: 1;
-            min-height: 0;
-            padding-bottom: 16px;
-        }
-
-        /* ─── ANALYTICS STYLES ─── */
-        .analytics-filters {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-        }
-        .analytics-filters .btn {
-            padding: 4px 12px;
-            font-size: 0.65rem;
-            flex: 1;
-            min-width: 50px;
-            box-shadow: none;
-            border-radius: 20px;
-            transition: 0.3s;
-        }
-        .analytics-filters .btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary-hover);
-        }
-        .analytics-container {
+        .insights-container {
             flex: 1;
             overflow-y: auto;
-            min-height: 0;
             padding-bottom: 12px;
         }
-        .analytics-card {
-            background: var(--bg-base);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 10px;
+        .insight-card {
+            background: var(--insight-bg);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
             margin-bottom: 8px;
-            transition: all 0.3s ease;
-            animation: slideUp 0.4s ease;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .analytics-card .date-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-main);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            transition: 0.3s;
         }
-        .analytics-card .date-label .day-name {
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.65rem;
-        }
-        .analytics-bar-wrap {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 4px;
-        }
-        .analytics-bar-track {
-            flex: 1;
-            height: 18px;
-            background: var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-        .analytics-bar-fill {
-            height: 100%;
-            border-radius: 20px;
-            transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
-            width: 0%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 6px;
-            font-size: 0.55rem;
-            font-weight: 700;
-            color: white;
-        }
-        .analytics-bar-fill.green { background: linear-gradient(90deg, #2ec4b6, #38b000); }
-        .analytics-bar-fill.blue { background: linear-gradient(90deg, #4361ee, #4895ef); }
-        .analytics-bar-fill.purple { background: linear-gradient(90deg, #7209b7, #b5179e); }
-        .analytics-bar-fill.orange { background: linear-gradient(90deg, #f77f00, #fcbf49); }
-        .analytics-bar-fill.red { background: linear-gradient(90deg, #e63946, #ff6b6b); }
-        .analytics-percent {
-            font-size: 0.75rem;
-            font-weight: 700;
-            min-width: 40px;
-            text-align: right;
-            color: var(--text-main);
-        }
-        .analytics-task-count {
-            font-size: 0.55rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-        .analytics-empty {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-align: center;
-            padding: 30px 0;
-            font-style: italic;
-        }
-        .analytics-stats-row {
+        .insight-card:hover { transform: translateX(4px); }
+        .insight-card .insight-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+        .insight-card .insight-text { font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1; line-height: 1.4; }
+        .insight-card .insight-text span { color: var(--primary); font-weight: 700; }
+        .insight-card .insight-text .highlight { color: var(--accent); font-weight: 700; }
+        .no-insights { color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 30px 0; font-style: italic; }
+        .insights-stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 6px;
             margin-bottom: 12px;
             flex-shrink: 0;
         }
-        .analytics-stat-box {
+        .insights-stat-box {
             background: var(--bg-base);
             border: 2px solid var(--border);
             border-radius: var(--radius-md);
@@ -727,97 +453,43 @@
             text-align: center;
             transition: 0.3s;
         }
-        .analytics-stat-box .stat-value {
+        .insights-stat-box .stat-value {
             font-family: 'Fredoka', sans-serif;
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--primary);
         }
-        .analytics-stat-box .stat-label {
+        .insights-stat-box .stat-label {
             font-size: 0.55rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
 
-        #view-analytics {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
-        #view-analytics.active {
-            display: flex;
-            flex-direction: column;
-        }
-        #view-analytics > *:not(.analytics-container) {
-            flex-shrink: 0;
-        }
-        #view-analytics .analytics-container {
-            flex: 1;
-            min-height: 0;
-        }
-
-        /* ─── INSIGHTS STYLES ─── */
-        .insights-section {
-            margin-top: 12px;
+        /* ─── HISTORY TASKS ─── */
+        .history-tasks-section {
+            margin-top: 10px;
             border-top: 2px dashed var(--border);
             padding-top: 10px;
-            flex-shrink: 0;
         }
-        .insights-section h4 {
+        .history-tasks-section h4 {
             font-family: 'Fredoka', sans-serif;
             font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-main);
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
             gap: 6px;
-            margin-bottom: 6px;
         }
-        .insight-card {
-            background: var(--insight-bg);
-            border: 2px solid var(--primary);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease;
-            transition: 0.3s;
-        }
-        .insight-card:hover {
-            transform: translateX(4px);
-        }
-        .insight-card .insight-icon {
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-        .insight-card .insight-text {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text-main);
-            flex: 1;
-        }
-        .insight-card .insight-text span {
-            color: var(--primary);
-            font-weight: 700;
-        }
-        .no-insights {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-style: italic;
-            padding: 4px 0;
-        }
+        .history-tasks-section .task-item { padding: 4px 8px 4px 4px; }
+        .history-tasks-section .task-item .task-text { font-size: 0.7rem; }
+        .history-tasks-section .task-check { width: 18px; height: 18px; font-size: 0.5rem; }
+        .history-tasks-section .task-list { max-height: 150px; }
 
-        /* ─── CALENDAR DATE WITH TIMETABLE ─── */
-        .calendar-date.has-timetable {
-            border-color: var(--success);
-            background-color: rgba(46,196,182,0.1);
-        }
-        .calendar-date.has-tasks.has-timetable {
-            background: linear-gradient(135deg, rgba(0,129,167,0.1), rgba(46,196,182,0.1));
-        }
+        .long-press-hint { font-size: 0.5rem; color: var(--text-muted); opacity: 0.6; text-align: center; margin-top: 2px; font-style: italic; }
+        .calendar-date.has-timetable { border-color: var(--success); background-color: rgba(46,196,182,0.1); }
+        .calendar-date.has-tasks.has-timetable { background: linear-gradient(135deg, rgba(0,129,167,0.1), rgba(46,196,182,0.1)); }
     </style>
 </head>
 <body>
@@ -918,11 +590,6 @@
                     <h3><i class="fas fa-list-check"></i> Today's Tasks</h3>
                     <div id="today-tasks-container"></div>
                 </div>
-
-                <div class="insights-section" id="insights-section">
-                    <h4><i class="fas fa-lightbulb"></i> Insights</h4>
-                    <div id="insights-container"></div>
-                </div>
             </div>
 
             <div id="view-yesterday" class="view-section">
@@ -955,14 +622,12 @@
                 </div>
                 <div class="table-container">
                     <table id="matrix-table">
-                        <thead>
-                            <tr id="matrix-header-row">
-                                <th>Subject / Time</th>
-                                <th><input type="text" value="08:00 AM" /></th>
-                                <th><input type="text" value="10:00 AM" /></th>
-                                <th><input type="text" value="12:00 PM" /></th>
-                            </tr>
-                        </thead>
+                        <thead><tr id="matrix-header-row">
+                            <th>Subject / Time</th>
+                            <th><input type="text" value="08:00 AM" /></th>
+                            <th><input type="text" value="10:00 AM" /></th>
+                            <th><input type="text" value="12:00 PM" /></th>
+                        </tr></thead>
                         <tbody id="matrix-body-rows">
                             <tr><td><input type="text" value="Maths" /></td><td><input type="text" value="Calculus" /></td><td><input type="text" value="Algebra" /></td><td><input type="text" value="Revision" /></td></tr>
                             <tr><td><input type="text" value="Physics" /></td><td><input type="text" value="Mechanics" /></td><td><input type="text" value="Optics" /></td><td><input type="text" value="Numericals" /></td></tr>
@@ -999,30 +664,24 @@
                 <div id="calendar-selected-data" style="margin-top:8px;"></div>
             </div>
 
-            <div id="view-analytics" class="view-section">
-                <h2><i class="fas fa-chart-simple"></i> Progress Analytics</h2>
-                <div class="analytics-stats-row" id="analytics-stats">
-                    <div class="analytics-stat-box">
-                        <div class="stat-value" id="stat-total-days">0</div>
-                        <div class="stat-label">Days Tracked</div>
+            <div id="view-insights" class="view-section">
+                <h2><i class="fas fa-lightbulb"></i> Insights</h2>
+                <div class="insights-stats-row" id="insights-stats">
+                    <div class="insights-stat-box">
+                        <div class="stat-value" id="insight-total-tasks">0</div>
+                        <div class="stat-label">Total Tasks</div>
                     </div>
-                    <div class="analytics-stat-box">
-                        <div class="stat-value" id="stat-avg-progress">0%</div>
-                        <div class="stat-label">Avg Progress</div>
+                    <div class="insights-stat-box">
+                        <div class="stat-value" id="insight-completed">0</div>
+                        <div class="stat-label">Completed</div>
                     </div>
-                    <div class="analytics-stat-box">
-                        <div class="stat-value" id="stat-best-day">-</div>
-                        <div class="stat-label">Best Day</div>
+                    <div class="insights-stat-box">
+                        <div class="stat-value" id="insight-progress">0%</div>
+                        <div class="stat-label">Progress</div>
                     </div>
                 </div>
-                <div class="analytics-filters">
-                    <button class="btn active" data-filter="day">Day</button>
-                    <button class="btn" data-filter="week">Week</button>
-                    <button class="btn" data-filter="month">Month</button>
-                    <button class="btn" data-filter="all">All</button>
-                </div>
-                <div class="analytics-container" id="analytics-container">
-                    <div class="analytics-empty">Loading analytics...</div>
+                <div class="insights-container" id="insights-container">
+                    <div class="no-insights">Complete some tasks to see insights! 🚀</div>
                 </div>
             </div>
         </main>
@@ -1034,21 +693,13 @@
             <i class="fas fa-circle"></i> <span id="cloud-status-text">Checking...</span>
         </div>
 
-        <div class="assistant-widget" id="assistant-widget">
-            <div class="assistant-speech-wrap" id="assistant-speech-wrap">
-                <button class="assistant-close-btn" id="assistant-close" title="Hide"><i class="fas fa-times"></i></button>
-                <div class="assistant-speech" id="assistant-bubble">Tap me for help! 👋</div>
-            </div>
-            <div class="assistant-avatar-btn" id="assistant-btn" title="Tap for guide"><i class="fas fa-child-reaching"></i></div>
-        </div>
-
         <nav class="bottom-nav">
             <div class="nav-items-row">
                 <button class="nav-item active" data-target="view-today"><i class="fas fa-house-chimney"></i><span>Today</span></button>
                 <button class="nav-item" data-target="view-yesterday"><i class="fas fa-box-archive"></i><span>History</span></button>
                 <button class="nav-item" data-target="view-create"><i class="fas fa-pen-nib"></i><span>Studio</span></button>
                 <button class="nav-item" data-target="view-calendar"><i class="fas fa-calendar-days"></i><span>Calendar</span></button>
-                <button class="nav-item" data-target="view-analytics"><i class="fas fa-chart-line"></i><span>Analytics</span></button>
+                <button class="nav-item" data-target="view-insights"><i class="fas fa-lightbulb"></i><span>Insights</span></button>
             </div>
             <div class="footer-credit">
                 Built with <span class="heart">❤️</span> by
@@ -1119,7 +770,6 @@
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const htmlEl = document.documentElement;
-        // Default to light theme
         const savedTheme = localStorage.getItem('doodleTheme') || 'light';
         htmlEl.setAttribute('data-theme', savedTheme);
         themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
@@ -1128,7 +778,6 @@
             htmlEl.setAttribute('data-theme', next);
             localStorage.setItem('doodleTheme', next);
             themeIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            renderAnalytics(currentFilter);
             renderInsights();
         });
 
@@ -1190,54 +839,15 @@
                                 renderStudioTasks(studioDate);
                             }
                         }
-                        if (target === 'view-analytics') {
-                            renderAnalytics(currentFilter);
+                        if (target === 'view-insights') {
+                            renderInsights();
                         }
                         if (target === 'view-today') {
-                            renderInsights();
+                            renderTodayTasks();
                         }
                     }
                 });
             });
-        });
-
-        // ─── Assistant ───
-        const assistantBtn = document.getElementById('assistant-btn');
-        const assistantBubble = document.getElementById('assistant-bubble');
-        const assistantClose = document.getElementById('assistant-close');
-        const speechWrap = document.getElementById('assistant-speech-wrap');
-        const guideMessages = [
-            "Hii I'm PS. Tap me for tips! 👋",
-            "⏱️ Live clock + target countdown!",
-            "📅 Calendar shows festivals, tests & tasks!",
-            "🎨 Studio lets you customise any date's timetable!",
-            "📊 Analytics shows your progress with bars!",
-            "📈 Switch between Day/Week/Month/All views!",
-            "💡 Insights give you smart feedback based on your data!",
-            "🔐 Your data syncs automatically across devices!",
-            "🔄 Tap the cloud button to force sync!",
-            "🗑️ Long-press on history timetable to delete!",
-            "✅ Tasks: add, tick, and track progress!",
-            "Stay productive! 🚀"
-        ];
-        let guideIdx = 0;
-
-        function handleAssistant() {
-            if (speechWrap.classList.contains('hidden')) {
-                speechWrap.classList.remove('hidden');
-                guideIdx = 0;
-                assistantBubble.innerHTML = guideMessages[0];
-                return;
-            }
-            guideIdx = (guideIdx + 1) % guideMessages.length;
-            assistantBubble.innerHTML = guideMessages[guideIdx];
-        }
-        assistantBtn.addEventListener('click', handleAssistant);
-        assistantBubble.addEventListener('click', handleAssistant);
-        assistantClose.addEventListener('click', (e) => {
-            e.stopPropagation();
-            speechWrap.classList.add('hidden');
-            showStickerToast("Assistant hidden. Tap the boy to reopen.");
         });
 
         // ─── Storage Keys ───
@@ -1512,7 +1122,6 @@
             if (studioDate) { loadStudioTimetable(studioDate);
                 renderStudioTasks(studioDate); }
             renderTodayTasks();
-            renderAnalytics(currentFilter);
             renderInsights();
         }
 
@@ -1795,27 +1404,35 @@
             if (tMatch) { html += `<div id="cal-table-box"></div>`; } else {
                 html += `<p style="color:var(--text-muted);font-size:0.7rem;">No timetable for this date.</p>`;
             }
+
+            // Tasks in calendar (using same style as history)
             const tasksData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
             const dateTasks = tasksData.find(t => t.date === dateStr);
             if (dateTasks && dateTasks.tasks && dateTasks.tasks.length > 0) {
                 const completed = dateTasks.tasks.filter(t => t.completed).length;
                 const total = dateTasks.tasks.length;
-                html += `<div style="margin-top:8px;border-top:2px dashed var(--border);padding-top:6px;">
-                    <p style="font-size:0.7rem;font-weight:600;color:var(--secondary);">
-                        <i class="fas fa-list-check"></i> Tasks: ${completed}/${total} done
-                    </p>
-                    <ul style="list-style:none;padding:0;margin:4px 0 0 0;display:flex;flex-direction:column;gap:2px;">
+                html += `<div class="calendar-tasks-section">
+                    <h4><i class="fas fa-list-check"></i> Tasks for this day</h4>
+                    <div class="task-progress-wrap" style="margin-bottom:4px;">
+                        <span style="font-size:0.65rem;font-weight:600;">${completed}/${total}</span>
+                        <div class="task-progress-bar"><div class="fill" style="width:${total > 0 ? Math.round((completed/total)*100) : 0}%;"></div></div>
+                        <span class="task-progress-text">${total > 0 ? Math.round((completed/total)*100) : 0}%</span>
+                    </div>
+                    <ul class="task-list">
                 `;
                 dateTasks.tasks.forEach(t => {
-                    html += `<li style="display:flex;align-items:center;gap:6px;font-size:0.65rem;padding:2px 4px;border-radius:6px;background:var(--bg-base);border:1px solid var(--border);">
-                        <span style="color:${t.completed ? 'var(--success)' : 'var(--text-muted)'};font-size:0.55rem;">
-                            <i class="fas ${t.completed ? 'fa-circle-check' : 'fa-circle'}"></i>
-                        </span>
-                        <span style="${t.completed ? 'text-decoration:line-through;color:var(--text-muted);' : ''}">${t.text}</span>
-                    </li>`;
+                    html += `
+                        <li class="task-item ${t.completed ? 'completed' : ''}">
+                            <span class="task-check ${t.completed ? 'checked' : ''}" style="pointer-events:none;width:18px;height:18px;font-size:0.5rem;">
+                                <i class="fas ${t.completed ? 'fa-circle-check' : 'fa-circle'}"></i>
+                            </span>
+                            <span class="task-text" style="font-size:0.7rem;">${t.text}</span>
+                        </li>
+                    `;
                 });
                 html += `</ul></div>`;
             }
+
             container.innerHTML = html;
             if (tMatch) renderTable(tMatch, document.getElementById('cal-table-box'));
         }
@@ -1935,7 +1552,6 @@
                         renderTodayTasks();
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
                         checkAndCelebrateAllDone(todayStr);
-                        renderInsights();
                     }
                 });
             });
@@ -1950,7 +1566,6 @@
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
                         showStickerToast('🗑️ Task deleted.');
                         checkAndCelebrateAllDone(todayStr);
-                        renderInsights();
                     }
                 });
             });
@@ -2114,6 +1729,8 @@
                 tableEl.style.cursor = 'pointer';
                 tableEl.title = 'Long press to delete this timetable';
             }
+
+            // Tasks in history
             const tasks = getTasksForDate(dateVal);
             if (tasks.length > 0) {
                 tasksSection.style.display = 'block';
@@ -2126,12 +1743,12 @@
                         <div class="task-progress-bar"><div class="fill" style="width:${pct}%;"></div></div>
                         <span class="task-progress-text">${pct}%</span>
                     </div>
-                    <ul class="task-list" style="max-height:150px;">
+                    <ul class="task-list">
                 `;
                 tasks.forEach(t => {
                     tHtml += `
-                        <li class="task-item ${t.completed ? 'completed' : ''}" style="padding:4px 8px 4px 4px;">
-                            <span class="task-check ${t.completed ? 'checked' : ''}" style="width:18px;height:18px;font-size:0.5rem;pointer-events:none;">
+                        <li class="task-item ${t.completed ? 'completed' : ''}">
+                            <span class="task-check ${t.completed ? 'checked' : ''}" style="pointer-events:none;width:18px;height:18px;font-size:0.5rem;">
                                 <i class="fas ${t.completed ? 'fa-circle-check' : 'fa-circle'}"></i>
                             </span>
                             <span class="task-text" style="font-size:0.7rem;">${t.text}</span>
@@ -2156,6 +1773,11 @@
             const totalCompleted = allTasks.reduce((sum, d) => sum + d.tasks.filter(t => t.completed).length, 0);
             const totalProgress = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
 
+            // Update stats
+            document.getElementById('insight-total-tasks').innerText = totalTasks;
+            document.getElementById('insight-completed').innerText = totalCompleted;
+            document.getElementById('insight-progress').innerText = totalProgress + '%';
+
             const todayTasks = getTasksForDate(todayStr);
             const todayCompleted = todayTasks.filter(t => t.completed).length;
             const todayProgress = todayTasks.length > 0 ? Math.round((todayCompleted / todayTasks.length) * 100) : 0;
@@ -2174,6 +1796,7 @@
             const today = new Date();
             const dayOfWeek = today.getDay();
 
+            // Today's progress
             if (todayTasks.length > 0) {
                 if (todayProgress === 100) {
                     insights.push({ icon: '🎉', text: `Amazing! You've completed <span>all ${todayTasks.length}</span> tasks today! Keep it up!` });
@@ -2190,6 +1813,7 @@
                 insights.push({ icon: '📋', text: `No tasks for today. Add some tasks to stay productive!` });
             }
 
+            // Consistency
             const daysWithTasks = allTasks.filter(d => d.tasks.length > 0);
             if (daysWithTasks.length > 0) {
                 const avgProgress = daysWithTasks.reduce((sum, d) => {
@@ -2205,11 +1829,13 @@
                 }
             }
 
+            // Best day
             if (bestDay.date && bestDay.progress > 0) {
                 const isTodayBest = bestDay.date === todayStr;
                 insights.push({ icon: '🏆', text: `Your best day was <span>${bestDay.date}</span> with <span>${bestDay.progress}%</span> completion (${bestDay.tasks} tasks)${isTodayBest ? ' 🎯' : ''}` });
             }
 
+            // Day motivation
             const motivational = [
                 "Monday motivation! Start the week strong 💪",
                 "Tuesday is for progress! Keep going 🚀",
@@ -2223,6 +1849,7 @@
                 insights.push({ icon: '💡', text: motivational[dayOfWeek - 1] });
             }
 
+            // Overall progress
             if (totalTasks > 0) {
                 if (totalProgress >= 80) {
                     insights.push({ icon: '🌟', text: `Overall you're at <span>${totalProgress}%</span> with <span>${totalCompleted}/${totalTasks}</span> tasks done. You're on fire!` });
@@ -2233,16 +1860,13 @@
                 }
             }
 
-            const maxInsights = 5;
-            const displayInsights = insights.slice(0, maxInsights);
-
-            if (displayInsights.length === 0) {
+            if (insights.length === 0) {
                 container.innerHTML = `<div class="no-insights">Complete some tasks to see insights! 🚀</div>`;
                 return;
             }
 
             let html = '';
-            displayInsights.forEach(insight => {
+            insights.forEach(insight => {
                 html += `
                     <div class="insight-card">
                         <span class="insight-icon">${insight.icon}</span>
@@ -2250,127 +1874,6 @@
                     </div>
                 `;
             });
-            container.innerHTML = html;
-        }
-
-        // ─── ANALYTICS ───
-        let currentFilter = 'day';
-
-        document.querySelectorAll('.analytics-filters .btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.analytics-filters .btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentFilter = btn.dataset.filter;
-                renderAnalytics(currentFilter);
-            });
-        });
-
-        function getDayName(dateStr) {
-            const d = new Date(dateStr + 'T00:00:00');
-            return d.toLocaleDateString(undefined, { weekday: 'short' });
-        }
-
-        function getDateRange(filter) {
-            const today = new Date();
-            const dates = [];
-            if (filter === 'day') {
-                const key = getLocalDate(today);
-                dates.push(key);
-            } else if (filter === 'week') {
-                const day = today.getDay();
-                const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-                const monday = new Date(today);
-                monday.setDate(diff);
-                for (let i = 0; i < 7; i++) {
-                    const d = new Date(monday);
-                    d.setDate(monday.getDate() + i);
-                    dates.push(getLocalDate(d));
-                }
-            } else if (filter === 'month') {
-                const year = today.getFullYear();
-                const month = today.getMonth();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                for (let i = 1; i <= daysInMonth; i++) {
-                    const d = new Date(year, month, i);
-                    dates.push(getLocalDate(d));
-                }
-            } else if (filter === 'all') {
-                const allData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
-                const sorted = allData.map(d => d.date).sort();
-                sorted.forEach(date => dates.push(date));
-                if (dates.length === 0) dates.push(todayStr);
-            }
-            return dates;
-        }
-
-        function getProgressForDate(dateStr) {
-            const tasks = getTasksForDate(dateStr);
-            if (tasks.length === 0) return null;
-            const completed = tasks.filter(t => t.completed).length;
-            return Math.round((completed / tasks.length) * 100);
-        }
-
-        function renderAnalytics(filter) {
-            const container = document.getElementById('analytics-container');
-            const dateKeys = getDateRange(filter);
-            const data = [];
-            let totalProgress = 0;
-            let daysWithData = 0;
-            let bestDay = { date: '', progress: 0 };
-
-            dateKeys.forEach(key => {
-                const progress = getProgressForDate(key);
-                if (progress !== null) {
-                    data.push({ date: key, progress, dayName: getDayName(key) });
-                    totalProgress += progress;
-                    daysWithData++;
-                    if (progress > bestDay.progress) {
-                        bestDay = { date: key, progress };
-                    }
-                }
-            });
-
-            document.getElementById('stat-total-days').innerText = daysWithData;
-            document.getElementById('stat-avg-progress').innerText = daysWithData > 0 ? Math.round(totalProgress / daysWithData) +
-                '%' : '0%';
-            document.getElementById('stat-best-day').innerText = bestDay.progress > 0 ? `${bestDay.date} (${bestDay.progress}%)` :
-                '-';
-
-            if (data.length === 0) {
-                container.innerHTML =
-                    `<div class="analytics-empty">📊 No data available. Start tracking your tasks to see progress!</div>`;
-                return;
-            }
-
-            data.sort((a, b) => a.date.localeCompare(b.date));
-
-            let html = '';
-            data.forEach((item, index) => {
-                const colorClasses = ['green', 'blue', 'purple', 'orange', 'red'];
-                const colorClass = colorClasses[index % colorClasses.length];
-                const progress = item.progress;
-
-                html += `
-                    <div class="analytics-card" style="animation-delay: ${index * 0.05}s">
-                        <div class="date-label">
-                            <span>${item.date} <span class="day-name">(${item.dayName})</span></span>
-                            <span>${progress}%</span>
-                        </div>
-                        <div class="analytics-bar-wrap">
-                            <div class="analytics-bar-track">
-                                <div class="analytics-bar-fill ${colorClass}" style="width: ${progress}%;">
-                                    ${progress > 30 ? progress + '%' : ''}
-                                </div>
-                            </div>
-                            <span class="analytics-percent">${progress}%</span>
-                        </div>
-                        <div class="analytics-task-count">
-                            ${getTasksForDate(item.date).length} tasks · ${getTasksForDate(item.date).filter(t => t.completed).length} completed
-                        </div>
-                    </div>
-                `;
-            });
-
             container.innerHTML = html;
         }
 
@@ -2568,7 +2071,6 @@
             const studioDate = document.getElementById('studio-date-input').value;
             if (studioDate) { loadStudioTimetable(studioDate);
                 renderStudioTasks(studioDate); }
-            renderAnalytics('day');
             renderInsights();
             const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
             const todayEvent = tests.find(t => t.date === todayStr);
@@ -2587,12 +2089,11 @@
         window.renderTodayTasks = renderTodayTasks;
         window.renderStudioTasks = renderStudioTasks;
         window.loadStudioTimetable = loadStudioTimetable;
-        window.renderAnalytics = renderAnalytics;
         window.renderInsights = renderInsights;
 
-        console.log('📚 Study Time-Table loaded with Light theme as default.');
-        console.log('💡 Insights provide smart feedback based on your task completion data.');
-        console.log('✅ Fully backward compatible with existing data.');
+        console.log('📚 Study Time-Table loaded with Insights tab.');
+        console.log('💡 Insights moved to separate tab. Assistant removed.');
+        console.log('✅ Task lists now use consistent scrollable style everywhere.');
     </script>
 </body>
 </html>
