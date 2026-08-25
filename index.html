@@ -1942,7 +1942,7 @@
             transition: border-color 0.2s, opacity 0.3s, background 0.2s, transform 0.2s;
             animation: slideIn 0.25s ease;
             flex-shrink: 0;
-            cursor: pointer;
+            cursor: default;
             min-height: 48px;
         }
 
@@ -2278,6 +2278,16 @@
 
         .studio-tasks-section .task-progress-wrap {
             flex-shrink: 0;
+        }
+
+        /* Studio tasks - no check buttons */
+        .studio-tasks-section .task-check {
+            display: none;
+        }
+
+        .studio-tasks-section .task-item {
+            cursor: default;
+            padding-left: 10px;
         }
 
         .history-tasks-section {
@@ -3868,10 +3878,7 @@
                 const tasks = dateTasks.tasks;
                 const completed = tasks.filter(t => t.completed).length;
                 const total = tasks.length;
-                const sortedTasks = [...tasks].sort((a, b) => {
-                    if (a.completed === b.completed) return 0;
-                    return a.completed ? 1 : -1;
-                });
+                const sortedTasks = [...tasks];
                 html += `<div class="calendar-tasks-section">
                     <h4><i class="fas fa-list-check"></i> Tasks for this day</h4>
                     <div class="task-progress-wrap" style="margin-bottom:4px;">
@@ -3954,12 +3961,23 @@
             const isToday = dateStr === todayStrLocal;
 
             let html = `<div class="future-date-label">📆 ${isToday ? 'Today' : isFuture ? 'Future' : 'Past'}</div>`;
-            html += `
-                <div class="task-add-row">
-                    <input type="text" id="${isStudio ? 'studio-task-input-field' : 'task-input-field'}" placeholder="Add a task..." maxlength="200" />
-                    <button class="btn primary" id="${isStudio ? 'studio-task-add-btn' : 'task-add-btn'}"><i class="fas fa-plus"></i> Add</button>
-                </div>
-            `;
+
+            // Only show add button for studio tasks (future tasks)
+            if (isStudio) {
+                html += `
+                    <div class="task-add-row">
+                        <input type="text" id="studio-task-input-field" placeholder="Add a task..." maxlength="200" />
+                        <button class="btn primary" id="studio-task-add-btn"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="task-add-row">
+                        <input type="text" id="task-input-field" placeholder="Add a task..." maxlength="200" />
+                        <button class="btn primary" id="task-add-btn"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                `;
+            }
 
             if (tasks.length === 0) {
                 html += `<div class="no-tasks-msg">No tasks for this date. Add one above.</div>`;
@@ -3967,10 +3985,7 @@
                 const completed = tasks.filter(t => t.completed).length;
                 const total = tasks.length;
                 const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-                const sortedTasks = [...tasks].sort((a, b) => {
-                    if (a.completed === b.completed) return 0;
-                    return a.completed ? 1 : -1;
-                });
+                // Keep tasks in original order - no sorting
                 html += `
                     <div class="task-progress-wrap">
                         <span style="font-size:0.65rem;font-weight:600;">${completed}/${total}</span>
@@ -3979,14 +3994,14 @@
                     </div>
                     <ul class="task-list" id="${isStudio ? 'studio-task-list' : 'today-task-list'}">
                 `;
-                sortedTasks.forEach((t, idx) => {
+                tasks.forEach((t, idx) => {
                     const checked = t.completed ? 'checked' : '';
                     const icon = t.completed ? 'fa-circle-check' : 'fa-circle';
+                    // For studio, hide the check button
+                    const checkHtml = isStudio ? '' : `<span class="task-check ${checked}" data-idx="${idx}" title="Toggle complete"><i class="fas ${icon}"></i></span>`;
                     html += `
                         <li class="task-item ${t.completed ? 'completed' : ''}" data-idx="${idx}" data-task-id="${t.id || idx}">
-                            <span class="task-check ${checked}" data-idx="${idx}" title="Toggle complete">
-                                <i class="fas ${icon}"></i>
-                            </span>
+                            ${checkHtml}
                             <span class="task-text">${t.text}</span>
                             <button class="task-delete-btn" data-idx="${idx}" title="Delete task"><i class="fas fa-times"></i></button>
                         </li>
@@ -3996,174 +4011,197 @@
             }
             container.innerHTML = html;
 
-            // Add event listeners
-            const addBtn = document.getElementById(isStudio ? 'studio-task-add-btn' : 'task-add-btn');
-            const inputField = document.getElementById(isStudio ? 'studio-task-input-field' : 'task-input-field');
+            // Add event listeners only for Today tab (non-studio)
+            if (!isStudio) {
+                const addBtn = document.getElementById('task-add-btn');
+                const inputField = document.getElementById('task-input-field');
 
-            if (addBtn && inputField) {
-                const addTask = () => {
-                    const text = inputField.value.trim();
-                    if (!text) { showStickerToast('⚠️ Please enter a task.'); return; }
-                    const current = getTasksForDate(dateStr);
-                    current.push({ id: Date.now().toString(), text, completed: false });
-                    saveTasksForDate(dateStr, current);
-                    inputField.value = '';
-                    if (isStudio) {
-                        renderStudioTasks(dateStr);
-                    } else {
+                if (addBtn && inputField) {
+                    const addTask = () => {
+                        const text = inputField.value.trim();
+                        if (!text) { showStickerToast('⚠️ Please enter a task.'); return; }
+                        const current = getTasksForDate(dateStr);
+                        current.push({ id: Date.now().toString(), text, completed: false });
+                        saveTasksForDate(dateStr, current);
+                        inputField.value = '';
                         renderTodayTasks();
-                    }
-                    if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                    showStickerToast('✅ Task added!');
-                };
-                addBtn.addEventListener('click', addTask);
-                inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
-            }
+                        if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                        showStickerToast('✅ Task added!');
+                    };
+                    addBtn.addEventListener('click', addTask);
+                    inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
+                }
 
-            const list = document.getElementById(isStudio ? 'studio-task-list' : 'today-task-list');
-            if (list) {
-                list.addEventListener('click', async (e) => {
-                    const checkBtn = e.target.closest('.task-check');
-                    const deleteBtn = e.target.closest('.task-delete-btn');
-                    const taskItem = e.target.closest('.task-item');
+                const list = document.getElementById('today-task-list');
+                if (list) {
+                    list.addEventListener('click', async (e) => {
+                        const checkBtn = e.target.closest('.task-check');
+                        const deleteBtn = e.target.closest('.task-delete-btn');
 
-                    if (deleteBtn) {
-                        e.stopPropagation();
-                        const idx = parseInt(deleteBtn.dataset.idx);
-                        const tasksList = getTasksForDate(dateStr);
-                        if (tasksList[idx]) {
-                            tasksList.splice(idx, 1);
-                            saveTasksForDate(dateStr, tasksList);
-                            if (isStudio) {
-                                renderStudioTasks(dateStr);
-                            } else {
+                        if (deleteBtn) {
+                            e.stopPropagation();
+                            const idx = parseInt(deleteBtn.dataset.idx);
+                            const tasksList = getTasksForDate(dateStr);
+                            if (tasksList[idx]) {
+                                tasksList.splice(idx, 1);
+                                saveTasksForDate(dateStr, tasksList);
                                 renderTodayTasks();
-                            }
-                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            showStickerToast('🗑️ Task deleted.');
-                            checkAndCelebrateAllDone(dateStr);
-                            renderAnalytics(currentFilter);
-                            renderInsightsInside();
-                        }
-                        return;
-                    }
-
-                    if (checkBtn) {
-                        e.stopPropagation();
-                        const idx = parseInt(checkBtn.dataset.idx);
-                        const tasksList = getTasksForDate(dateStr);
-                        if (tasksList[idx]) {
-                            const isCurrentlyCompleted = tasksList[idx].completed;
-
-                            if (isCurrentlyCompleted) {
-                                const confirmed = await showUndoConfirm(tasksList[idx].text);
-                                if (!confirmed) return;
-                            }
-
-                            tasksList[idx].completed = !tasksList[idx].completed;
-                            saveTasksForDate(dateStr, tasksList);
-                            if (isStudio) {
-                                renderStudioTasks(dateStr);
-                            } else {
-                                renderTodayTasks();
-                            }
-                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            if (!isCurrentlyCompleted) {
+                                if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                                showStickerToast('🗑️ Task deleted.');
                                 checkAndCelebrateAllDone(dateStr);
-                            } else {
-                                showStickerToast('↻ Task marked as incomplete');
+                                renderAnalytics(currentFilter);
+                                renderInsightsInside();
                             }
-                            renderAnalytics(currentFilter);
-                            renderInsightsInside();
+                            return;
                         }
-                    }
-                });
 
-                // Long press on task item
-                let longPressTimer = null;
-                let longPressTarget = null;
+                        if (checkBtn) {
+                            e.stopPropagation();
+                            const idx = parseInt(checkBtn.dataset.idx);
+                            const tasksList = getTasksForDate(dateStr);
+                            if (tasksList[idx]) {
+                                const isCurrentlyCompleted = tasksList[idx].completed;
 
-                list.addEventListener('mousedown', (e) => {
-                    const target = e.target.closest('.task-item');
-                    if (!target) return;
-                    if (e.target.closest('.task-delete-btn')) return;
-                    longPressTarget = target;
-                    longPressTimer = setTimeout(async () => {
-                        const idx = parseInt(target.dataset.idx);
-                        const tasksList = getTasksForDate(dateStr);
-                        if (tasksList[idx]) {
-                            const isCurrentlyCompleted = tasksList[idx].completed;
+                                if (isCurrentlyCompleted) {
+                                    const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                    if (!confirmed) return;
+                                }
 
-                            if (isCurrentlyCompleted) {
-                                const confirmed = await showUndoConfirm(tasksList[idx].text);
-                                if (!confirmed) return;
-                            }
-
-                            tasksList[idx].completed = !tasksList[idx].completed;
-                            saveTasksForDate(dateStr, tasksList);
-                            if (isStudio) {
-                                renderStudioTasks(dateStr);
-                            } else {
+                                tasksList[idx].completed = !tasksList[idx].completed;
+                                saveTasksForDate(dateStr, tasksList);
                                 renderTodayTasks();
+                                if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                                if (!isCurrentlyCompleted) {
+                                    checkAndCelebrateAllDone(dateStr);
+                                } else {
+                                    showStickerToast('↻ Task marked as incomplete');
+                                }
+                                renderAnalytics(currentFilter);
+                                renderInsightsInside();
                             }
-                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            if (!isCurrentlyCompleted) {
-                                checkAndCelebrateAllDone(dateStr);
-                            } else {
-                                showStickerToast('↻ Task marked as incomplete');
-                            }
-                            renderAnalytics(currentFilter);
-                            renderInsightsInside();
-                            if (navigator.vibrate) navigator.vibrate(30);
                         }
-                    }, 500);
-                });
+                    });
 
-                list.addEventListener('mouseup', () => { clearTimeout(longPressTimer);
-                    longPressTarget = null; });
-                list.addEventListener('mouseleave', () => { clearTimeout(longPressTimer);
-                    longPressTarget = null; });
+                    // Long press on task item for Today tab
+                    let longPressTimer = null;
+                    let longPressTarget = null;
 
-                list.addEventListener('touchstart', (e) => {
-                    const target = e.target.closest('.task-item');
-                    if (!target) return;
-                    if (e.target.closest('.task-delete-btn')) return;
-                    longPressTarget = target;
-                    longPressTimer = setTimeout(async () => {
-                        const idx = parseInt(target.dataset.idx);
-                        const tasksList = getTasksForDate(dateStr);
-                        if (tasksList[idx]) {
-                            const isCurrentlyCompleted = tasksList[idx].completed;
+                    list.addEventListener('mousedown', (e) => {
+                        const target = e.target.closest('.task-item');
+                        if (!target) return;
+                        if (e.target.closest('.task-delete-btn')) return;
+                        longPressTarget = target;
+                        longPressTimer = setTimeout(async () => {
+                            const idx = parseInt(target.dataset.idx);
+                            const tasksList = getTasksForDate(dateStr);
+                            if (tasksList[idx]) {
+                                const isCurrentlyCompleted = tasksList[idx].completed;
 
-                            if (isCurrentlyCompleted) {
-                                const confirmed = await showUndoConfirm(tasksList[idx].text);
-                                if (!confirmed) return;
-                            }
+                                if (isCurrentlyCompleted) {
+                                    const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                    if (!confirmed) return;
+                                }
 
-                            tasksList[idx].completed = !tasksList[idx].completed;
-                            saveTasksForDate(dateStr, tasksList);
-                            if (isStudio) {
-                                renderStudioTasks(dateStr);
-                            } else {
+                                tasksList[idx].completed = !tasksList[idx].completed;
+                                saveTasksForDate(dateStr, tasksList);
                                 renderTodayTasks();
+                                if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                                if (!isCurrentlyCompleted) {
+                                    checkAndCelebrateAllDone(dateStr);
+                                } else {
+                                    showStickerToast('↻ Task marked as incomplete');
+                                }
+                                renderAnalytics(currentFilter);
+                                renderInsightsInside();
+                                if (navigator.vibrate) navigator.vibrate(30);
                             }
-                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            if (!isCurrentlyCompleted) {
-                                checkAndCelebrateAllDone(dateStr);
-                            } else {
-                                showStickerToast('↻ Task marked as incomplete');
-                            }
-                            renderAnalytics(currentFilter);
-                            renderInsightsInside();
-                            if (navigator.vibrate) navigator.vibrate(30);
-                        }
-                    }, 500);
-                }, { passive: true });
+                        }, 500);
+                    });
 
-                list.addEventListener('touchend', () => { clearTimeout(longPressTimer);
-                    longPressTarget = null; }, { passive: true });
-                list.addEventListener('touchmove', () => { clearTimeout(longPressTimer);
-                    longPressTarget = null; }, { passive: true });
+                    list.addEventListener('mouseup', () => { clearTimeout(longPressTimer);
+                        longPressTarget = null; });
+                    list.addEventListener('mouseleave', () => { clearTimeout(longPressTimer);
+                        longPressTarget = null; });
+
+                    list.addEventListener('touchstart', (e) => {
+                        const target = e.target.closest('.task-item');
+                        if (!target) return;
+                        if (e.target.closest('.task-delete-btn')) return;
+                        longPressTarget = target;
+                        longPressTimer = setTimeout(async () => {
+                            const idx = parseInt(target.dataset.idx);
+                            const tasksList = getTasksForDate(dateStr);
+                            if (tasksList[idx]) {
+                                const isCurrentlyCompleted = tasksList[idx].completed;
+
+                                if (isCurrentlyCompleted) {
+                                    const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                    if (!confirmed) return;
+                                }
+
+                                tasksList[idx].completed = !tasksList[idx].completed;
+                                saveTasksForDate(dateStr, tasksList);
+                                renderTodayTasks();
+                                if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                                if (!isCurrentlyCompleted) {
+                                    checkAndCelebrateAllDone(dateStr);
+                                } else {
+                                    showStickerToast('↻ Task marked as incomplete');
+                                }
+                                renderAnalytics(currentFilter);
+                                renderInsightsInside();
+                                if (navigator.vibrate) navigator.vibrate(30);
+                            }
+                        }, 500);
+                    }, { passive: true });
+
+                    list.addEventListener('touchend', () => { clearTimeout(longPressTimer);
+                        longPressTarget = null; }, { passive: true });
+                    list.addEventListener('touchmove', () => { clearTimeout(longPressTimer);
+                        longPressTarget = null; }, { passive: true });
+                }
+            } else {
+                // Studio tab - only add and delete
+                const addBtn = document.getElementById('studio-task-add-btn');
+                const inputField = document.getElementById('studio-task-input-field');
+
+                if (addBtn && inputField) {
+                    const addTask = () => {
+                        const text = inputField.value.trim();
+                        if (!text) { showStickerToast('⚠️ Please enter a task.'); return; }
+                        const current = getTasksForDate(dateStr);
+                        current.push({ id: Date.now().toString(), text, completed: false });
+                        saveTasksForDate(dateStr, current);
+                        inputField.value = '';
+                        renderStudioTasks(dateStr);
+                        if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                        showStickerToast('✅ Task added!');
+                    };
+                    addBtn.addEventListener('click', addTask);
+                    inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
+                }
+
+                const list = document.getElementById('studio-task-list');
+                if (list) {
+                    list.addEventListener('click', (e) => {
+                        const deleteBtn = e.target.closest('.task-delete-btn');
+                        if (deleteBtn) {
+                            e.stopPropagation();
+                            const idx = parseInt(deleteBtn.dataset.idx);
+                            const tasksList = getTasksForDate(dateStr);
+                            if (tasksList[idx]) {
+                                tasksList.splice(idx, 1);
+                                saveTasksForDate(dateStr, tasksList);
+                                renderStudioTasks(dateStr);
+                                if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                                showStickerToast('🗑️ Task deleted.');
+                                checkAndCelebrateAllDone(dateStr);
+                                renderAnalytics(currentFilter);
+                                renderInsightsInside();
+                            }
+                        }
+                    });
+                }
             }
         }
 
@@ -4251,10 +4289,7 @@
                 const completed = tasks.filter(t => t.completed).length;
                 const total = tasks.length;
                 const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-                const sortedTasks = [...tasks].sort((a, b) => {
-                    if (a.completed === b.completed) return 0;
-                    return a.completed ? 1 : -1;
-                });
+                const sortedTasks = [...tasks];
                 let tHtml = `
                     <div class="task-progress-wrap" style="margin-bottom:4px;">
                         <span style="font-size:0.65rem;font-weight:600;">${completed}/${total}</span>
@@ -4722,9 +4757,9 @@
         window.renderInsightsInside = renderInsightsInside;
 
         console.log('📚 Study Time-Table fully updated!');
-        console.log('✅ Task toggle fixed - only clicked task toggles');
-        console.log('✅ Undo confirmation modal added for completed tasks');
-        console.log('✅ Task items size increased for better touch targets');
+        console.log('✅ Task order preserved - no sorting/position change on done/undone');
+        console.log('✅ Studio tab: only add and delete tasks (no done/undone)');
+        console.log('✅ Today tab: full done/undo with confirmation');
         console.log('✅ All original functionality preserved');
     </script>
 </body>
