@@ -1934,14 +1934,16 @@
         .task-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             background: var(--task-bg);
             border: 2px solid var(--border);
             border-radius: var(--radius-sm);
-            padding: 6px 8px 6px 6px;
+            padding: 10px 12px 10px 10px;
             transition: border-color 0.2s, opacity 0.3s, background 0.2s, transform 0.2s;
             animation: slideIn 0.25s ease;
             flex-shrink: 0;
+            cursor: pointer;
+            min-height: 48px;
         }
 
         .task-item.completed {
@@ -1971,8 +1973,8 @@
         }
 
         .task-check {
-            width: 22px;
-            height: 22px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             border: 2px solid var(--border);
             background: var(--bg-base);
@@ -1982,7 +1984,7 @@
             cursor: pointer;
             flex-shrink: 0;
             transition: background 0.2s, border-color 0.2s, transform 0.15s;
-            font-size: 0.65rem;
+            font-size: 0.8rem;
             color: transparent;
         }
 
@@ -2003,11 +2005,11 @@
 
         .task-text {
             flex: 1;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--text-main);
             word-break: break-word;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         .task-delete-btn {
@@ -2015,8 +2017,8 @@
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 0.7rem;
-            padding: 2px 4px;
+            font-size: 0.8rem;
+            padding: 4px 6px;
             border-radius: 4px;
             transition: color 0.2s, background 0.2s;
             flex-shrink: 0;
@@ -2038,12 +2040,12 @@
 
         .task-add-row input {
             flex: 1;
-            padding: 6px 10px;
+            padding: 8px 12px;
             background: var(--input-bg);
             border: 2px solid var(--border);
             border-radius: var(--radius-sm);
             color: var(--text-main);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 600;
             outline: none;
         }
@@ -2058,8 +2060,8 @@
         }
 
         .task-add-row .btn {
-            padding: 6px 12px;
-            font-size: 0.7rem;
+            padding: 8px 14px;
+            font-size: 0.75rem;
             flex-shrink: 0;
             box-shadow: none;
             border-radius: var(--radius-sm);
@@ -2067,9 +2069,9 @@
 
         .no-tasks-msg {
             color: var(--text-muted);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-style: italic;
-            padding: 4px 0;
+            padding: 6px 0;
         }
 
         #view-today {
@@ -2144,7 +2146,8 @@
         }
 
         .calendar-tasks-section .task-item {
-            padding: 4px 8px 4px 4px;
+            padding: 6px 10px 6px 8px;
+            min-height: 40px;
         }
 
         .calendar-tasks-section .task-item .task-text {
@@ -2152,9 +2155,9 @@
         }
 
         .calendar-tasks-section .task-check {
-            width: 18px;
-            height: 18px;
-            font-size: 0.5rem;
+            width: 20px;
+            height: 20px;
+            font-size: 0.6rem;
         }
 
         .calendar-tasks-section .task-item.completed {
@@ -2311,7 +2314,8 @@
         }
 
         .history-tasks-section .task-item {
-            padding: 4px 8px 4px 4px;
+            padding: 6px 10px 6px 8px;
+            min-height: 40px;
         }
 
         .history-tasks-section .task-item .task-text {
@@ -2319,9 +2323,9 @@
         }
 
         .history-tasks-section .task-check {
-            width: 18px;
-            height: 18px;
-            font-size: 0.5rem;
+            width: 20px;
+            height: 20px;
+            font-size: 0.6rem;
         }
 
         .history-tasks-section .task-list {
@@ -2693,6 +2697,92 @@
         .login-loader-circle.show {
             display: block;
         }
+
+        /* Undo confirmation modal */
+        .undo-confirm-modal {
+            position: absolute;
+            inset: 0;
+            background: var(--modal-overlay);
+            backdrop-filter: blur(5px);
+            z-index: 1600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .undo-confirm-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .undo-confirm-box {
+            background: var(--bg-card);
+            border: 3px solid var(--accent);
+            width: 88%;
+            max-width: 320px;
+            padding: 24px 20px 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+        }
+
+        .undo-confirm-modal.active .undo-confirm-box {
+            transform: scale(1);
+        }
+
+        .undo-confirm-box h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        .undo-confirm-box p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .undo-confirm-box .undo-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .undo-confirm-box .undo-actions .btn {
+            min-width: 70px;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            box-shadow: none;
+            border-radius: 30px;
+        }
+
+        .undo-confirm-box .undo-actions .btn-cancel {
+            background: var(--bg-base);
+            border-color: var(--border);
+            color: var(--text-main);
+        }
+
+        .undo-confirm-box .undo-actions .btn-cancel:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .undo-confirm-box .undo-actions .btn-undo {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .undo-confirm-box .undo-actions .btn-undo:hover {
+            opacity: 0.85;
+        }
     </style>
 </head>
 
@@ -2771,6 +2861,18 @@
     <div id="sticker-toast">
         <i class="fas fa-sparkles"></i>
         <span id="toast-text">Ready!</span>
+    </div>
+
+    <!-- Undo Confirmation Modal -->
+    <div class="undo-confirm-modal" id="undo-confirm-modal">
+        <div class="undo-confirm-box">
+            <h3><i class="fas fa-rotate-left"></i> Undo Task</h3>
+            <p id="undo-task-text">Are you sure you want to mark this task as incomplete?</p>
+            <div class="undo-actions">
+                <button class="btn btn-cancel" id="undo-confirm-cancel">Cancel</button>
+                <button class="btn btn-undo" id="undo-confirm-yes">Yes, Undo</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal-overlay" id="custom-modal">
@@ -3114,6 +3216,29 @@
                     modalResolve(inputs[0] ? inputs[0].value : true);
                 }
             }
+        });
+
+        // ─── Undo Confirmation Modal ───
+        const undoConfirmModal = document.getElementById('undo-confirm-modal');
+        let undoResolve = null;
+
+        function showUndoConfirm(taskText) {
+            return new Promise((resolve) => {
+                document.getElementById('undo-task-text').innerHTML =
+                    `Are you sure you want to mark "<strong>${taskText}</strong>" as incomplete?`;
+                undoConfirmModal.classList.add('active');
+                undoResolve = resolve;
+            });
+        }
+
+        document.getElementById('undo-confirm-cancel').addEventListener('click', () => {
+            undoConfirmModal.classList.remove('active');
+            if (undoResolve) undoResolve(false);
+        });
+
+        document.getElementById('undo-confirm-yes').addEventListener('click', () => {
+            undoConfirmModal.classList.remove('active');
+            if (undoResolve) undoResolve(true);
         });
 
         // ─── Pull to Refresh Confirmation ───
@@ -3867,9 +3992,9 @@
                     const icon = t.completed ? 'fa-circle-check' : 'fa-circle';
                     html += `
                         <li class="task-item ${t.completed ? 'completed' : ''}" data-idx="${idx}" data-task-id="${t.id || idx}">
-                            <button class="task-check ${checked}" data-idx="${idx}" title="Toggle complete">
+                            <span class="task-check ${checked}" data-idx="${idx}" title="Toggle complete">
                                 <i class="fas ${icon}"></i>
-                            </button>
+                            </span>
                             <span class="task-text">${t.text}</span>
                             <button class="task-delete-btn" data-idx="${idx}" title="Delete task"><i class="fas fa-times"></i></button>
                         </li>
@@ -3899,25 +4024,13 @@
 
             const list = document.getElementById('today-task-list');
             if (list) {
-                list.addEventListener('click', (e) => {
+                list.addEventListener('click', async (e) => {
                     const checkBtn = e.target.closest('.task-check');
                     const deleteBtn = e.target.closest('.task-delete-btn');
-
-                    if (checkBtn) {
-                        const idx = parseInt(checkBtn.dataset.idx);
-                        const tasksList = getTasksForDate(todayStr);
-                        if (tasksList[idx]) {
-                            tasksList[idx].completed = !tasksList[idx].completed;
-                            saveTasksForDate(todayStr, tasksList);
-                            renderTodayTasks();
-                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            checkAndCelebrateAllDone(todayStr);
-                            renderAnalytics(currentFilter);
-                            renderInsightsInside();
-                        }
-                    }
+                    const taskItem = e.target.closest('.task-item');
 
                     if (deleteBtn) {
+                        e.stopPropagation();
                         const idx = parseInt(deleteBtn.dataset.idx);
                         const tasksList = getTasksForDate(todayStr);
                         if (tasksList[idx]) {
@@ -3930,52 +4043,115 @@
                             renderAnalytics(currentFilter);
                             renderInsightsInside();
                         }
+                        return;
+                    }
+
+                    if (checkBtn) {
+                        e.stopPropagation();
+                        const idx = parseInt(checkBtn.dataset.idx);
+                        const tasksList = getTasksForDate(todayStr);
+                        if (tasksList[idx]) {
+                            const isCurrentlyCompleted = tasksList[idx].completed;
+
+                            if (isCurrentlyCompleted) {
+                                // Undo: show confirmation
+                                const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                if (!confirmed) return;
+                            }
+
+                            tasksList[idx].completed = !tasksList[idx].completed;
+                            saveTasksForDate(todayStr, tasksList);
+                            renderTodayTasks();
+                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                            if (!isCurrentlyCompleted) {
+                                checkAndCelebrateAllDone(todayStr);
+                            } else {
+                                showStickerToast('↻ Task marked as incomplete');
+                            }
+                            renderAnalytics(currentFilter);
+                            renderInsightsInside();
+                        }
                     }
                 });
 
+                // Long press on task item to toggle (same behavior as click on check)
                 let longPressTimer = null;
+                let longPressTarget = null;
+
                 list.addEventListener('mousedown', (e) => {
                     const target = e.target.closest('.task-item');
                     if (!target) return;
-                    longPressTimer = setTimeout(() => {
+                    // Don't trigger if click is on delete button
+                    if (e.target.closest('.task-delete-btn')) return;
+                    longPressTarget = target;
+                    longPressTimer = setTimeout(async () => {
                         const idx = parseInt(target.dataset.idx);
                         const tasksList = getTasksForDate(todayStr);
                         if (tasksList[idx]) {
+                            const isCurrentlyCompleted = tasksList[idx].completed;
+
+                            if (isCurrentlyCompleted) {
+                                const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                if (!confirmed) return;
+                            }
+
                             tasksList[idx].completed = !tasksList[idx].completed;
                             saveTasksForDate(todayStr, tasksList);
                             renderTodayTasks();
                             if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            checkAndCelebrateAllDone(todayStr);
+                            if (!isCurrentlyCompleted) {
+                                checkAndCelebrateAllDone(todayStr);
+                            } else {
+                                showStickerToast('↻ Task marked as incomplete');
+                            }
                             renderAnalytics(currentFilter);
                             renderInsightsInside();
                             if (navigator.vibrate) navigator.vibrate(30);
-                            showStickerToast(`🔄 Task ${tasksList[idx].completed ? '✓ done' : '↻ undone'}`);
                         }
-                    }, 600);
+                    }, 500);
                 });
-                list.addEventListener('mouseup', () => clearTimeout(longPressTimer));
-                list.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
+
+                list.addEventListener('mouseup', () => { clearTimeout(longPressTimer);
+                    longPressTarget = null; });
+                list.addEventListener('mouseleave', () => { clearTimeout(longPressTimer);
+                    longPressTarget = null; });
+
                 list.addEventListener('touchstart', (e) => {
                     const target = e.target.closest('.task-item');
                     if (!target) return;
-                    longPressTimer = setTimeout(() => {
+                    if (e.target.closest('.task-delete-btn')) return;
+                    longPressTarget = target;
+                    longPressTimer = setTimeout(async () => {
                         const idx = parseInt(target.dataset.idx);
                         const tasksList = getTasksForDate(todayStr);
                         if (tasksList[idx]) {
+                            const isCurrentlyCompleted = tasksList[idx].completed;
+
+                            if (isCurrentlyCompleted) {
+                                const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                if (!confirmed) return;
+                            }
+
                             tasksList[idx].completed = !tasksList[idx].completed;
                             saveTasksForDate(todayStr, tasksList);
                             renderTodayTasks();
                             if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            checkAndCelebrateAllDone(todayStr);
+                            if (!isCurrentlyCompleted) {
+                                checkAndCelebrateAllDone(todayStr);
+                            } else {
+                                showStickerToast('↻ Task marked as incomplete');
+                            }
                             renderAnalytics(currentFilter);
                             renderInsightsInside();
                             if (navigator.vibrate) navigator.vibrate(30);
-                            showStickerToast(`🔄 Task ${tasksList[idx].completed ? '✓ done' : '↻ undone'}`);
                         }
-                    }, 600);
+                    }, 500);
                 }, { passive: true });
-                list.addEventListener('touchend', () => clearTimeout(longPressTimer), { passive: true });
-                list.addEventListener('touchmove', () => clearTimeout(longPressTimer), { passive: true });
+
+                list.addEventListener('touchend', () => { clearTimeout(longPressTimer);
+                    longPressTarget = null; }, { passive: true });
+                list.addEventListener('touchmove', () => { clearTimeout(longPressTimer);
+                    longPressTarget = null; }, { passive: true });
             }
         }
 
@@ -4025,9 +4201,9 @@
                     const icon = t.completed ? 'fa-circle-check' : 'fa-circle';
                     html += `
                         <li class="task-item ${t.completed ? 'completed' : ''}" data-idx="${idx}" data-task-id="${t.id || idx}">
-                            <button class="task-check ${checked}" data-idx="${idx}" title="Toggle complete">
+                            <span class="task-check ${checked}" data-idx="${idx}" title="Toggle complete">
                                 <i class="fas ${icon}"></i>
-                            </button>
+                            </span>
                             <span class="task-text">${t.text}</span>
                             <button class="task-delete-btn" data-idx="${idx}" title="Delete task"><i class="fas fa-times"></i></button>
                         </li>
@@ -4057,25 +4233,13 @@
 
             const list = document.getElementById('studio-task-list');
             if (list) {
-                list.addEventListener('click', (e) => {
+                list.addEventListener('click', async (e) => {
                     const checkBtn = e.target.closest('.task-check');
                     const deleteBtn = e.target.closest('.task-delete-btn');
-
-                    if (checkBtn) {
-                        const idx = parseInt(checkBtn.dataset.idx);
-                        const tasksList = getTasksForDate(dateStr);
-                        if (tasksList[idx]) {
-                            tasksList[idx].completed = !tasksList[idx].completed;
-                            saveTasksForDate(dateStr, tasksList);
-                            renderStudioTasks(dateStr);
-                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            checkAndCelebrateAllDone(dateStr);
-                            renderAnalytics(currentFilter);
-                            renderInsightsInside();
-                        }
-                    }
+                    const taskItem = e.target.closest('.task-item');
 
                     if (deleteBtn) {
+                        e.stopPropagation();
                         const idx = parseInt(deleteBtn.dataset.idx);
                         const tasksList = getTasksForDate(dateStr);
                         if (tasksList[idx]) {
@@ -4088,52 +4252,112 @@
                             renderAnalytics(currentFilter);
                             renderInsightsInside();
                         }
+                        return;
+                    }
+
+                    if (checkBtn) {
+                        e.stopPropagation();
+                        const idx = parseInt(checkBtn.dataset.idx);
+                        const tasksList = getTasksForDate(dateStr);
+                        if (tasksList[idx]) {
+                            const isCurrentlyCompleted = tasksList[idx].completed;
+
+                            if (isCurrentlyCompleted) {
+                                const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                if (!confirmed) return;
+                            }
+
+                            tasksList[idx].completed = !tasksList[idx].completed;
+                            saveTasksForDate(dateStr, tasksList);
+                            renderStudioTasks(dateStr);
+                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                            if (!isCurrentlyCompleted) {
+                                checkAndCelebrateAllDone(dateStr);
+                            } else {
+                                showStickerToast('↻ Task marked as incomplete');
+                            }
+                            renderAnalytics(currentFilter);
+                            renderInsightsInside();
+                        }
                     }
                 });
 
                 let longPressTimer = null;
+                let longPressTarget = null;
+
                 list.addEventListener('mousedown', (e) => {
                     const target = e.target.closest('.task-item');
                     if (!target) return;
-                    longPressTimer = setTimeout(() => {
+                    if (e.target.closest('.task-delete-btn')) return;
+                    longPressTarget = target;
+                    longPressTimer = setTimeout(async () => {
                         const idx = parseInt(target.dataset.idx);
                         const tasksList = getTasksForDate(dateStr);
                         if (tasksList[idx]) {
+                            const isCurrentlyCompleted = tasksList[idx].completed;
+
+                            if (isCurrentlyCompleted) {
+                                const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                if (!confirmed) return;
+                            }
+
                             tasksList[idx].completed = !tasksList[idx].completed;
                             saveTasksForDate(dateStr, tasksList);
                             renderStudioTasks(dateStr);
                             if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            checkAndCelebrateAllDone(dateStr);
+                            if (!isCurrentlyCompleted) {
+                                checkAndCelebrateAllDone(dateStr);
+                            } else {
+                                showStickerToast('↻ Task marked as incomplete');
+                            }
                             renderAnalytics(currentFilter);
                             renderInsightsInside();
                             if (navigator.vibrate) navigator.vibrate(30);
-                            showStickerToast(`🔄 Task ${tasksList[idx].completed ? '✓ done' : '↻ undone'}`);
                         }
-                    }, 600);
+                    }, 500);
                 });
-                list.addEventListener('mouseup', () => clearTimeout(longPressTimer));
-                list.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
+
+                list.addEventListener('mouseup', () => { clearTimeout(longPressTimer);
+                    longPressTarget = null; });
+                list.addEventListener('mouseleave', () => { clearTimeout(longPressTimer);
+                    longPressTarget = null; });
+
                 list.addEventListener('touchstart', (e) => {
                     const target = e.target.closest('.task-item');
                     if (!target) return;
-                    longPressTimer = setTimeout(() => {
+                    if (e.target.closest('.task-delete-btn')) return;
+                    longPressTarget = target;
+                    longPressTimer = setTimeout(async () => {
                         const idx = parseInt(target.dataset.idx);
                         const tasksList = getTasksForDate(dateStr);
                         if (tasksList[idx]) {
+                            const isCurrentlyCompleted = tasksList[idx].completed;
+
+                            if (isCurrentlyCompleted) {
+                                const confirmed = await showUndoConfirm(tasksList[idx].text);
+                                if (!confirmed) return;
+                            }
+
                             tasksList[idx].completed = !tasksList[idx].completed;
                             saveTasksForDate(dateStr, tasksList);
                             renderStudioTasks(dateStr);
                             if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                            checkAndCelebrateAllDone(dateStr);
+                            if (!isCurrentlyCompleted) {
+                                checkAndCelebrateAllDone(dateStr);
+                            } else {
+                                showStickerToast('↻ Task marked as incomplete');
+                            }
                             renderAnalytics(currentFilter);
                             renderInsightsInside();
                             if (navigator.vibrate) navigator.vibrate(30);
-                            showStickerToast(`🔄 Task ${tasksList[idx].completed ? '✓ done' : '↻ undone'}`);
                         }
-                    }, 600);
+                    }, 500);
                 }, { passive: true });
-                list.addEventListener('touchend', () => clearTimeout(longPressTimer), { passive: true });
-                list.addEventListener('touchmove', () => clearTimeout(longPressTimer), { passive: true });
+
+                list.addEventListener('touchend', () => { clearTimeout(longPressTimer);
+                    longPressTarget = null; }, { passive: true });
+                list.addEventListener('touchmove', () => { clearTimeout(longPressTimer);
+                    longPressTarget = null; }, { passive: true });
             }
         }
 
@@ -4673,10 +4897,10 @@
         window.renderInsightsInside = renderInsightsInside;
 
         console.log('📚 Study Time-Table fully updated!');
-        console.log('✅ Realistic book intro animation added (replaces old preloader)');
+        console.log('✅ Task toggle fixed with proper click handling');
+        console.log('✅ Undo confirmation modal added');
+        console.log('✅ Task items size increased for better touch targets');
         console.log('✅ All original functionality preserved');
-        console.log('✅ Studio tasks list scrollable with boundary');
-        console.log('✅ Long press on task toggles complete (Today & Studio)');
     </script>
 </body>
 </html>
