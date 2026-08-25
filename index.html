@@ -466,6 +466,7 @@
             overflow-y: auto;
             min-height: 50px;
             max-height: none;
+            margin-bottom: 6px; /* added margin-bottom for breathing room */
         }
         .studio-tasks-section .task-item.completed { order: 1; }
         .studio-tasks-section .task-item:not(.completed) { order: 0; }
@@ -1820,6 +1821,7 @@
 
             const list = document.getElementById('today-task-list');
             if (list) {
+                // Click handler for checkbox and delete
                 list.addEventListener('click', (e) => {
                     const checkBtn = e.target.closest('.task-check');
                     const deleteBtn = e.target.closest('.task-delete-btn');
@@ -1853,6 +1855,51 @@
                         }
                     }
                 });
+
+                // Long press to toggle complete
+                let longPressTimer = null;
+                list.addEventListener('mousedown', (e) => {
+                    const target = e.target.closest('.task-item');
+                    if (!target) return;
+                    longPressTimer = setTimeout(() => {
+                        const idx = parseInt(target.dataset.idx);
+                        const tasksList = getTasksForDate(todayStr);
+                        if (tasksList[idx]) {
+                            tasksList[idx].completed = !tasksList[idx].completed;
+                            saveTasksForDate(todayStr, tasksList);
+                            renderTodayTasks();
+                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                            checkAndCelebrateAllDone(todayStr);
+                            renderAnalytics(currentFilter);
+                            renderInsightsInside();
+                            if (navigator.vibrate) navigator.vibrate(30);
+                            showStickerToast(`🔄 Task ${tasksList[idx].completed ? '✓ done' : '↻ undone'}`);
+                        }
+                    }, 600);
+                });
+                list.addEventListener('mouseup', () => clearTimeout(longPressTimer));
+                list.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
+                list.addEventListener('touchstart', (e) => {
+                    const target = e.target.closest('.task-item');
+                    if (!target) return;
+                    longPressTimer = setTimeout(() => {
+                        const idx = parseInt(target.dataset.idx);
+                        const tasksList = getTasksForDate(todayStr);
+                        if (tasksList[idx]) {
+                            tasksList[idx].completed = !tasksList[idx].completed;
+                            saveTasksForDate(todayStr, tasksList);
+                            renderTodayTasks();
+                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                            checkAndCelebrateAllDone(todayStr);
+                            renderAnalytics(currentFilter);
+                            renderInsightsInside();
+                            if (navigator.vibrate) navigator.vibrate(30);
+                            showStickerToast(`🔄 Task ${tasksList[idx].completed ? '✓ done' : '↻ undone'}`);
+                        }
+                    }, 600);
+                }, { passive: true });
+                list.addEventListener('touchend', () => clearTimeout(longPressTimer), { passive: true });
+                list.addEventListener('touchmove', () => clearTimeout(longPressTimer), { passive: true });
             }
         }
 
@@ -1934,6 +1981,7 @@
 
             const list = document.getElementById('studio-task-list');
             if (list) {
+                // Click handler for checkbox and delete
                 list.addEventListener('click', (e) => {
                     const checkBtn = e.target.closest('.task-check');
                     const deleteBtn = e.target.closest('.task-delete-btn');
@@ -1967,6 +2015,51 @@
                         }
                     }
                 });
+
+                // Long press to toggle complete
+                let longPressTimer = null;
+                list.addEventListener('mousedown', (e) => {
+                    const target = e.target.closest('.task-item');
+                    if (!target) return;
+                    longPressTimer = setTimeout(() => {
+                        const idx = parseInt(target.dataset.idx);
+                        const tasksList = getTasksForDate(dateStr);
+                        if (tasksList[idx]) {
+                            tasksList[idx].completed = !tasksList[idx].completed;
+                            saveTasksForDate(dateStr, tasksList);
+                            renderStudioTasks(dateStr);
+                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                            checkAndCelebrateAllDone(dateStr);
+                            renderAnalytics(currentFilter);
+                            renderInsightsInside();
+                            if (navigator.vibrate) navigator.vibrate(30);
+                            showStickerToast(`🔄 Task ${tasksList[idx].completed ? '✓ done' : '↻ undone'}`);
+                        }
+                    }, 600);
+                });
+                list.addEventListener('mouseup', () => clearTimeout(longPressTimer));
+                list.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
+                list.addEventListener('touchstart', (e) => {
+                    const target = e.target.closest('.task-item');
+                    if (!target) return;
+                    longPressTimer = setTimeout(() => {
+                        const idx = parseInt(target.dataset.idx);
+                        const tasksList = getTasksForDate(dateStr);
+                        if (tasksList[idx]) {
+                            tasksList[idx].completed = !tasksList[idx].completed;
+                            saveTasksForDate(dateStr, tasksList);
+                            renderStudioTasks(dateStr);
+                            if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                            checkAndCelebrateAllDone(dateStr);
+                            renderAnalytics(currentFilter);
+                            renderInsightsInside();
+                            if (navigator.vibrate) navigator.vibrate(30);
+                            showStickerToast(`🔄 Task ${tasksList[idx].completed ? '✓ done' : '↻ undone'}`);
+                        }
+                    }, 600);
+                }, { passive: true });
+                list.addEventListener('touchend', () => clearTimeout(longPressTimer), { passive: true });
+                list.addEventListener('touchmove', () => clearTimeout(longPressTimer), { passive: true });
             }
         }
 
@@ -2511,6 +2604,8 @@
         console.log('✅ Studio tab - task list has proper boundary with scroll');
         console.log('✅ Analytics tab - bars display properly on desktop and mobile');
         console.log('✅ Pull to refresh now shows a confirmation modal');
+        console.log('✅ Long press on task toggles complete (Today & Studio)');
+        console.log('✅ Studio tasks now have bottom margin and proper scrolling');
     </script>
 </body>
 </html>
