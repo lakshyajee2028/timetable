@@ -232,7 +232,8 @@
             padding-top: 10px;
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
+            flex: 1;
+            min-height: 0;
         }
         .tasks-section h3 {
             font-family: 'Fredoka', sans-serif;
@@ -284,9 +285,9 @@
             flex-direction: column;
             gap: 4px;
             overflow-y: auto;
-            max-height: 260px;
-            min-height: 0;
             flex: 1;
+            min-height: 50px;
+            max-height: none;
         }
         .task-item {
             display: flex;
@@ -356,6 +357,47 @@
         .task-add-row .btn { padding: 6px 12px; font-size: 0.7rem; flex-shrink: 0; box-shadow: none; border-radius: var(--radius-sm); }
         .no-tasks-msg { color: var(--text-muted); font-size: 0.7rem; font-style: italic; padding: 4px 0; }
 
+        #view-today {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #view-today.active {
+            display: flex;
+            flex-direction: column;
+        }
+        #view-today > *:not(.tasks-section) {
+            flex-shrink: 0;
+        }
+        #view-today .tasks-section {
+            flex: 1;
+            min-height: 100px;
+        }
+
+        #view-yesterday {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #view-yesterday.active {
+            display: flex;
+            flex-direction: column;
+        }
+        #view-yesterday > *:not(.history-tasks-section) {
+            flex-shrink: 0;
+        }
+        #view-yesterday .history-tasks-section {
+            flex: 1;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+        }
+        #view-yesterday .history-tasks-section .task-list {
+            flex: 1;
+            max-height: none;
+            min-height: 50px;
+        }
+
         /* ─── CALENDAR TASKS ─── */
         .calendar-tasks-section {
             margin-top: 10px;
@@ -372,7 +414,7 @@
             align-items: center;
             gap: 6px;
         }
-        .calendar-tasks-section .task-list { max-height: 150px; flex: none; }
+        .calendar-tasks-section .task-list { max-height: 150px; flex: none; min-height: 0; }
         .calendar-tasks-section .task-item { padding: 4px 8px 4px 4px; }
         .calendar-tasks-section .task-item .task-text { font-size: 0.7rem; }
         .calendar-tasks-section .task-check { width: 18px; height: 18px; font-size: 0.5rem; }
@@ -384,6 +426,19 @@
         .studio-date-selector input[type="date"] { flex: 1; padding: 6px 10px; background: var(--input-bg); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.75rem; font-weight: 600; outline: none; min-width: 130px; }
         .studio-date-selector input[type="date"]:focus { border-color: var(--primary); }
         .studio-date-selector .btn { padding: 6px 12px; font-size: 0.7rem; flex-shrink: 0; box-shadow: none; border-radius: var(--radius-sm); }
+
+        #view-create {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #view-create.active {
+            display: flex;
+            flex-direction: column;
+        }
+        #view-create > *:not(.studio-tasks-section) {
+            flex-shrink: 0;
+        }
         .studio-tasks-section {
             margin-top: 12px;
             border-top: 2px solid var(--border);
@@ -393,6 +448,7 @@
             flex-direction: column;
             min-height: 0;
             padding-bottom: 16px;
+            overflow: hidden;
         }
         .studio-tasks-section h3 {
             font-family: 'Fredoka', sans-serif;
@@ -405,20 +461,53 @@
             margin-bottom: 6px;
             flex-shrink: 0;
         }
-        .studio-tasks-section .task-list { flex: 1; overflow-y: auto; min-height: 0; max-height: 300px; }
+        .studio-tasks-section .task-list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 50px;
+            max-height: none;
+        }
         .studio-tasks-section .task-item.completed { order: 1; }
         .studio-tasks-section .task-item:not(.completed) { order: 0; }
         .studio-tasks-section .future-date-label { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); padding: 4px 0; flex-shrink: 0; }
         .studio-tasks-section .task-add-row { flex-shrink: 0; }
         .studio-tasks-section .task-progress-wrap { flex-shrink: 0; }
 
-        #view-today .tasks-section { flex-shrink: 0; flex: 1; display: flex; flex-direction: column; }
-        #view-today .tasks-section .task-list { flex: 1; max-height: none; min-height: 100px; }
+        /* ─── HISTORY TASKS ─── */
+        .history-tasks-section {
+            margin-top: 10px;
+            border-top: 2px dashed var(--border);
+            padding-top: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .history-tasks-section h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .history-tasks-section .task-item { padding: 4px 8px 4px 4px; }
+        .history-tasks-section .task-item .task-text { font-size: 0.7rem; }
+        .history-tasks-section .task-check { width: 18px; height: 18px; font-size: 0.5rem; }
+        .history-tasks-section .task-list {
+            flex: 1;
+            max-height: none;
+            min-height: 50px;
+        }
+        .history-tasks-section .task-item.completed { order: 1; }
+        .history-tasks-section .task-item:not(.completed) { order: 0; }
 
-        #view-create { display: none; flex-direction: column; height: 100%; }
-        #view-create.active { display: flex; flex-direction: column; }
-        #view-create > *:not(.studio-tasks-section) { flex-shrink: 0; }
-        #view-create .studio-tasks-section { flex: 1; min-height: 0; padding-bottom: 20px; }
+        .long-press-hint { font-size: 0.5rem; color: var(--text-muted); opacity: 0.6; text-align: center; margin-top: 2px; font-style: italic; flex-shrink: 0; }
+        .calendar-date.has-timetable { border-color: var(--success); background-color: rgba(46,196,182,0.1); }
+        .calendar-date.has-tasks.has-timetable { background: linear-gradient(135deg, rgba(0,129,167,0.1), rgba(46,196,182,0.1)); }
 
         /* ─── ANALYTICS & INSIGHTS TAB ─── */
         #view-analytics {
@@ -455,7 +544,7 @@
             flex: 1;
             overflow-y: auto;
             min-height: 0;
-            padding-bottom: 12px;
+            padding-bottom: 8px;
         }
         .analytics-card {
             background: var(--bg-base);
@@ -561,33 +650,6 @@
         .insight-card-mini .insight-text { font-size: 0.7rem; font-weight: 600; color: var(--text-main); flex: 1; line-height: 1.3; }
         .insight-card-mini .insight-text span { color: var(--primary); font-weight: 700; }
         .no-insights-mini { color: var(--text-muted); font-size: 0.7rem; font-style: italic; padding: 4px 0; }
-
-        /* ─── HISTORY TASKS ─── */
-        .history-tasks-section {
-            margin-top: 10px;
-            border-top: 2px dashed var(--border);
-            padding-top: 10px;
-        }
-        .history-tasks-section h4 {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .history-tasks-section .task-item { padding: 4px 8px 4px 4px; }
-        .history-tasks-section .task-item .task-text { font-size: 0.7rem; }
-        .history-tasks-section .task-check { width: 18px; height: 18px; font-size: 0.5rem; }
-        .history-tasks-section .task-list { max-height: 150px; flex: none; }
-        .history-tasks-section .task-item.completed { order: 1; }
-        .history-tasks-section .task-item:not(.completed) { order: 0; }
-
-        .long-press-hint { font-size: 0.5rem; color: var(--text-muted); opacity: 0.6; text-align: center; margin-top: 2px; font-style: italic; }
-        .calendar-date.has-timetable { border-color: var(--success); background-color: rgba(46,196,182,0.1); }
-        .calendar-date.has-tasks.has-timetable { background: linear-gradient(135deg, rgba(0,129,167,0.1), rgba(46,196,182,0.1)); }
     </style>
 </head>
 <body>
@@ -787,7 +849,6 @@
                 <div class="analytics-container" id="analytics-container">
                     <div class="analytics-empty">Loading analytics...</div>
                 </div>
-                <!-- ─── INSIGHTS INSIDE ANALYTICS ─── -->
                 <div class="insights-inside" id="insights-inside">
                     <h3><i class="fas fa-lightbulb"></i> Insights</h3>
                     <div id="insights-inside-container"></div>
@@ -1497,14 +1558,12 @@
                 html += `<p style="color:var(--text-muted);font-size:0.7rem;">No timetable for this date.</p>`;
             }
 
-            // Tasks in calendar
             const tasksData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
             const dateTasks = tasksData.find(t => t.date === dateStr);
             if (dateTasks && dateTasks.tasks && dateTasks.tasks.length > 0) {
                 const tasks = dateTasks.tasks;
                 const completed = tasks.filter(t => t.completed).length;
                 const total = tasks.length;
-                // Sort: undone first, then completed
                 const sortedTasks = [...tasks].sort((a, b) => {
                     if (a.completed === b.completed) return 0;
                     return a.completed ? 1 : -1;
@@ -1598,7 +1657,6 @@
                 const completed = tasks.filter(t => t.completed).length;
                 const total = tasks.length;
                 const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-                // Sort: undone first, then completed
                 const sortedTasks = [...tasks].sort((a, b) => {
                     if (a.completed === b.completed) return 0;
                     return a.completed ? 1 : -1;
@@ -1646,7 +1704,6 @@
                 inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
             }
 
-            // Use event delegation for dynamic elements
             const list = document.getElementById('today-task-list');
             if (list) {
                 list.addEventListener('click', (e) => {
@@ -1858,10 +1915,9 @@
                 tableEl.title = 'Long press to delete this timetable';
             }
 
-            // Tasks in history
             const tasks = getTasksForDate(dateVal);
             if (tasks.length > 0) {
-                tasksSection.style.display = 'block';
+                tasksSection.style.display = 'flex';
                 const completed = tasks.filter(t => t.completed).length;
                 const total = tasks.length;
                 const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -1875,7 +1931,7 @@
                         <div class="task-progress-bar"><div class="fill" style="width:${pct}%;"></div></div>
                         <span class="task-progress-text">${pct}%</span>
                     </div>
-                    <ul class="task-list">
+                    <ul class="task-list" id="history-task-list">
                 `;
                 sortedTasks.forEach(t => {
                     tHtml += `
@@ -2044,7 +2100,6 @@
             const today = new Date();
             const dayOfWeek = today.getDay();
 
-            // Today's progress
             if (todayTasks.length > 0) {
                 if (todayProgress === 100) {
                     insights.push({ icon: '🎉', text: `Amazing! You've completed <span>all ${todayTasks.length}</span> tasks today!` });
@@ -2061,7 +2116,6 @@
                 insights.push({ icon: '📋', text: `No tasks for today. Add some to stay productive!` });
             }
 
-            // Consistency
             const daysWithTasks = allTasks.filter(d => d.tasks.length > 0);
             if (daysWithTasks.length > 0) {
                 const avgProgress = daysWithTasks.reduce((sum, d) => {
@@ -2077,12 +2131,10 @@
                 }
             }
 
-            // Best day
             if (bestDay.date && bestDay.progress > 0) {
                 insights.push({ icon: '🏆', text: `Best day: <span>${bestDay.date}</span> with <span>${bestDay.progress}%</span> (${bestDay.tasks} tasks)` });
             }
 
-            // Day motivation
             const motivational = [
                 "Monday motivation! Start the week strong 💪",
                 "Tuesday is for progress! Keep going 🚀",
@@ -2096,7 +2148,6 @@
                 insights.push({ icon: '💡', text: motivational[dayOfWeek - 1] });
             }
 
-            // Overall
             if (totalTasks > 0 && totalProgress > 0) {
                 if (totalProgress >= 80) {
                     insights.push({ icon: '🌟', text: `Overall: <span>${totalProgress}%</span> (${totalCompleted}/${totalTasks})` });
@@ -2341,10 +2392,11 @@
         window.renderInsightsInside = renderInsightsInside;
 
         console.log('📚 Study Time-Table fully updated!');
-        console.log('✅ Completed tasks move to bottom automatically');
-        console.log('✅ Task lists use full space in mobile view');
-        console.log('✅ Studio tab has proper bottom margin');
-        console.log('✅ Analytics + Insights merged in one tab');
+        console.log('✅ Today tab - task list fills full height');
+        console.log('✅ History tab - task list fills full height with scroll');
+        console.log('✅ Studio tab - task list has proper boundary with scroll');
+        console.log('✅ Analytics tab - bars display properly on desktop and mobile');
+        console.log('✅ All task lists have scroll when content exceeds container');
     </script>
 </body>
 </html>
