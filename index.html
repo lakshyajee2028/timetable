@@ -287,7 +287,7 @@
             overflow-y: auto;
             flex: 1;
             min-height: 50px;
-            max-height: none;
+            max-height: 280px;
         }
         .task-item {
             display: flex;
@@ -650,6 +650,79 @@
         .insight-card-mini .insight-text { font-size: 0.7rem; font-weight: 600; color: var(--text-main); flex: 1; line-height: 1.3; }
         .insight-card-mini .insight-text span { color: var(--primary); font-weight: 700; }
         .no-insights-mini { color: var(--text-muted); font-size: 0.7rem; font-style: italic; padding: 4px 0; }
+
+        /* ─── PULL-TO-REFRESH CONFIRM MODAL ─── */
+        .confirm-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--modal-overlay);
+            backdrop-filter: blur(5px);
+            z-index: 1500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .confirm-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .confirm-modal-box {
+            background: var(--bg-card);
+            border: 3px solid var(--primary);
+            width: 88%;
+            max-width: 340px;
+            padding: 24px 20px 20px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+        }
+        .confirm-modal-overlay.active .confirm-modal-box { transform: scale(1); }
+        .confirm-modal-box h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .confirm-modal-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+        .confirm-modal-box .confirm-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .confirm-modal-box .confirm-actions .btn {
+            min-width: 80px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            box-shadow: none;
+            border-radius: 30px;
+        }
+        .confirm-modal-box .confirm-actions .btn-cancel {
+            background: var(--bg-base);
+            border-color: var(--border);
+            color: var(--text-main);
+        }
+        .confirm-modal-box .confirm-actions .btn-cancel:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .confirm-modal-box .confirm-actions .btn-confirm {
+            background: var(--primary);
+            border-color: var(--primary-hover);
+            color: white;
+        }
+        .confirm-modal-box .confirm-actions .btn-confirm:hover {
+            background: var(--primary-hover);
+        }
     </style>
 </head>
 <body>
@@ -676,6 +749,18 @@
             <div class="modal-actions">
                 <button class="btn" id="modal-cancel-btn">Cancel</button>
                 <button class="btn primary" id="modal-confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pull to Refresh Confirmation Modal -->
+    <div class="confirm-modal-overlay" id="pull-confirm-modal">
+        <div class="confirm-modal-box">
+            <h3><i class="fas fa-cloud-upload-alt"></i> Sync Data</h3>
+            <p>Do you want to pull the latest data from the cloud? Your local changes will be merged.</p>
+            <div class="confirm-actions">
+                <button class="btn btn-cancel" id="pull-confirm-cancel">Cancel</button>
+                <button class="btn btn-confirm" id="pull-confirm-yes">Yes, Pull</button>
             </div>
         </div>
     </div>
@@ -986,6 +1071,27 @@
             }
         });
 
+        // ─── Pull to Refresh Confirmation ───
+        const pullConfirmModal = document.getElementById('pull-confirm-modal');
+        let pullConfirmResolve = null;
+
+        function showPullConfirm() {
+            return new Promise((resolve) => {
+                pullConfirmModal.classList.add('active');
+                pullConfirmResolve = resolve;
+            });
+        }
+
+        document.getElementById('pull-confirm-cancel').addEventListener('click', () => {
+            pullConfirmModal.classList.remove('active');
+            if (pullConfirmResolve) pullConfirmResolve(false);
+        });
+
+        document.getElementById('pull-confirm-yes').addEventListener('click', () => {
+            pullConfirmModal.classList.remove('active');
+            if (pullConfirmResolve) pullConfirmResolve(true);
+        });
+
         // ─── Navigation ───
         const navItems = document.querySelectorAll('.nav-item');
         const viewSections = document.querySelectorAll('.view-section');
@@ -1219,6 +1325,14 @@
                 return false;
             }
             if (syncInProgress) { showStickerToast('⏳ Sync already in progress...'); return false; }
+            
+            // Show confirmation modal
+            const confirmed = await showPullConfirm();
+            if (!confirmed) {
+                showStickerToast('⏹️ Sync cancelled.');
+                return false;
+            }
+            
             updateCloudStatus('syncing');
             const pulled = await pullFromCloud();
             if (!pulled) {
@@ -2396,7 +2510,7 @@
         console.log('✅ History tab - task list fills full height with scroll');
         console.log('✅ Studio tab - task list has proper boundary with scroll');
         console.log('✅ Analytics tab - bars display properly on desktop and mobile');
-        console.log('✅ All task lists have scroll when content exceeds container');
+        console.log('✅ Pull to refresh now shows a confirmation modal');
     </script>
 </body>
 </html>
