@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,6 +35,10 @@
             --analytics-purple: #7209b7;
             --analytics-orange: #f77f00;
             --analytics-red: #e63946;
+            --insight-bg: rgba(67, 97, 238, 0.08);
+            --task-bg: #f8f9fa;
+            --input-bg: #ffffff;
+            --modal-overlay: rgba(0,0,0,0.4);
         }
         [data-theme="dark"] {
             --bg-base: #121420;
@@ -49,13 +53,17 @@
             --text-muted: #94a3b8;
             --success: #38b000;
             --shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            --insight-bg: rgba(72, 149, 239, 0.12);
+            --task-bg: #252942;
+            --input-bg: #2d314d;
+            --modal-overlay: rgba(0,0,0,0.7);
         }
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Quicksand', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
         body {
             background-color: var(--bg-base);
@@ -77,7 +85,7 @@
         .floating-item {
             position: absolute;
             font-size: 2rem;
-            opacity: 0.35;
+            opacity: 0.3;
             animation: floatAnim 9s ease-in-out infinite alternate;
         }
         .floating-item:nth-child(1) { top: 8%; left: 6%; animation-delay: 0s; font-size: 2.4rem; }
@@ -86,7 +94,8 @@
         .floating-item:nth-child(4) { top: 55%; right: 5%; animation-delay: 1.8s; font-size: 2.1rem; }
         .floating-item:nth-child(5) { bottom: 12%; left: 10%; animation-delay: 3.2s; font-size: 2.6rem; }
         .floating-item:nth-child(6) { bottom: 18%; right: 12%; animation-delay: 2.1s; font-size: 2.3rem; }
-        .floating-item:nth-child(7) { top: 28%; left: 45%; animation-delay: 4s; font-size: 1.8rem; opacity: 0.25; }
+        .floating-item:nth-child(7) { top: 28%; left: 45%; animation-delay: 4s; font-size: 1.8rem; opacity: 0.2; }
+        [data-theme="dark"] .floating-item { opacity: 0.25; }
         @keyframes floatAnim {
             0% { transform: translateY(0px) rotate(0deg) scale(1); }
             100% { transform: translateY(-20px) rotate(12deg) scale(1.08); }
@@ -122,7 +131,7 @@
         }
         #login-overlay.hidden { opacity: 0; pointer-events: none; transform: scale(0.95); }
         #login-overlay .login-icon { font-size: 3rem; color: var(--primary); margin-bottom: 6px; }
-        #login-overlay h2 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; margin-bottom: 2px; }
+        #login-overlay h2 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; margin-bottom: 2px; color: var(--text-main); }
         #login-overlay p { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 12px; max-width: 300px; }
         .login-methods { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 320px; }
         .method-divider { display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; margin: 0; }
@@ -130,16 +139,19 @@
         .btn-google { background: #fff; color: #444; border: 2px solid #ddd; padding: 9px 14px; border-radius: 40px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: 0.2s; width: 100%; }
         .btn-google:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
         .btn-google i { font-size: 1.1rem; color: #ea4335; }
+        [data-theme="dark"] .btn-google { background: #2d314d; color: #e0e0e0; border-color: #3d4166; }
+        [data-theme="dark"] .btn-google:hover { background: #3d4166; }
         .btn-guest { background: var(--bg-base); border: 2px solid var(--border); color: var(--text-main); padding: 9px 14px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; width: 100%; }
         .btn-guest:hover { border-color: var(--primary); background: var(--bg-card); }
         .input-group { display: flex; flex-direction: column; gap: 5px; width: 100%; }
-        .input-group input { width: 100%; padding: 8px 12px; background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.85rem; outline: none; }
+        .input-group input { width: 100%; padding: 8px 12px; background: var(--input-bg); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.85rem; outline: none; }
         .input-group input:focus { border-color: var(--primary); }
+        .input-group input::placeholder { color: var(--text-muted); opacity: 0.7; }
         .email-actions { display: flex; gap: 5px; margin-top: 2px; }
         .email-actions .btn-action { flex: 1; }
         .btn-action { padding: 8px 14px; border-radius: var(--radius-sm); background: var(--secondary); color: white; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; font-size: 0.8rem; }
-        .btn-action:hover { opacity: 0.85; }
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-action:hover { opacity: 0.85; transform: translateY(-1px); }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .btn-action.primary { background: var(--primary); }
         .btn-action.danger { background: var(--accent); }
         .forgot-link { font-size: 0.65rem; color: var(--primary); cursor: pointer; text-align: right; margin-top: 1px; }
@@ -152,13 +164,14 @@
         #sticker-toast { position: absolute; top: 10px; left: 50%; transform: translateX(-50%) translateY(-140px); background: var(--bg-card); border: 3px solid var(--primary); color: var(--text-main); padding: 8px 14px; border-radius: var(--radius-md); box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 2000; display: flex; align-items: center; gap: 6px; font-family: 'Fredoka', sans-serif; font-size: 0.8rem; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 90%; }
         #sticker-toast.show { transform: translateX(-50%) translateY(0); }
         #sticker-toast i { color: var(--accent); font-size: 0.9rem; }
-        .modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+        .modal-overlay { position: absolute; inset: 0; background: var(--modal-overlay); backdrop-filter: blur(5px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-box { background: var(--bg-card); border: 3px solid var(--primary); width: 88%; max-width: 380px; padding: 20px; border-radius: var(--radius-lg); box-shadow: 0 15px 35px rgba(0,0,0,0.3); transform: scale(0.85); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
         .modal-overlay.active .modal-box { transform: scale(1); }
         .modal-box h3 { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; margin-bottom: 12px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-        .modal-box input, .modal-box select { width: 100%; padding: 10px 14px; background: var(--bg-base); border: 2px solid var(--border); color: var(--text-main); border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; outline: none; }
+        .modal-box input, .modal-box select { width: 100%; padding: 10px 14px; background: var(--input-bg); border: 2px solid var(--border); color: var(--text-main); border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; outline: none; }
         .modal-box input:focus, .modal-box select:focus { border-color: var(--primary); }
+        .modal-box input::placeholder { color: var(--text-muted); opacity: 0.7; }
         .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
         header { background: var(--bg-card); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed var(--border); flex-shrink: 0; gap: 6px; }
         .logo-area { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
@@ -166,9 +179,10 @@
         @keyframes bounceMascot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
         header h1 { font-family: 'Fredoka', sans-serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.3px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .header-controls { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
-        .icon-btn { background: var(--bg-base); border: 2px solid var(--border); color: var(--text-main); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
+        .icon-btn { background: var(--bg-base); border: 2px solid var(--border); color: var(--text-main); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; transition: 0.2s; }
         .icon-btn:hover { border-color: var(--primary); color: var(--primary); transform: scale(1.05); }
-        .user-badge { display: flex; align-items: center; gap: 4px; background: var(--bg-base); border: 2px solid var(--border); border-radius: 40px; padding: 2px 6px 2px 3px; cursor: pointer; position: relative; flex-shrink: 0; }
+        .user-badge { display: flex; align-items: center; gap: 4px; background: var(--bg-base); border: 2px solid var(--border); border-radius: 40px; padding: 2px 6px 2px 3px; cursor: pointer; position: relative; flex-shrink: 0; transition: 0.2s; }
+        .user-badge:hover { border-color: var(--primary); }
         .user-badge img { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--primary); }
         .user-badge .user-name { font-size: 0.65rem; font-weight: 600; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-main); }
         .user-badge .logout-tip { font-size: 0.5rem; color: var(--text-muted); opacity: 0.6; }
@@ -186,8 +200,9 @@
         .widget-value { font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--primary); }
         .countdown-sub { font-size: 0.55rem; color: var(--text-muted); margin-top: 1px; }
         .search-box { display: flex; gap: 6px; margin-bottom: 10px; }
-        .search-box input { flex: 1; padding: 6px 10px; background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-weight: 600; font-size: 0.8rem; outline: none; }
+        .search-box input { flex: 1; padding: 6px 10px; background: var(--input-bg); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-weight: 600; font-size: 0.8rem; outline: none; }
         .search-box input:focus { border-color: var(--primary); }
+        .search-box input::placeholder { color: var(--text-muted); opacity: 0.7; }
         .table-container { overflow-x: auto; border-radius: var(--radius-md); border: 2px solid var(--border); background: var(--bg-card); margin-bottom: 10px; position: relative; transition: all 0.2s ease; }
         .table-container.long-press-active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(230,57,70,0.3); transform: scale(0.98); }
         .table-container .delete-hint { position: absolute; top: 4px; right: 6px; font-size: 0.5rem; color: var(--text-muted); opacity: 0.5; background: var(--bg-card); padding: 0 6px; border-radius: 8px; pointer-events: none; font-family: 'Fredoka', sans-serif; }
@@ -197,24 +212,29 @@
         td:first-child { background-color: var(--bg-base); font-weight: 700; color: var(--secondary); }
         td input, th input { width: 100%; border: none; background: transparent; text-align: center; font-size: 0.7rem; font-weight: 600; outline: none; color: var(--text-main); padding: 2px; border-radius: 4px; }
         td input:focus, th input:focus { background: var(--bg-base); box-shadow: 0 0 0 2px var(--primary); }
+        td input::placeholder, th input::placeholder { color: var(--text-muted); opacity: 0.5; }
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
-        .btn { padding: 6px 10px; border-radius: var(--radius-sm); font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 0.7rem; cursor: pointer; border: 2px solid var(--border); background: var(--bg-base); color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 3px; box-shadow: 0 3px 0 var(--border); transition: transform 0.1s ease, box-shadow 0.1s ease; }
+        .btn { padding: 6px 10px; border-radius: var(--radius-sm); font-family: 'Fredoka', sans-serif; font-weight: 500; font-size: 0.7rem; cursor: pointer; border: 2px solid var(--border); background: var(--bg-base); color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 3px; box-shadow: 0 3px 0 var(--border); transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s, border-color 0.2s; }
         .btn:hover { transform: translateY(-2px); }
         .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
         .btn.primary { background: var(--primary); color: white; border-color: var(--primary-hover); box-shadow: 0 3px 0 var(--primary-hover); }
+        .btn.primary:hover { background: var(--primary-hover); }
         .btn.danger { background: #ff6b6b; color: white; border-color: #ee5253; box-shadow: 0 3px 0 #d63031; }
+        .btn.danger:hover { background: #ee5253; }
         .btn.success { background: var(--success); color: white; border-color: #1a9e8e; box-shadow: 0 3px 0 #1a9e8e; }
+        .btn.success:hover { background: #1a9e8e; }
         .btn-outline-danger { background: transparent; color: var(--accent); border-color: var(--accent); box-shadow: none; }
         .btn-outline-danger:hover { background: var(--accent); color: white; transform: translateY(-2px); }
         .history-delete-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; margin-bottom: 8px; }
         .history-delete-row .btn { font-size: 0.6rem; padding: 3px 12px; }
         .calendar-card { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 8px; }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.85rem; }
-        .calendar-header button { background: var(--bg-card); border: 2px solid var(--border); color: var(--text-main); width: 26px; height: 26px; border-radius: 50%; cursor: pointer; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.85rem; color: var(--text-main); }
+        .calendar-header button { background: var(--bg-card); border: 2px solid var(--border); color: var(--text-main); width: 26px; height: 26px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        .calendar-header button:hover { border-color: var(--primary); color: var(--primary); }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
         .calendar-day-name { font-size: 0.55rem; font-weight: 700; color: var(--text-muted); padding-bottom: 2px; }
-        .calendar-date { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; border-radius: 50%; cursor: pointer; position: relative; background-color: var(--bg-card); border: 1px solid var(--border); }
-        .calendar-date:hover { border-color: var(--primary); }
+        .calendar-date { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; border-radius: 50%; cursor: pointer; position: relative; background-color: var(--bg-card); border: 1px solid var(--border); transition: 0.2s; }
+        .calendar-date:hover { border-color: var(--primary); transform: scale(1.05); }
         .calendar-date.selected { background-color: var(--primary) !important; color: white !important; border-color: var(--primary-hover) !important; }
         .calendar-date.has-festival { background-color: rgba(114,9,183,0.15); border-color: var(--festival-color); color: var(--festival-color); }
         .calendar-date.has-test { background-color: rgba(230,57,70,0.15); border-color: var(--accent); color: var(--accent); }
@@ -227,8 +247,10 @@
         .assistant-speech-wrap.hidden { opacity: 0; transform: scale(0); pointer-events: none; }
         .assistant-speech { background: var(--bg-card); border: 2px solid var(--primary); padding: 6px 10px; border-radius: 14px; font-family: 'Fredoka', sans-serif; font-size: 0.8rem; color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 150px; cursor: pointer; position: relative; line-height: 1.3; }
         .assistant-speech::after { content: ''; position: absolute; right: -6px; bottom: 5px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 6px solid var(--primary); }
-        .assistant-close-btn { position: absolute; top: -7px; left: -7px; width: 16px; height: 16px; background: var(--accent); color: white; border: 2px solid var(--bg-card); border-radius: 50%; font-size: 0.45rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 155; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .assistant-avatar-btn { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; border: 3px solid var(--bg-card); display: flex; justify-content: center; align-items: center; color: white; font-size: 1rem; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.2); animation: floatBoy 2.5s ease-in-out infinite alternate; flex-shrink: 0; }
+        .assistant-close-btn { position: absolute; top: -7px; left: -7px; width: 16px; height: 16px; background: var(--accent); color: white; border: 2px solid var(--bg-card); border-radius: 50%; font-size: 0.45rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 155; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.2s; }
+        .assistant-close-btn:hover { transform: scale(1.1); }
+        .assistant-avatar-btn { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; border: 3px solid var(--bg-card); display: flex; justify-content: center; align-items: center; color: white; font-size: 1rem; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.2); animation: floatBoy 2.5s ease-in-out infinite alternate; flex-shrink: 0; transition: 0.2s; }
+        .assistant-avatar-btn:hover { transform: scale(1.05); }
         @keyframes floatBoy { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
         .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; background: var(--bg-card); border-top: 2px dashed var(--border); z-index: 100; display: flex; flex-direction: column; padding: 4px 0 2px 0; flex-shrink: 0; }
         .nav-items-row { display: flex; justify-content: space-around; align-items: center; padding: 0 4px; }
@@ -271,88 +293,531 @@
         .sync-actions { display: none; }
 
         /* ─── TASKS STYLES ─── */
-        .tasks-section { margin-top: 12px; border-top: 2px dashed var(--border); padding-top: 10px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
-        .tasks-section h3 { font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-shrink: 0; }
-        .task-progress-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 0.7rem; color: var(--text-muted); flex-shrink: 0; }
-        .task-progress-bar { flex: 1; height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; position: relative; }
-        .task-progress-bar .fill { height: 100%; background: var(--success); border-radius: 10px; transition: width 0.4s ease; width: 0%; }
-        .task-progress-text { font-weight: 600; white-space: nowrap; font-size: 0.65rem; min-width: 40px; text-align: right; }
-        .task-list { list-style: none; padding: 0; margin: 0 0 8px 0; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; flex: 1; min-height: 0; max-height: none; }
-        .task-item { display: flex; align-items: center; gap: 8px; background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px 6px 6px; transition: border-color 0.2s, opacity 0.3s; animation: slideIn 0.25s ease; flex-shrink: 0; }
-        .task-item.completed { opacity: 0.6; border-color: var(--success); }
-        .task-item.completed .task-text { text-decoration: line-through; color: var(--text-muted); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
-        .task-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg-base); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.2s, border-color 0.2s, transform 0.15s; font-size: 0.65rem; color: transparent; }
-        .task-check:hover { transform: scale(1.08); border-color: var(--primary); }
-        .task-check.checked { background: var(--success); border-color: var(--success); color: white; }
-        .task-check.checked i { color: white; }
-        .task-text { flex: 1; font-size: 0.75rem; font-weight: 600; color: var(--text-main); word-break: break-word; line-height: 1.3; }
-        .task-delete-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; transition: color 0.2s, background 0.2s; flex-shrink: 0; opacity: 0.4; }
-        .task-delete-btn:hover { color: var(--accent); background: rgba(230,57,70,0.1); opacity: 1; }
-        .task-add-row { display: flex; gap: 5px; margin-bottom: 8px; flex-shrink: 0; }
-        .task-add-row input { flex: 1; padding: 6px 10px; background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.75rem; font-weight: 600; outline: none; }
-        .task-add-row input:focus { border-color: var(--primary); }
-        .task-add-row .btn { padding: 6px 12px; font-size: 0.7rem; flex-shrink: 0; box-shadow: none; border-radius: var(--radius-sm); }
-        .history-tasks-section { margin-top: 10px; border-top: 2px dashed var(--border); padding-top: 10px; }
-        .history-tasks-section h4 { font-family: 'Fredoka', sans-serif; font-size: 0.8rem; font-weight: 600; color: var(--text-main); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-        .history-tasks-section .task-item { padding: 4px 8px 4px 4px; }
-        .history-tasks-section .task-item .task-text { font-size: 0.7rem; }
-        .history-tasks-section .task-check { width: 18px; height: 18px; font-size: 0.5rem; }
-        .no-tasks-msg { color: var(--text-muted); font-size: 0.7rem; font-style: italic; padding: 4px 0; }
+        .tasks-section {
+            margin-top: 12px;
+            border-top: 2px dashed var(--border);
+            padding-top: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            padding-bottom: 12px;
+        }
+        .tasks-section h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            flex-shrink: 0;
+        }
+        .task-progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        .task-progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .task-progress-bar .fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .task-progress-text {
+            font-weight: 600;
+            white-space: nowrap;
+            font-size: 0.65rem;
+            min-width: 40px;
+            text-align: right;
+        }
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 8px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+            max-height: none;
+            padding-bottom: 4px;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--task-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px 6px 6px;
+            transition: border-color 0.2s, opacity 0.3s, background 0.2s;
+            animation: slideIn 0.25s ease;
+            flex-shrink: 0;
+        }
+        .task-item.completed {
+            opacity: 0.6;
+            border-color: var(--success);
+        }
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-12px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .task-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--bg-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+            font-size: 0.65rem;
+            color: transparent;
+        }
+        .task-check:hover {
+            transform: scale(1.08);
+            border-color: var(--primary);
+        }
+        .task-check.checked {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        .task-check.checked i {
+            color: white;
+        }
+        .task-text {
+            flex: 1;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-main);
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        .task-delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: color 0.2s, background 0.2s;
+            flex-shrink: 0;
+            opacity: 0.4;
+        }
+        .task-delete-btn:hover {
+            color: var(--accent);
+            background: rgba(230,57,70,0.1);
+            opacity: 1;
+        }
+        .task-add-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .task-add-row input {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--input-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.75rem;
+            font-weight: 600;
+            outline: none;
+        }
+        .task-add-row input:focus {
+            border-color: var(--primary);
+        }
+        .task-add-row input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+        .task-add-row .btn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            box-shadow: none;
+            border-radius: var(--radius-sm);
+        }
+        .history-tasks-section {
+            margin-top: 10px;
+            border-top: 2px dashed var(--border);
+            padding-top: 10px;
+        }
+        .history-tasks-section h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .history-tasks-section .task-item {
+            padding: 4px 8px 4px 4px;
+        }
+        .history-tasks-section .task-item .task-text {
+            font-size: 0.7rem;
+        }
+        .history-tasks-section .task-check {
+            width: 18px;
+            height: 18px;
+            font-size: 0.5rem;
+        }
+        .no-tasks-msg {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-style: italic;
+            padding: 4px 0;
+        }
 
         /* ─── STUDIO TAB ─── */
-        .studio-date-selector { display: flex; gap: 6px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
-        .studio-date-selector input[type="date"] { flex: 1; padding: 6px 10px; background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.75rem; font-weight: 600; outline: none; min-width: 130px; }
-        .studio-date-selector input[type="date"]:focus { border-color: var(--primary); }
-        .studio-date-selector .btn { padding: 6px 12px; font-size: 0.7rem; flex-shrink: 0; box-shadow: none; border-radius: var(--radius-sm); }
-        .studio-tasks-section { margin-top: 12px; border-top: 2px solid var(--border); padding-top: 10px; flex: 1; display: flex; flex-direction: column; min-height: 0; padding-bottom: 10px; }
-        .studio-tasks-section h3 { font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-shrink: 0; }
-        .studio-tasks-section .task-list { flex: 1; overflow-y: auto; min-height: 0; max-height: none; }
-        .studio-tasks-section .future-date-label { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); padding: 4px 0; flex-shrink: 0; }
-        .studio-tasks-section .task-add-row { flex-shrink: 0; }
-        .studio-tasks-section .task-progress-wrap { flex-shrink: 0; }
+        .studio-date-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .studio-date-selector input[type="date"] {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--input-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.75rem;
+            font-weight: 600;
+            outline: none;
+            min-width: 130px;
+        }
+        .studio-date-selector input[type="date"]:focus {
+            border-color: var(--primary);
+        }
+        .studio-date-selector .btn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            box-shadow: none;
+            border-radius: var(--radius-sm);
+        }
+        .studio-tasks-section {
+            margin-top: 12px;
+            border-top: 2px solid var(--border);
+            padding-top: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            padding-bottom: 12px;
+        }
+        .studio-tasks-section h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            flex-shrink: 0;
+        }
+        .studio-tasks-section .task-list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            max-height: none;
+            padding-bottom: 4px;
+        }
+        .studio-tasks-section .future-date-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 4px 0;
+            flex-shrink: 0;
+        }
+        .studio-tasks-section .task-add-row {
+            flex-shrink: 0;
+        }
+        .studio-tasks-section .task-progress-wrap {
+            flex-shrink: 0;
+        }
 
-        #view-today { display: none; flex-direction: column; height: 100%; }
-        #view-today.active { display: flex; flex-direction: column; }
-        #view-today > *:not(.tasks-section) { flex-shrink: 0; }
-        #view-today .tasks-section { flex: 1; min-height: 0; }
+        #view-today {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #view-today.active {
+            display: flex;
+            flex-direction: column;
+        }
+        #view-today > *:not(.tasks-section) {
+            flex-shrink: 0;
+        }
+        #view-today .tasks-section {
+            flex: 1;
+            min-height: 0;
+            padding-bottom: 16px;
+        }
 
-        #view-create { display: none; flex-direction: column; height: 100%; }
-        #view-create.active { display: flex; flex-direction: column; }
-        #view-create > *:not(.studio-tasks-section) { flex-shrink: 0; }
-        #view-create .studio-tasks-section { flex: 1; min-height: 0; }
+        #view-create {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #view-create.active {
+            display: flex;
+            flex-direction: column;
+        }
+        #view-create > *:not(.studio-tasks-section) {
+            flex-shrink: 0;
+        }
+        #view-create .studio-tasks-section {
+            flex: 1;
+            min-height: 0;
+            padding-bottom: 16px;
+        }
 
         /* ─── ANALYTICS STYLES ─── */
-        .analytics-filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; flex-shrink: 0; }
-        .analytics-filters .btn { padding: 4px 12px; font-size: 0.65rem; flex: 1; min-width: 50px; box-shadow: none; border-radius: 20px; }
-        .analytics-filters .btn.active { background: var(--primary); color: white; border-color: var(--primary-hover); }
-        .analytics-container { flex: 1; overflow-y: auto; min-height: 0; padding-bottom: 10px; }
-        .analytics-card { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 10px; margin-bottom: 8px; transition: all 0.3s ease; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .analytics-card .date-label { font-size: 0.7rem; font-weight: 700; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
-        .analytics-card .date-label .day-name { color: var(--text-muted); font-weight: 600; font-size: 0.65rem; }
-        .analytics-bar-wrap { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-        .analytics-bar-track { flex: 1; height: 18px; background: var(--border); border-radius: 20px; overflow: hidden; position: relative; }
-        .analytics-bar-fill { height: 100%; border-radius: 20px; transition: width 1s cubic-bezier(0.22, 1, 0.36, 1); width: 0%; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 0.55rem; font-weight: 700; color: white; }
+        .analytics-filters {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .analytics-filters .btn {
+            padding: 4px 12px;
+            font-size: 0.65rem;
+            flex: 1;
+            min-width: 50px;
+            box-shadow: none;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+        .analytics-filters .btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-hover);
+        }
+        .analytics-container {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding-bottom: 12px;
+        }
+        .analytics-card {
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .analytics-card .date-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .analytics-card .date-label .day-name {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.65rem;
+        }
+        .analytics-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .analytics-bar-track {
+            flex: 1;
+            height: 18px;
+            background: var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .analytics-bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+            width: 0%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 6px;
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: white;
+        }
         .analytics-bar-fill.green { background: linear-gradient(90deg, #2ec4b6, #38b000); }
         .analytics-bar-fill.blue { background: linear-gradient(90deg, #4361ee, #4895ef); }
         .analytics-bar-fill.purple { background: linear-gradient(90deg, #7209b7, #b5179e); }
         .analytics-bar-fill.orange { background: linear-gradient(90deg, #f77f00, #fcbf49); }
         .analytics-bar-fill.red { background: linear-gradient(90deg, #e63946, #ff6b6b); }
-        .analytics-percent { font-size: 0.75rem; font-weight: 700; min-width: 40px; text-align: right; color: var(--text-main); }
-        .analytics-task-count { font-size: 0.55rem; color: var(--text-muted); margin-top: 2px; }
-        .analytics-empty { color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 30px 0; font-style: italic; }
-        .analytics-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; flex-shrink: 0; }
-        .analytics-stat-box { background: var(--bg-base); border: 2px solid var(--border); border-radius: var(--radius-md); padding: 8px; text-align: center; }
-        .analytics-stat-box .stat-value { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--primary); }
-        .analytics-stat-box .stat-label { font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .analytics-percent {
+            font-size: 0.75rem;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: right;
+            color: var(--text-main);
+        }
+        .analytics-task-count {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .analytics-empty {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 30px 0;
+            font-style: italic;
+        }
+        .analytics-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        .analytics-stat-box {
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .analytics-stat-box .stat-value {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .analytics-stat-box .stat-label {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
-        #view-analytics { display: none; flex-direction: column; height: 100%; }
-        #view-analytics.active { display: flex; flex-direction: column; }
-        #view-analytics > *:not(.analytics-container) { flex-shrink: 0; }
-        #view-analytics .analytics-container { flex: 1; min-height: 0; }
-        .calendar-date.has-timetable { border-color: var(--success); background-color: rgba(46,196,182,0.1); }
-        .calendar-date.has-tasks.has-timetable { background: linear-gradient(135deg, rgba(0,129,167,0.1), rgba(46,196,182,0.1)); }
+        #view-analytics {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #view-analytics.active {
+            display: flex;
+            flex-direction: column;
+        }
+        #view-analytics > *:not(.analytics-container) {
+            flex-shrink: 0;
+        }
+        #view-analytics .analytics-container {
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* ─── INSIGHTS STYLES ─── */
+        .insights-section {
+            margin-top: 12px;
+            border-top: 2px dashed var(--border);
+            padding-top: 10px;
+            flex-shrink: 0;
+        }
+        .insights-section h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .insight-card {
+            background: var(--insight-bg);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            transition: 0.3s;
+        }
+        .insight-card:hover {
+            transform: translateX(4px);
+        }
+        .insight-card .insight-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .insight-card .insight-text {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-main);
+            flex: 1;
+        }
+        .insight-card .insight-text span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .no-insights {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-style: italic;
+            padding: 4px 0;
+        }
+
+        /* ─── CALENDAR DATE WITH TIMETABLE ─── */
+        .calendar-date.has-timetable {
+            border-color: var(--success);
+            background-color: rgba(46,196,182,0.1);
+        }
+        .calendar-date.has-tasks.has-timetable {
+            background: linear-gradient(135deg, rgba(0,129,167,0.1), rgba(46,196,182,0.1));
+        }
     </style>
 </head>
 <body>
@@ -448,9 +913,15 @@
                 </div>
                 <h2 id="today-heading"><i class="fas fa-sun"></i> Today's Schedule</h2>
                 <div id="today-container"></div>
+
                 <div class="tasks-section" id="today-tasks-section">
                     <h3><i class="fas fa-list-check"></i> Today's Tasks</h3>
                     <div id="today-tasks-container"></div>
+                </div>
+
+                <div class="insights-section" id="insights-section">
+                    <h4><i class="fas fa-lightbulb"></i> Insights</h4>
+                    <div id="insights-container"></div>
                 </div>
             </div>
 
@@ -548,6 +1019,7 @@
                     <button class="btn active" data-filter="day">Day</button>
                     <button class="btn" data-filter="week">Week</button>
                     <button class="btn" data-filter="month">Month</button>
+                    <button class="btn" data-filter="all">All</button>
                 </div>
                 <div class="analytics-container" id="analytics-container">
                     <div class="analytics-empty">Loading analytics...</div>
@@ -647,7 +1119,8 @@
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const htmlEl = document.documentElement;
-        const savedTheme = localStorage.getItem('doodleTheme') || 'dark';
+        // Default to light theme
+        const savedTheme = localStorage.getItem('doodleTheme') || 'light';
         htmlEl.setAttribute('data-theme', savedTheme);
         themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         themeToggle.addEventListener('click', () => {
@@ -655,8 +1128,8 @@
             htmlEl.setAttribute('data-theme', next);
             localStorage.setItem('doodleTheme', next);
             themeIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            // Re-render analytics with new theme colors
             renderAnalytics(currentFilter);
+            renderInsights();
         });
 
         // ─── Modal ───
@@ -720,6 +1193,9 @@
                         if (target === 'view-analytics') {
                             renderAnalytics(currentFilter);
                         }
+                        if (target === 'view-today') {
+                            renderInsights();
+                        }
                     }
                 });
             });
@@ -736,7 +1212,8 @@
             "📅 Calendar shows festivals, tests & tasks!",
             "🎨 Studio lets you customise any date's timetable!",
             "📊 Analytics shows your progress with bars!",
-            "📈 Switch between Day/Week/Month views!",
+            "📈 Switch between Day/Week/Month/All views!",
+            "💡 Insights give you smart feedback based on your data!",
             "🔐 Your data syncs automatically across devices!",
             "🔄 Tap the cloud button to force sync!",
             "🗑️ Long-press on history timetable to delete!",
@@ -1036,6 +1513,7 @@
                 renderStudioTasks(studioDate); }
             renderTodayTasks();
             renderAnalytics(currentFilter);
+            renderInsights();
         }
 
         // ─── TABLE RENDER ───
@@ -1457,6 +1935,7 @@
                         renderTodayTasks();
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
                         checkAndCelebrateAllDone(todayStr);
+                        renderInsights();
                     }
                 });
             });
@@ -1471,6 +1950,7 @@
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
                         showStickerToast('🗑️ Task deleted.');
                         checkAndCelebrateAllDone(todayStr);
+                        renderInsights();
                     }
                 });
             });
@@ -1668,10 +2148,114 @@
             if (dateVal) loadHistory(dateVal);
         });
 
+        // ─── INSIGHTS ───
+        function renderInsights() {
+            const container = document.getElementById('insights-container');
+            const allTasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+            const totalTasks = allTasks.reduce((sum, d) => sum + d.tasks.length, 0);
+            const totalCompleted = allTasks.reduce((sum, d) => sum + d.tasks.filter(t => t.completed).length, 0);
+            const totalProgress = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
+
+            const todayTasks = getTasksForDate(todayStr);
+            const todayCompleted = todayTasks.filter(t => t.completed).length;
+            const todayProgress = todayTasks.length > 0 ? Math.round((todayCompleted / todayTasks.length) * 100) : 0;
+
+            let bestDay = { date: '', progress: 0, tasks: 0 };
+            allTasks.forEach(d => {
+                const tasks = d.tasks;
+                const completed = tasks.filter(t => t.completed).length;
+                const pct = tasks.length > 0 ? Math.round((completed / tasks.length) * 100) : 0;
+                if (pct > bestDay.progress && tasks.length > 0) {
+                    bestDay = { date: d.date, progress: pct, tasks: tasks.length };
+                }
+            });
+
+            const insights = [];
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+
+            if (todayTasks.length > 0) {
+                if (todayProgress === 100) {
+                    insights.push({ icon: '🎉', text: `Amazing! You've completed <span>all ${todayTasks.length}</span> tasks today! Keep it up!` });
+                } else if (todayProgress >= 70) {
+                    insights.push({ icon: '🔥', text: `Great progress! You're at <span>${todayProgress}%</span> for today. Just ${todayTasks.length - todayCompleted} more to go!` });
+                } else if (todayProgress >= 40) {
+                    insights.push({ icon: '💪', text: `You're making steady progress at <span>${todayProgress}%</span>. Keep pushing!` });
+                } else if (todayProgress > 0) {
+                    insights.push({ icon: '📝', text: `You've started with <span>${todayCompleted}/${todayTasks.length}</span> tasks done. Time to focus!` });
+                } else {
+                    insights.push({ icon: '⏰', text: `You have <span>${todayTasks.length}</span> tasks pending. Start with the easiest one!` });
+                }
+            } else {
+                insights.push({ icon: '📋', text: `No tasks for today. Add some tasks to stay productive!` });
+            }
+
+            const daysWithTasks = allTasks.filter(d => d.tasks.length > 0);
+            if (daysWithTasks.length > 0) {
+                const avgProgress = daysWithTasks.reduce((sum, d) => {
+                    const tasks = d.tasks;
+                    const completed = tasks.filter(t => t.completed).length;
+                    return sum + (tasks.length > 0 ? (completed / tasks.length) * 100 : 0);
+                }, 0) / daysWithTasks.length;
+
+                if (daysWithTasks.length >= 5) {
+                    insights.push({ icon: '📊', text: `You've been consistent for <span>${daysWithTasks.length}</span> days! Average progress: <span>${Math.round(avgProgress)}%</span>` });
+                } else if (daysWithTasks.length >= 3) {
+                    insights.push({ icon: '🌱', text: `Good start! You've tracked tasks for <span>${daysWithTasks.length}</span> days. Keep the momentum!` });
+                }
+            }
+
+            if (bestDay.date && bestDay.progress > 0) {
+                const isTodayBest = bestDay.date === todayStr;
+                insights.push({ icon: '🏆', text: `Your best day was <span>${bestDay.date}</span> with <span>${bestDay.progress}%</span> completion (${bestDay.tasks} tasks)${isTodayBest ? ' 🎯' : ''}` });
+            }
+
+            const motivational = [
+                "Monday motivation! Start the week strong 💪",
+                "Tuesday is for progress! Keep going 🚀",
+                "Wednesday - halfway there! You've got this 🌟",
+                "Thursday - almost Friday! Stay focused 📚",
+                "Friday - finish strong! Reward yourself after 🎯",
+                "Saturday - great time to catch up! 💫",
+                "Sunday - relax and plan for the week ahead 🌅"
+            ];
+            if (dayOfWeek >= 1 && dayOfWeek <= 7) {
+                insights.push({ icon: '💡', text: motivational[dayOfWeek - 1] });
+            }
+
+            if (totalTasks > 0) {
+                if (totalProgress >= 80) {
+                    insights.push({ icon: '🌟', text: `Overall you're at <span>${totalProgress}%</span> with <span>${totalCompleted}/${totalTasks}</span> tasks done. You're on fire!` });
+                } else if (totalProgress >= 50) {
+                    insights.push({ icon: '📈', text: `Overall progress: <span>${totalProgress}%</span> (${totalCompleted}/${totalTasks} tasks). Keep going!` });
+                } else if (totalProgress > 0) {
+                    insights.push({ icon: '🌱', text: `You've completed <span>${totalCompleted}/${totalTasks}</span> tasks overall. Every step counts!` });
+                }
+            }
+
+            const maxInsights = 5;
+            const displayInsights = insights.slice(0, maxInsights);
+
+            if (displayInsights.length === 0) {
+                container.innerHTML = `<div class="no-insights">Complete some tasks to see insights! 🚀</div>`;
+                return;
+            }
+
+            let html = '';
+            displayInsights.forEach(insight => {
+                html += `
+                    <div class="insight-card">
+                        <span class="insight-icon">${insight.icon}</span>
+                        <span class="insight-text">${insight.text}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
         // ─── ANALYTICS ───
         let currentFilter = 'day';
 
-        // Analytics filter buttons
         document.querySelectorAll('.analytics-filters .btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.analytics-filters .btn').forEach(b => b.classList.remove('active'));
@@ -1710,6 +2294,11 @@
                     const d = new Date(year, month, i);
                     dates.push(getLocalDate(d));
                 }
+            } else if (filter === 'all') {
+                const allData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+                const sorted = allData.map(d => d.date).sort();
+                sorted.forEach(date => dates.push(date));
+                if (dates.length === 0) dates.push(todayStr);
             }
             return dates;
         }
@@ -1741,7 +2330,6 @@
                 }
             });
 
-            // Update stats
             document.getElementById('stat-total-days').innerText = daysWithData;
             document.getElementById('stat-avg-progress').innerText = daysWithData > 0 ? Math.round(totalProgress / daysWithData) +
                 '%' : '0%';
@@ -1754,7 +2342,6 @@
                 return;
             }
 
-            // Sort by date
             data.sort((a, b) => a.date.localeCompare(b.date));
 
             let html = '';
@@ -1982,6 +2569,7 @@
             if (studioDate) { loadStudioTimetable(studioDate);
                 renderStudioTasks(studioDate); }
             renderAnalytics('day');
+            renderInsights();
             const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
             const todayEvent = tests.find(t => t.date === todayStr);
             if (todayEvent) setTimeout(() => showStickerToast(`📌 Today: "${todayEvent.subject}"`), 800);
@@ -2000,9 +2588,10 @@
         window.renderStudioTasks = renderStudioTasks;
         window.loadStudioTimetable = loadStudioTimetable;
         window.renderAnalytics = renderAnalytics;
+        window.renderInsights = renderInsights;
 
-        console.log('📚 Study Time-Table loaded with Analytics dashboard.');
-        console.log('📊 Analytics features: Day/Week/Month views with progress bars.');
+        console.log('📚 Study Time-Table loaded with Light theme as default.');
+        console.log('💡 Insights provide smart feedback based on your task completion data.');
         console.log('✅ Fully backward compatible with existing data.');
     </script>
 </body>
