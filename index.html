@@ -1413,30 +1413,15 @@
             background: linear-gradient(135deg, rgba(230, 57, 70, 0.15), rgba(0, 129, 167, 0.15));
         }
 
-        /* ─── FUTURE TASKS STYLES ─── */
-        .future-tasks-section {
-            margin-top: 12px;
-            border-top: 2px solid var(--border);
-            padding-top: 10px;
-        }
-        .future-tasks-section h3 {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 6px;
-        }
-        .future-tasks-section .future-date-selector {
+        /* ─── STUDIO (ADD) TAB STYLES ─── */
+        .studio-date-selector {
             display: flex;
             gap: 6px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             align-items: center;
             flex-wrap: wrap;
         }
-        .future-tasks-section .future-date-selector input[type="date"] {
+        .studio-date-selector input[type="date"] {
             flex: 1;
             padding: 6px 10px;
             background: var(--bg-base);
@@ -1448,30 +1433,41 @@
             outline: none;
             min-width: 130px;
         }
-        .future-tasks-section .future-date-selector input[type="date"]:focus {
+        .studio-date-selector input[type="date"]:focus {
             border-color: var(--primary);
         }
-        .future-tasks-section .future-date-selector .btn {
+        .studio-date-selector .btn {
             padding: 6px 12px;
             font-size: 0.7rem;
             flex-shrink: 0;
             box-shadow: none;
             border-radius: var(--radius-sm);
         }
-        .future-tasks-section .future-date-label {
+
+        /* ─── FUTURE TASKS (in Studio tab) ─── */
+        .studio-tasks-section {
+            margin-top: 12px;
+            border-top: 2px solid var(--border);
+            padding-top: 10px;
+        }
+        .studio-tasks-section h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .studio-tasks-section .task-list {
+            max-height: 250px;
+        }
+        .studio-tasks-section .future-date-label {
             font-size: 0.7rem;
             font-weight: 600;
             color: var(--text-muted);
             padding: 4px 0;
-        }
-        .future-tasks-section .no-future-tasks-msg {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-style: italic;
-            padding: 4px 0;
-        }
-        .future-tasks-section .task-list {
-            max-height: 300px;
         }
     </style>
 </head>
@@ -1578,16 +1574,6 @@
                     <h3><i class="fas fa-list-check"></i> Today's Tasks</h3>
                     <div id="today-tasks-container"></div>
                 </div>
-
-                <!-- ─── FUTURE TASKS ─── -->
-                <div class="future-tasks-section" id="future-tasks-section">
-                    <h3><i class="fas fa-calendar-plus"></i> Future Tasks</h3>
-                    <div class="future-date-selector">
-                        <input type="date" id="future-date-input" />
-                        <button class="btn primary" id="load-future-tasks-btn"><i class="fas fa-search"></i> Load</button>
-                    </div>
-                    <div id="future-tasks-container"></div>
-                </div>
             </div>
 
             <div id="view-yesterday" class="view-section">
@@ -1608,6 +1594,14 @@
 
             <div id="view-create" class="view-section">
                 <h2><i class="fas fa-wand-magic-sparkles"></i> Timetable Studio</h2>
+
+                <!-- Date Selector for Future Timetable -->
+                <div class="studio-date-selector">
+                    <input type="date" id="studio-date-input" />
+                    <button class="btn primary" id="load-studio-date-btn"><i class="fas fa-calendar-day"></i> Load</button>
+                    <button class="btn success" id="studio-today-btn"><i class="fas fa-sun"></i> Today</button>
+                </div>
+
                 <div class="btn-grid">
                     <button class="btn" id="add-subject-row"><i class="fas fa-plus-circle"></i> Add Row</button>
                     <button class="btn" id="add-time-col"><i class="fas fa-plus-circle"></i> Add Col</button>
@@ -1631,7 +1625,13 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="btn primary" id="save-timetable-btn" style="width:100%;"><i class="fas fa-cloud-arrow-up"></i> SAVE & SYNC</button>
+                <button class="btn primary" id="save-timetable-btn" style="width:100%;"><i class="fas fa-cloud-arrow-up"></i> SAVE &amp; SYNC</button>
+
+                <!-- ─── FUTURE TASKS (in Studio tab) ─── -->
+                <div class="studio-tasks-section" id="studio-tasks-section">
+                    <h3><i class="fas fa-list-check"></i> Tasks for <span id="studio-tasks-date-label">Today</span></h3>
+                    <div id="studio-tasks-container"></div>
+                </div>
             </div>
 
             <div id="view-calendar" class="view-section">
@@ -1679,7 +1679,7 @@
             <div class="nav-items-row">
                 <button class="nav-item active" data-target="view-today"><i class="fas fa-house-chimney"></i><span>Today</span></button>
                 <button class="nav-item" data-target="view-yesterday"><i class="fas fa-box-archive"></i><span>History</span></button>
-                <button class="nav-item" data-target="view-create"><i class="fas fa-pen-nib"></i><span>Add</span></button>
+                <button class="nav-item" data-target="view-create"><i class="fas fa-pen-nib"></i><span>Studio</span></button>
                 <button class="nav-item" data-target="view-calendar"><i class="fas fa-calendar-days"></i><span>Calendar</span></button>
             </div>
             <div class="footer-credit">
@@ -1815,6 +1815,13 @@
                             const histDate = document.getElementById('history-date-input').value;
                             if (histDate) loadHistory(histDate);
                         }
+                        if (target === 'view-create') {
+                            const studioDate = document.getElementById('studio-date-input').value;
+                            if (studioDate) {
+                                loadStudioTimetable(studioDate);
+                                renderStudioTasks(studioDate);
+                            }
+                        }
                     }
                 });
             });
@@ -1828,15 +1835,15 @@
         const guideMessages = [
             "Hii I'm PS. Tap me for tips! 👋",
             "⏱️ Live clock + target countdown!",
-            "📅 Calendar shows festivals & tests!",
-            "🎨 Studio lets you customise timetable!",
+            "📅 Calendar shows festivals, tests & tasks!",
+            "🎨 Studio lets you customise any date's timetable!",
+            "📆 Select any date in Studio to edit future timetables!",
             "🔐 Your data syncs across devices via Google!",
             "🔄 Tap the cloud button on bottom-right to force sync!",
             "⬇️ Use 'Pull from Cloud' to get latest data!",
             "⬆️ Use 'Push to Cloud' to upload your data!",
             "🗑️ Long-press on history timetable to delete!",
             "✅ Tasks: add, tick, and track progress!",
-            "📆 Future tasks: plan ahead with date picker!",
             "Stay productive! 🚀"
         ];
         let guideIdx = 0;
@@ -1877,10 +1884,8 @@
         yesterday.setDate(yesterday.getDate() - 1);
         document.getElementById('history-date-input').value = getLocalDate(yesterday);
 
-        // Set future date input to tomorrow by default
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('future-date-input').value = getLocalDate(tomorrow);
+        // Set studio date input to today
+        document.getElementById('studio-date-input').value = todayStr;
 
         // ─── Festivals DB ───
         const globalFestivals = {
@@ -2306,9 +2311,12 @@
             updateLiveWidgets();
             const histDate = document.getElementById('history-date-input').value;
             if (histDate) loadHistory(histDate);
-            loadMatrixFromToday();
+            const studioDate = document.getElementById('studio-date-input').value;
+            if (studioDate) {
+                loadStudioTimetable(studioDate);
+                renderStudioTasks(studioDate);
+            }
             renderTodayTasks();
-            renderFutureTasks();
         }
 
         // ─── TABLE RENDER ───
@@ -2337,27 +2345,52 @@
             renderTable(todayObj, container);
         }
 
-        // ─── Load matrix ───
-        function loadMatrixFromToday() {
+        // ─── Studio Timetable Load ───
+        function loadStudioTimetable(dateStr) {
             const data = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-            const todayObj = data.find(d => d.date === todayStr);
-            if (!todayObj) return;
+            const found = data.find(d => d.date === dateStr);
 
             const headerRow = document.getElementById('matrix-header-row');
             const bodyRows = document.getElementById('matrix-body-rows');
 
+            // Clear existing rows
             while (bodyRows.rows.length > 0) {
                 bodyRows.deleteRow(0);
             }
 
+            if (!found) {
+                // Default template
+                headerRow.innerHTML = `
+                    <th>Subject / Time</th>
+                    <th><input type="text" value="08:00 AM" /></th>
+                    <th><input type="text" value="10:00 AM" /></th>
+                    <th><input type="text" value="12:00 PM" /></th>
+                `;
+                const defaultRows = [
+                    ['Maths', 'Calculus', 'Algebra', 'Revision'],
+                    ['Physics', 'Mechanics', 'Optics', 'Numericals'],
+                    ['Chemistry', 'Organic', 'Inorganic', 'Equations']
+                ];
+                defaultRows.forEach(rowData => {
+                    const tr = document.createElement('tr');
+                    rowData.forEach(cellData => {
+                        const td = document.createElement('td');
+                        td.innerHTML = `<input type="text" value="${cellData}">`;
+                        tr.appendChild(td);
+                    });
+                    bodyRows.appendChild(tr);
+                });
+                return;
+            }
+
             headerRow.innerHTML = '';
-            todayObj.headers.forEach(h => {
+            found.headers.forEach(h => {
                 const th = document.createElement('th');
                 th.innerHTML = `<input type="text" value="${h}">`;
                 headerRow.appendChild(th);
             });
 
-            todayObj.rows.forEach(rowData => {
+            found.rows.forEach(rowData => {
                 const tr = document.createElement('tr');
                 rowData.forEach(cellData => {
                     const td = document.createElement('td');
@@ -2454,18 +2487,56 @@
             showStickerToast("🗑️ Subject row removed.");
         });
 
+        // ─── STUDIO DATE LOAD ───
+        document.getElementById('load-studio-date-btn').addEventListener('click', () => {
+            const dateVal = document.getElementById('studio-date-input').value;
+            if (dateVal) {
+                loadStudioTimetable(dateVal);
+                renderStudioTasks(dateVal);
+                showStickerToast(`📅 Loaded timetable for ${dateVal}`);
+            } else {
+                showStickerToast('⚠️ Please select a date.');
+            }
+        });
+
+        document.getElementById('studio-today-btn').addEventListener('click', () => {
+            document.getElementById('studio-date-input').value = todayStr;
+            loadStudioTimetable(todayStr);
+            renderStudioTasks(todayStr);
+            showStickerToast(`📅 Loaded today's timetable`);
+        });
+
         // ─── SAVE & SYNC ───
         document.getElementById('save-timetable-btn').addEventListener('click', async () => {
+            const dateVal = document.getElementById('studio-date-input').value;
+            if (!dateVal) {
+                showStickerToast('⚠️ Please select a date first.');
+                return;
+            }
+
             const headers = Array.from(headerRow.cells).map(th => th.querySelector('input')?.value || th.innerText);
             const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector(
                 'input')?.value || cell.innerText));
-            const payload = { date: todayStr, headers, rows };
+
+            // Validate
+            if (headers.length < 2) {
+                showStickerToast('⚠️ Need at least 1 time column.');
+                return;
+            }
+            if (rows.length < 1) {
+                showStickerToast('⚠️ Need at least 1 subject row.');
+                return;
+            }
+
+            const payload = { date: dateVal, headers, rows };
             let allData = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
-            allData = allData.filter(d => d.date !== todayStr);
+            allData = allData.filter(d => d.date !== dateVal);
             allData.push(payload);
             localStorage.setItem(TIMETABLE_KEY, JSON.stringify(allData));
-            showStickerToast("🎉 Timetable saved locally!");
-            loadTodayView();
+            showStickerToast(`🎉 Timetable saved for ${dateVal}!`);
+
+            if (dateVal === todayStr) loadTodayView();
+            renderCalendar();
 
             if (currentUser && !currentUser.isAnonymous) {
                 let success = false;
@@ -2501,6 +2572,9 @@
             const savedTests = (JSON.parse(localStorage.getItem(TESTS_KEY)) || []).map(t => t.date);
             const tasksData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
             const taskDates = tasksData.map(t => t.date);
+            const timetables = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+            const ttDates = timetables.map(t => t.date);
+
             for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
             for (let day = 1; day <= totalDays; day++) {
                 const cell = document.createElement('div');
@@ -2512,6 +2586,7 @@
                 if (globalFestivals[key]) cell.classList.add('has-festival');
                 if (savedTests.includes(key)) cell.classList.add('has-test');
                 if (taskDates.includes(key)) cell.classList.add('has-tasks');
+                if (ttDates.includes(key)) cell.classList.add('has-timetable');
                 if (key === todayStr) cell.classList.add('selected');
                 cell.addEventListener('click', () => {
                     document.querySelectorAll('.calendar-date').forEach(d => d.classList.remove('selected'));
@@ -2559,7 +2634,7 @@
                 html += `<p style="color:var(--text-muted);font-size:0.7rem;">No timetable for this date.</p>`;
             }
 
-            // Tasks for this date in calendar
+            // Tasks for this date
             const tasksData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
             const dateTasks = tasksData.find(t => t.date === dateStr);
             if (dateTasks && dateTasks.tasks && dateTasks.tasks.length > 0) {
@@ -2731,35 +2806,38 @@
             });
         }
 
-        // ─── FUTURE TASKS ───
-        function renderFutureTasks(dateStr) {
-            const container = document.getElementById('future-tasks-container');
+        // ─── STUDIO TASKS ───
+        function renderStudioTasks(dateStr) {
+            const container = document.getElementById('studio-tasks-container');
+            const label = document.getElementById('studio-tasks-date-label');
+
             if (!dateStr) {
-                dateStr = document.getElementById('future-date-input').value;
-            }
-            if (!dateStr) {
-                container.innerHTML = `<div class="no-future-tasks-msg">Please select a date.</div>`;
-                return;
+                dateStr = document.getElementById('studio-date-input').value;
+                if (!dateStr) {
+                    container.innerHTML = `<div class="no-tasks-msg">Please select a date first.</div>`;
+                    label.innerText = '...';
+                    return;
+                }
             }
 
+            label.innerText = dateStr;
             const tasks = getTasksForDate(dateStr);
             const today = new Date();
             const todayStrLocal = getLocalDate(today);
             const isFuture = dateStr > todayStrLocal;
             const isToday = dateStr === todayStrLocal;
 
-            let html = `<div class="future-date-label">📆 Tasks for <b>${dateStr}</b> ${isToday ? '(Today)' : isFuture ? '(Future)' : '(Past)'}</div>`;
+            let html = `<div class="future-date-label">📆 ${isToday ? 'Today' : isFuture ? 'Future' : 'Past'}</div>`;
 
-            // Add task row for future tasks
             html += `
                     <div class="task-add-row">
-                        <input type="text" id="future-task-input-field" placeholder="Add a task..." maxlength="200" />
-                        <button class="btn primary" id="future-task-add-btn"><i class="fas fa-plus"></i> Add</button>
+                        <input type="text" id="studio-task-input-field" placeholder="Add a task..." maxlength="200" />
+                        <button class="btn primary" id="studio-task-add-btn"><i class="fas fa-plus"></i> Add</button>
                     </div>
                 `;
 
             if (tasks.length === 0) {
-                html += `<div class="no-future-tasks-msg">No tasks for this date. Add one above.</div>`;
+                html += `<div class="no-tasks-msg">No tasks for this date. Add one above.</div>`;
             } else {
                 const completed = tasks.filter(t => t.completed).length;
                 const total = tasks.length;
@@ -2790,9 +2868,8 @@
 
             container.innerHTML = html;
 
-            // Event listeners for future tasks
-            const addBtn = document.getElementById('future-task-add-btn');
-            const inputField = document.getElementById('future-task-input-field');
+            const addBtn = document.getElementById('studio-task-add-btn');
+            const inputField = document.getElementById('studio-task-input-field');
             if (addBtn && inputField) {
                 const addTask = () => {
                     const text = inputField.value.trim();
@@ -2801,9 +2878,9 @@
                     current.push({ id: Date.now().toString(), text, completed: false });
                     saveTasksForDate(dateStr, current);
                     inputField.value = '';
-                    renderFutureTasks(dateStr);
+                    renderStudioTasks(dateStr);
                     if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
-                    showStickerToast('✅ Future task added!');
+                    showStickerToast('✅ Task added!');
                 };
                 addBtn.addEventListener('click', addTask);
                 inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
@@ -2816,7 +2893,7 @@
                     if (tasksList[idx]) {
                         tasksList[idx].completed = !tasksList[idx].completed;
                         saveTasksForDate(dateStr, tasksList);
-                        renderFutureTasks(dateStr);
+                        renderStudioTasks(dateStr);
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
                         checkAndCelebrateAllDone(dateStr);
                     }
@@ -2830,7 +2907,7 @@
                     if (tasksList[idx]) {
                         tasksList.splice(idx, 1);
                         saveTasksForDate(dateStr, tasksList);
-                        renderFutureTasks(dateStr);
+                        renderStudioTasks(dateStr);
                         if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
                         showStickerToast('🗑️ Task deleted.');
                         checkAndCelebrateAllDone(dateStr);
@@ -2838,22 +2915,6 @@
                 });
             });
         }
-
-        // Future tasks load button
-        document.getElementById('load-future-tasks-btn').addEventListener('click', () => {
-            const dateVal = document.getElementById('future-date-input').value;
-            if (dateVal) {
-                renderFutureTasks(dateVal);
-            } else {
-                showStickerToast('⚠️ Please select a date.');
-            }
-        });
-
-        // Also load future tasks when date input changes (optional)
-        document.getElementById('future-date-input').addEventListener('change', () => {
-            const dateVal = document.getElementById('future-date-input').value;
-            if (dateVal) renderFutureTasks(dateVal);
-        });
 
         // ─── HISTORY with tasks ───
         function loadHistory(dateVal) {
@@ -3197,9 +3258,14 @@
             const histDate = document.getElementById('history-date-input').value;
             if (histDate) loadHistory(histDate);
             renderTodayTasks();
-            // Load future tasks for the default date (tomorrow)
-            const futureDate = document.getElementById('future-date-input').value;
-            if (futureDate) renderFutureTasks(futureDate);
+
+            // Load studio with today's date
+            const studioDate = document.getElementById('studio-date-input').value;
+            if (studioDate) {
+                loadStudioTimetable(studioDate);
+                renderStudioTasks(studioDate);
+            }
+
             const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
             const todayEvent = tests.find(t => t.date === todayStr);
             if (todayEvent) {
@@ -3218,11 +3284,15 @@
         window.syncAllToCloud = syncAllToCloud;
         window.deleteTimetable = deleteTimetable;
         window.renderTodayTasks = renderTodayTasks;
-        window.renderFutureTasks = renderFutureTasks;
+        window.renderStudioTasks = renderStudioTasks;
+        window.loadStudioTimetable = loadStudioTimetable;
 
-        console.log('📚 Study Time-Table loaded with future tasks feature.');
-        console.log('📌 Future tasks are stored date-wise and sync to cloud.');
-        console.log('✅ Backward compatible with existing data.');
+        console.log('📚 Study Time-Table loaded with improved Studio and Future Tasks.');
+        console.log('📌 Features:');
+        console.log('  - Today tab: Today\'s timetable + tasks');
+        console.log('  - Studio tab: Any date\'s timetable + tasks');
+        console.log('  - Calendar: View all dates with timetables/tasks');
+        console.log('✅ Fully backward compatible with existing data.');
     </script>
 </body>
 </html>
