@@ -1344,7 +1344,6 @@
             background: rgba(230, 57, 70, 0.1);
             opacity: 1;
         }
-        /* Add task row always at top */
         .task-add-row {
             display: flex;
             gap: 5px;
@@ -1403,7 +1402,6 @@
             font-style: italic;
             padding: 4px 0;
         }
-        /* tasks in calendar */
         .calendar-date.has-tasks {
             border-color: var(--secondary);
             background-color: rgba(0, 129, 167, 0.12);
@@ -1413,6 +1411,67 @@
         }
         .calendar-date.has-tasks.has-test {
             background: linear-gradient(135deg, rgba(230, 57, 70, 0.15), rgba(0, 129, 167, 0.15));
+        }
+
+        /* ─── FUTURE TASKS STYLES ─── */
+        .future-tasks-section {
+            margin-top: 12px;
+            border-top: 2px solid var(--border);
+            padding-top: 10px;
+        }
+        .future-tasks-section h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .future-tasks-section .future-date-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .future-tasks-section .future-date-selector input[type="date"] {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 0.75rem;
+            font-weight: 600;
+            outline: none;
+            min-width: 130px;
+        }
+        .future-tasks-section .future-date-selector input[type="date"]:focus {
+            border-color: var(--primary);
+        }
+        .future-tasks-section .future-date-selector .btn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            box-shadow: none;
+            border-radius: var(--radius-sm);
+        }
+        .future-tasks-section .future-date-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 4px 0;
+        }
+        .future-tasks-section .no-future-tasks-msg {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-style: italic;
+            padding: 4px 0;
+        }
+        .future-tasks-section .task-list {
+            max-height: 300px;
         }
     </style>
 </head>
@@ -1514,10 +1573,20 @@
                 <h2 id="today-heading"><i class="fas fa-sun"></i> Today's Schedule</h2>
                 <div id="today-container"></div>
 
-                <!-- ─── TASKS SECTION (TODAY) ─── -->
+                <!-- ─── TODAY'S TASKS ─── -->
                 <div class="tasks-section" id="today-tasks-section">
                     <h3><i class="fas fa-list-check"></i> Today's Tasks</h3>
                     <div id="today-tasks-container"></div>
+                </div>
+
+                <!-- ─── FUTURE TASKS ─── -->
+                <div class="future-tasks-section" id="future-tasks-section">
+                    <h3><i class="fas fa-calendar-plus"></i> Future Tasks</h3>
+                    <div class="future-date-selector">
+                        <input type="date" id="future-date-input" />
+                        <button class="btn primary" id="load-future-tasks-btn"><i class="fas fa-search"></i> Load</button>
+                    </div>
+                    <div id="future-tasks-container"></div>
                 </div>
             </div>
 
@@ -1531,7 +1600,6 @@
                 <div id="history-delete-area"></div>
                 <div class="long-press-hint"><i class="fas fa-hand-pointer"></i> Long press on timetable to delete</div>
 
-                <!-- ─── TASKS IN HISTORY ─── -->
                 <div class="history-tasks-section" id="history-tasks-section" style="display:none;">
                     <h4><i class="fas fa-list-check"></i> Tasks for this day</h4>
                     <div id="history-tasks-container"></div>
@@ -1589,7 +1657,6 @@
             </div>
         </main>
 
-        <!-- Force Sync Button (Floating) -->
         <button class="sync-btn" id="force-sync-btn" title="Force Sync Data (Push + Pull)">
             <i class="fas fa-cloud-upload-alt"></i>
         </button>
@@ -1769,6 +1836,7 @@
             "⬆️ Use 'Push to Cloud' to upload your data!",
             "🗑️ Long-press on history timetable to delete!",
             "✅ Tasks: add, tick, and track progress!",
+            "📆 Future tasks: plan ahead with date picker!",
             "Stay productive! 🚀"
         ];
         let guideIdx = 0;
@@ -1808,6 +1876,11 @@
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         document.getElementById('history-date-input').value = getLocalDate(yesterday);
+
+        // Set future date input to tomorrow by default
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('future-date-input').value = getLocalDate(tomorrow);
 
         // ─── Festivals DB ───
         const globalFestivals = {
@@ -1985,7 +2058,7 @@
             }));
         }
 
-        // ─── CLOUD SYNC FUNCTIONS (with tasks) ───
+        // ─── CLOUD SYNC FUNCTIONS ───
         function updateCloudStatus(state) {
             cloudStatus.className = 'cloud-status';
             if (state === 'online') {
@@ -2235,6 +2308,7 @@
             if (histDate) loadHistory(histDate);
             loadMatrixFromToday();
             renderTodayTasks();
+            renderFutureTasks();
         }
 
         // ─── TABLE RENDER ───
@@ -2554,7 +2628,6 @@
             localStorage.setItem(TASKS_KEY, JSON.stringify(all));
         }
 
-        // Helper to check if all tasks are completed and show celebration
         function checkAndCelebrateAllDone(dateStr) {
             const tasks = getTasksForDate(dateStr);
             if (tasks.length === 0) return;
@@ -2564,13 +2637,13 @@
             }
         }
 
+        // ─── TODAY'S TASKS ───
         function renderTodayTasks() {
             const container = document.getElementById('today-tasks-container');
             const tasks = getTasksForDate(todayStr);
 
             let html = '';
 
-            // Always show the add row at the top
             html += `
                     <div class="task-add-row">
                         <input type="text" id="task-input-field" placeholder="Add a task..." maxlength="200" />
@@ -2610,7 +2683,6 @@
 
             container.innerHTML = html;
 
-            // Event listeners
             const addBtn = document.getElementById('task-add-btn');
             const inputField = document.getElementById('task-input-field');
             if (addBtn && inputField) {
@@ -2629,7 +2701,6 @@
                 inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
             }
 
-            // Toggle and delete listeners
             container.querySelectorAll('.task-check').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const idx = parseInt(btn.dataset.idx);
@@ -2660,6 +2731,130 @@
             });
         }
 
+        // ─── FUTURE TASKS ───
+        function renderFutureTasks(dateStr) {
+            const container = document.getElementById('future-tasks-container');
+            if (!dateStr) {
+                dateStr = document.getElementById('future-date-input').value;
+            }
+            if (!dateStr) {
+                container.innerHTML = `<div class="no-future-tasks-msg">Please select a date.</div>`;
+                return;
+            }
+
+            const tasks = getTasksForDate(dateStr);
+            const today = new Date();
+            const todayStrLocal = getLocalDate(today);
+            const isFuture = dateStr > todayStrLocal;
+            const isToday = dateStr === todayStrLocal;
+
+            let html = `<div class="future-date-label">📆 Tasks for <b>${dateStr}</b> ${isToday ? '(Today)' : isFuture ? '(Future)' : '(Past)'}</div>`;
+
+            // Add task row for future tasks
+            html += `
+                    <div class="task-add-row">
+                        <input type="text" id="future-task-input-field" placeholder="Add a task..." maxlength="200" />
+                        <button class="btn primary" id="future-task-add-btn"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                `;
+
+            if (tasks.length === 0) {
+                html += `<div class="no-future-tasks-msg">No tasks for this date. Add one above.</div>`;
+            } else {
+                const completed = tasks.filter(t => t.completed).length;
+                const total = tasks.length;
+                const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+                html += `
+                        <div class="task-progress-wrap">
+                            <span style="font-size:0.65rem;font-weight:600;">${completed}/${total}</span>
+                            <div class="task-progress-bar"><div class="fill" style="width:${pct}%;"></div></div>
+                            <span class="task-progress-text">${pct}%</span>
+                        </div>
+                        <ul class="task-list">
+                    `;
+                tasks.forEach((t, idx) => {
+                    const checked = t.completed ? 'checked' : '';
+                    const icon = t.completed ? 'fa-circle-check' : 'fa-circle';
+                    html += `
+                            <li class="task-item ${t.completed ? 'completed' : ''}" data-idx="${idx}">
+                                <button class="task-check ${checked}" data-idx="${idx}" title="Toggle complete">
+                                    <i class="fas ${icon}"></i>
+                                </button>
+                                <span class="task-text">${t.text}</span>
+                                <button class="task-delete-btn" data-idx="${idx}" title="Delete task"><i class="fas fa-times"></i></button>
+                            </li>
+                        `;
+                });
+                html += `</ul>`;
+            }
+
+            container.innerHTML = html;
+
+            // Event listeners for future tasks
+            const addBtn = document.getElementById('future-task-add-btn');
+            const inputField = document.getElementById('future-task-input-field');
+            if (addBtn && inputField) {
+                const addTask = () => {
+                    const text = inputField.value.trim();
+                    if (!text) { showStickerToast('⚠️ Please enter a task.'); return; }
+                    const current = getTasksForDate(dateStr);
+                    current.push({ id: Date.now().toString(), text, completed: false });
+                    saveTasksForDate(dateStr, current);
+                    inputField.value = '';
+                    renderFutureTasks(dateStr);
+                    if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                    showStickerToast('✅ Future task added!');
+                };
+                addBtn.addEventListener('click', addTask);
+                inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTask(); });
+            }
+
+            container.querySelectorAll('.task-check').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.dataset.idx);
+                    const tasksList = getTasksForDate(dateStr);
+                    if (tasksList[idx]) {
+                        tasksList[idx].completed = !tasksList[idx].completed;
+                        saveTasksForDate(dateStr, tasksList);
+                        renderFutureTasks(dateStr);
+                        if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                        checkAndCelebrateAllDone(dateStr);
+                    }
+                });
+            });
+
+            container.querySelectorAll('.task-delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.dataset.idx);
+                    const tasksList = getTasksForDate(dateStr);
+                    if (tasksList[idx]) {
+                        tasksList.splice(idx, 1);
+                        saveTasksForDate(dateStr, tasksList);
+                        renderFutureTasks(dateStr);
+                        if (currentUser && !currentUser.isAnonymous) syncAllToCloud();
+                        showStickerToast('🗑️ Task deleted.');
+                        checkAndCelebrateAllDone(dateStr);
+                    }
+                });
+            });
+        }
+
+        // Future tasks load button
+        document.getElementById('load-future-tasks-btn').addEventListener('click', () => {
+            const dateVal = document.getElementById('future-date-input').value;
+            if (dateVal) {
+                renderFutureTasks(dateVal);
+            } else {
+                showStickerToast('⚠️ Please select a date.');
+            }
+        });
+
+        // Also load future tasks when date input changes (optional)
+        document.getElementById('future-date-input').addEventListener('change', () => {
+            const dateVal = document.getElementById('future-date-input').value;
+            if (dateVal) renderFutureTasks(dateVal);
+        });
+
         // ─── HISTORY with tasks ───
         function loadHistory(dateVal) {
             const container = document.getElementById('history-container');
@@ -2678,7 +2873,6 @@
                 return;
             }
 
-            // Render table
             const wrapper = document.createElement('div');
             wrapper.className = 'history-timetable-wrapper';
             wrapper.style.position = 'relative';
@@ -2690,7 +2884,6 @@
             wrapper.querySelector('.table-container')?.appendChild(hint);
             container.appendChild(wrapper);
 
-            // Delete button
             const btnRow = document.createElement('div');
             btnRow.className = 'history-delete-row';
             const delBtn = document.createElement('button');
@@ -2704,7 +2897,6 @@
             btnRow.appendChild(delBtn);
             deleteArea.appendChild(btnRow);
 
-            // Long press
             const tableEl = wrapper.querySelector('.table-container');
             if (tableEl) {
                 let pressTimer = null;
@@ -2732,7 +2924,6 @@
                 tableEl.title = 'Long press to delete this timetable';
             }
 
-            // ─── SHOW TASKS FOR THIS DATE ───
             const tasks = getTasksForDate(dateVal);
             if (tasks.length > 0) {
                 tasksSection.style.display = 'block';
@@ -2873,9 +3064,8 @@
             }
         });
 
-        // ─── Guest Sign-In with fallback to local mode ───
+        // ─── Guest Sign-In ───
         guestBtn.addEventListener('click', async () => {
-            // If Firebase is not ready, go directly to local mode
             if (!isFirebaseReady) {
                 loginOverlay.classList.add('hidden');
                 showStickerToast("📁 Local mode active.");
@@ -2893,7 +3083,6 @@
                 showStickerToast('👤 Guest mode active. Data stored locally.');
             } catch (e) {
                 console.warn('Guest login error:', e);
-                // If anonymous auth is disabled, fallback to local mode
                 if (e.code === 'auth/admin-restricted-operation') {
                     loginOverlay.classList.add('hidden');
                     showStickerToast("📁 Local mode active (anonymous auth disabled).");
@@ -3008,6 +3197,9 @@
             const histDate = document.getElementById('history-date-input').value;
             if (histDate) loadHistory(histDate);
             renderTodayTasks();
+            // Load future tasks for the default date (tomorrow)
+            const futureDate = document.getElementById('future-date-input').value;
+            if (futureDate) renderFutureTasks(futureDate);
             const tests = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
             const todayEvent = tests.find(t => t.date === todayStr);
             if (todayEvent) {
@@ -3026,9 +3218,11 @@
         window.syncAllToCloud = syncAllToCloud;
         window.deleteTimetable = deleteTimetable;
         window.renderTodayTasks = renderTodayTasks;
+        window.renderFutureTasks = renderFutureTasks;
 
-        console.log('📚 Study Time-Table loaded with tasks feature.');
-        console.log('📌 Tasks are stored date-wise and sync to cloud.');
+        console.log('📚 Study Time-Table loaded with future tasks feature.');
+        console.log('📌 Future tasks are stored date-wise and sync to cloud.');
+        console.log('✅ Backward compatible with existing data.');
     </script>
 </body>
 </html>
