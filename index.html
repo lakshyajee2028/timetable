@@ -1148,44 +1148,10 @@
             }
         }
         .pull-btn {
-            position: fixed;
-            bottom: 160px;
-            right: 12px;
-            background: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            z-index: 120;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .pull-btn:hover {
-            transform: scale(1.08);
-        }
-        .pull-btn:active {
-            transform: scale(0.92);
-        }
-        .pull-btn i {
-            color: white;
+            display: none; /* HIDDEN - auto-sync handles everything */
         }
         .sync-actions {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-        .sync-actions .btn {
-            flex: 1;
-            min-width: 80px;
-            padding: 4px 8px;
-            font-size: 0.65rem;
+            display: none; /* HIDDEN - auto-sync handles everything */
         }
         .history-delete-row {
             display: flex;
@@ -1212,6 +1178,9 @@
             margin-top: 12px;
             border-top: 2px dashed var(--border);
             padding-top: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .tasks-section h3 {
             font-family: 'Fredoka', sans-serif;
@@ -1222,6 +1191,7 @@
             align-items: center;
             gap: 6px;
             margin-bottom: 6px;
+            flex-shrink: 0;
         }
         .task-progress-wrap {
             display: flex;
@@ -1230,6 +1200,7 @@
             margin-bottom: 8px;
             font-size: 0.7rem;
             color: var(--text-muted);
+            flex-shrink: 0;
         }
         .task-progress-bar {
             flex: 1;
@@ -1260,8 +1231,9 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-            max-height: 200px;
-            overflow-y: auto;
+            max-height: none; /* Remove max-height to allow full expansion */
+            overflow-y: visible;
+            flex: 1;
         }
         .task-item {
             display: flex;
@@ -1348,6 +1320,7 @@
             display: flex;
             gap: 5px;
             margin-bottom: 8px;
+            flex-shrink: 0;
         }
         .task-add-row input {
             flex: 1;
@@ -1444,11 +1417,14 @@
             border-radius: var(--radius-sm);
         }
 
-        /* ─── FUTURE TASKS (in Studio tab) ─── */
+        /* ─── STUDIO TASKS ─── */
         .studio-tasks-section {
             margin-top: 12px;
             border-top: 2px solid var(--border);
             padding-top: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .studio-tasks-section h3 {
             font-family: 'Fredoka', sans-serif;
@@ -1459,15 +1435,61 @@
             align-items: center;
             gap: 6px;
             margin-bottom: 6px;
+            flex-shrink: 0;
         }
         .studio-tasks-section .task-list {
-            max-height: 250px;
+            max-height: none;
+            overflow-y: visible;
+            flex: 1;
         }
         .studio-tasks-section .future-date-label {
             font-size: 0.7rem;
             font-weight: 600;
             color: var(--text-muted);
             padding: 4px 0;
+            flex-shrink: 0;
+        }
+        .studio-tasks-section .task-add-row {
+            flex-shrink: 0;
+        }
+        .studio-tasks-section .task-progress-wrap {
+            flex-shrink: 0;
+        }
+
+        /* Today view should fill height properly */
+        #view-today {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #view-today.active {
+            display: flex;
+            flex-direction: column;
+        }
+        #view-today > *:not(.tasks-section) {
+            flex-shrink: 0;
+        }
+        #view-today .tasks-section {
+            flex: 1;
+            min-height: 150px;
+        }
+
+        /* Studio view should fill height properly */
+        #view-create {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #view-create.active {
+            display: flex;
+            flex-direction: column;
+        }
+        #view-create > *:not(.studio-tasks-section) {
+            flex-shrink: 0;
+        }
+        #view-create .studio-tasks-section {
+            flex: 1;
+            min-height: 100px;
         }
     </style>
 </head>
@@ -1562,10 +1584,6 @@
                         <div class="countdown-sub">Tap to set 🎯</div>
                     </div>
                 </div>
-                <div class="sync-actions">
-                    <button class="btn success" id="pull-cloud-btn" style="flex:1;"><i class="fas fa-cloud-download-alt"></i> Pull from Cloud</button>
-                    <button class="btn primary" id="push-cloud-btn" style="flex:1;"><i class="fas fa-cloud-upload-alt"></i> Push to Cloud</button>
-                </div>
                 <h2 id="today-heading"><i class="fas fa-sun"></i> Today's Schedule</h2>
                 <div id="today-container"></div>
 
@@ -1627,7 +1645,7 @@
                 </div>
                 <button class="btn primary" id="save-timetable-btn" style="width:100%;"><i class="fas fa-cloud-arrow-up"></i> SAVE &amp; SYNC</button>
 
-                <!-- ─── FUTURE TASKS (in Studio tab) ─── -->
+                <!-- ─── STUDIO TASKS ─── -->
                 <div class="studio-tasks-section" id="studio-tasks-section">
                     <h3><i class="fas fa-list-check"></i> Tasks for <span id="studio-tasks-date-label">Today</span></h3>
                     <div id="studio-tasks-container"></div>
@@ -1657,11 +1675,9 @@
             </div>
         </main>
 
-        <button class="sync-btn" id="force-sync-btn" title="Force Sync Data (Push + Pull)">
+        <!-- Force Sync Button (only one floating button) -->
+        <button class="sync-btn" id="force-sync-btn" title="Sync Data">
             <i class="fas fa-cloud-upload-alt"></i>
-        </button>
-        <button class="pull-btn" id="pull-sync-btn" title="Pull from Cloud">
-            <i class="fas fa-cloud-download-alt"></i>
         </button>
         <div class="cloud-status" id="cloud-status">
             <i class="fas fa-circle"></i> <span id="cloud-status-text">Checking...</span>
@@ -1734,11 +1750,8 @@
         const userTypeBadge = document.getElementById('user-type-badge');
         const appTitle = document.getElementById('app-title');
         const forceSyncBtn = document.getElementById('force-sync-btn');
-        const pullSyncBtn = document.getElementById('pull-sync-btn');
         const cloudStatus = document.getElementById('cloud-status');
         const cloudStatusText = document.getElementById('cloud-status-text');
-        const pullCloudBtn = document.getElementById('pull-cloud-btn');
-        const pushCloudBtn = document.getElementById('push-cloud-btn');
 
         const toast = document.getElementById('sticker-toast');
         const toastText = document.getElementById('toast-text');
@@ -1838,10 +1851,8 @@
             "📅 Calendar shows festivals, tests & tasks!",
             "🎨 Studio lets you customise any date's timetable!",
             "📆 Select any date in Studio to edit future timetables!",
-            "🔐 Your data syncs across devices via Google!",
-            "🔄 Tap the cloud button on bottom-right to force sync!",
-            "⬇️ Use 'Pull from Cloud' to get latest data!",
-            "⬆️ Use 'Push to Cloud' to upload your data!",
+            "🔐 Your data syncs automatically across devices!",
+            "🔄 Tap the cloud button to force sync!",
             "🗑️ Long-press on history timetable to delete!",
             "✅ Tasks: add, tick, and track progress!",
             "Stay productive! 🚀"
@@ -2128,7 +2139,6 @@
         async function pullFromCloud() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
                 console.warn('Cannot pull: not logged in or Firebase not ready.');
-                showStickerToast('⚠️ Please login with Google or Email to pull data.');
                 return false;
             }
             if (syncInProgress) {
@@ -2264,36 +2274,9 @@
             return true;
         }
 
-        // ─── Buttons ───
-        pullCloudBtn.addEventListener('click', async () => {
-            if (!currentUser || currentUser.isAnonymous) {
-                showStickerToast('⚠️ Please login with Google or Email to pull data.');
-                return;
-            }
-            const success = await pullFromCloud();
-            if (success) refreshAllViews();
-        });
-
-        pushCloudBtn.addEventListener('click', async () => {
-            if (!currentUser || currentUser.isAnonymous) {
-                showStickerToast('⚠️ Please login with Google or Email to push data.');
-                return;
-            }
-            const success = await syncAllToCloud();
-            if (success) refreshAllViews();
-        });
-
+        // ─── Force Sync Button ───
         forceSyncBtn.addEventListener('click', async () => {
             await fullSync();
-        });
-
-        pullSyncBtn.addEventListener('click', async () => {
-            if (!currentUser || currentUser.isAnonymous) {
-                showStickerToast('⚠️ Please login with Google or Email to pull data.');
-                return;
-            }
-            const success = await pullFromCloud();
-            if (success) refreshAllViews();
         });
 
         // ─── Auto-sync ───
@@ -2353,13 +2336,11 @@
             const headerRow = document.getElementById('matrix-header-row');
             const bodyRows = document.getElementById('matrix-body-rows');
 
-            // Clear existing rows
             while (bodyRows.rows.length > 0) {
                 bodyRows.deleteRow(0);
             }
 
             if (!found) {
-                // Default template
                 headerRow.innerHTML = `
                     <th>Subject / Time</th>
                     <th><input type="text" value="08:00 AM" /></th>
@@ -2518,7 +2499,6 @@
             const rows = Array.from(bodyRows.rows).map(row => Array.from(row.cells).map(cell => cell.querySelector(
                 'input')?.value || cell.innerText));
 
-            // Validate
             if (headers.length < 2) {
                 showStickerToast('⚠️ Need at least 1 time column.');
                 return;
@@ -2634,7 +2614,6 @@
                 html += `<p style="color:var(--text-muted);font-size:0.7rem;">No timetable for this date.</p>`;
             }
 
-            // Tasks for this date
             const tasksData = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
             const dateTasks = tasksData.find(t => t.date === dateStr);
             if (dateTasks && dateTasks.tasks && dateTasks.tasks.length > 0) {
@@ -3259,7 +3238,6 @@
             if (histDate) loadHistory(histDate);
             renderTodayTasks();
 
-            // Load studio with today's date
             const studioDate = document.getElementById('studio-date-input').value;
             if (studioDate) {
                 loadStudioTimetable(studioDate);
@@ -3287,11 +3265,12 @@
         window.renderStudioTasks = renderStudioTasks;
         window.loadStudioTimetable = loadStudioTimetable;
 
-        console.log('📚 Study Time-Table loaded with improved Studio and Future Tasks.');
+        console.log('📚 Study Time-Table loaded with improved UI.');
         console.log('📌 Features:');
-        console.log('  - Today tab: Today\'s timetable + tasks');
+        console.log('  - Today tab: Full height for tasks (no scroll needed)');
         console.log('  - Studio tab: Any date\'s timetable + tasks');
         console.log('  - Calendar: View all dates with timetables/tasks');
+        console.log('  - Auto-sync: Removed manual pull/push buttons');
         console.log('✅ Fully backward compatible with existing data.');
     </script>
 </body>
