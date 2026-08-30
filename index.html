@@ -14,8 +14,8 @@
     </script>
 
     <style>
+        /* ─── All original styles remain exactly the same ─── */
         /* ─── REALISTIC BOOK INTRO ANIMATION ─── */
-        /* All animation styles from the provided file */
         * {
             margin: 0;
             padding: 0;
@@ -43,7 +43,6 @@
             perspective: 1400px;
         }
 
-        /* Preloader overlay - will be removed after animation */
         #bwal-preloader {
             position: fixed;
             inset: 0;
@@ -589,7 +588,6 @@
         }
 
         /* ─── REST OF YOUR ORIGINAL STYLES ─── */
-        /* All existing styles remain exactly as they were */
         :root {
             --bg-base: #f4f6fc;
             --bg-card: #ffffff;
@@ -636,7 +634,6 @@
             --modal-overlay: rgba(0, 0, 0, 0.7);
         }
 
-        /* Original app container - hidden during intro */
         .app-container {
             width: 100%;
             max-width: 480px;
@@ -2784,9 +2781,8 @@
 
 <body>
 
-    <!-- 🔥 REALISTIC BOOK INTRO ANIMATION (Full Replacement) -->
+    <!-- 🔥 REALISTIC BOOK INTRO ANIMATION -->
     <div id="bwal-preloader">
-        <!-- Background -->
         <div class="scene-bg">
             <div class="glow one"></div>
             <div class="glow two"></div>
@@ -2798,18 +2794,12 @@
             <div class="particle p5"></div>
             <div class="particle p6"></div>
         </div>
-
-        <!-- Floating Decorations -->
         <div class="decor decor1"></div>
         <div class="decor decor2"></div>
         <div class="decor decor3"></div>
         <div class="decor decor4"></div>
-
-        <!-- Main Scene -->
         <div class="scene">
             <div class="floor-shadow"></div>
-
-            <!-- Book -->
             <div class="book">
                 <div class="book-cover"></div>
                 <div class="pages">
@@ -2827,8 +2817,6 @@
                 <div class="flip flip2"></div>
                 <div class="flip flip3"></div>
             </div>
-
-            <!-- Character -->
             <div class="character">
                 <div class="eyes">
                     <div class="eye"></div>
@@ -2836,14 +2824,12 @@
                 </div>
                 <div class="mouth"></div>
             </div>
-
-            <!-- Text -->
             <div class="title">Time Table</div>
             <div class="subtitle">PLAN • STUDY • ACHIEVE</div>
         </div>
     </div>
 
-    <!-- Rest of the app (unchanged) -->
+    <!-- Rest of the app -->
     <div class="bg-decor">
         <div class="floating-item">📚</div>
         <div class="floating-item">✏️</div>
@@ -3123,6 +3109,7 @@
         let currentUser = null;
         let isFirebaseReady = false;
         let syncInProgress = false;
+        let realtimeUnsubscribe = null;
 
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -3519,6 +3506,107 @@
             } finally { syncInProgress = false; }
         }
 
+        // ─── REAL-TIME SYNC (NEW FEATURE) ───
+        function setupRealtimeSync() {
+            // Clear existing listener if any
+            if (realtimeUnsubscribe) {
+                realtimeUnsubscribe();
+                realtimeUnsubscribe = null;
+            }
+
+            if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
+                console.log('⚠️ Realtime sync: No authenticated user');
+                return;
+            }
+
+            console.log('🔄 Setting up real-time sync for user:', currentUser.uid);
+
+            try {
+                realtimeUnsubscribe = db.collection('users').doc(currentUser.uid)
+                    .onSnapshot({
+                        includeMetadataChanges: true
+                    }, (docSnapshot) => {
+                        if (!docSnapshot.exists) {
+                            console.log('📭 No document exists yet');
+                            return;
+                        }
+
+                        // Only process if the data came from the server (not from local cache)
+                        const source = docSnapshot.metadata.fromCache ? 'local' : 'server';
+                        if (source === 'local') {
+                            console.log('📦 Data from local cache, skipping...');
+                            return;
+                        }
+
+                        const data = docSnapshot.data();
+                        console.log('🔥 Real-time update received from server!', data);
+
+                        // Check what changed and update localStorage
+                        let hasChanges = false;
+
+                        if (data.timetables !== undefined && data.timetables !== null) {
+                            const converted = convertRowsFromFirestore(data.timetables);
+                            const current = JSON.parse(localStorage.getItem(TIMETABLE_KEY)) || [];
+                            if (JSON.stringify(converted) !== JSON.stringify(current)) {
+                                localStorage.setItem(TIMETABLE_KEY, JSON.stringify(converted));
+                                hasChanges = true;
+                                console.log('📊 Timetable updated from cloud');
+                            }
+                        }
+
+                        if (data.tests !== undefined && data.tests !== null) {
+                            const current = JSON.parse(localStorage.getItem(TESTS_KEY)) || [];
+                            if (JSON.stringify(data.tests) !== JSON.stringify(current)) {
+                                localStorage.setItem(TESTS_KEY, JSON.stringify(data.tests || []));
+                                hasChanges = true;
+                                console.log('📝 Tests updated from cloud');
+                            }
+                        }
+
+                        if (data.target) {
+                            const current = JSON.parse(localStorage.getItem(TARGET_KEY)) || {};
+                            if (JSON.stringify(data.target) !== JSON.stringify(current)) {
+                                localStorage.setItem(TARGET_KEY, JSON.stringify(data.target));
+                                hasChanges = true;
+                                console.log('🎯 Target updated from cloud');
+                            }
+                        }
+
+                        if (data.tasks !== undefined && data.tasks !== null) {
+                            const current = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+                            if (JSON.stringify(data.tasks) !== JSON.stringify(current)) {
+                                localStorage.setItem(TASKS_KEY, JSON.stringify(data.tasks || []));
+                                hasChanges = true;
+                                console.log('✅ Tasks updated from cloud');
+                            }
+                        }
+
+                        if (hasChanges) {
+                            console.log('🔄 Refreshing all views due to real-time update');
+                            refreshAllViews();
+                            updateCloudStatus('online');
+                            showStickerToast('🔄 Synced with cloud!');
+                        }
+                    }, (error) => {
+                        console.warn('❌ Realtime listener error:', error);
+                        updateCloudStatus('offline');
+                    });
+
+                console.log('✅ Realtime sync enabled!');
+            } catch (e) {
+                console.warn('⚠️ Failed to setup realtime sync:', e);
+            }
+        }
+
+        // ─── CLEAN UP REALTIME SYNC ───
+        function cleanupRealtimeSync() {
+            if (realtimeUnsubscribe) {
+                realtimeUnsubscribe();
+                realtimeUnsubscribe = null;
+                console.log('🛑 Realtime sync stopped');
+            }
+        }
+
         async function fullSync() {
             if (!currentUser || currentUser.isAnonymous || !isFirebaseReady) {
                 showStickerToast('⚠️ Please login with Google or Email to sync.');
@@ -3839,10 +3927,12 @@
         }
 
         document.getElementById('prev-month').addEventListener('click', () => { currMonth--;
+
             if (currMonth < 0) { currMonth = 11;
                 currYear--; }
             renderCalendar(); });
         document.getElementById('next-month').addEventListener('click', () => { currMonth++;
+
             if (currMonth > 11) { currMonth = 0;
                 currYear++; }
             renderCalendar(); });
@@ -3998,7 +4088,8 @@
                     const checked = t.completed ? 'checked' : '';
                     const icon = t.completed ? 'fa-circle-check' : 'fa-circle';
                     // For studio, hide the check button
-                    const checkHtml = isStudio ? '' : `<span class="task-check ${checked}" data-idx="${idx}" title="Toggle complete"><i class="fas ${icon}"></i></span>`;
+                    const checkHtml = isStudio ? '' :
+                        `<span class="task-check ${checked}" data-idx="${idx}" title="Toggle complete"><i class="fas ${icon}"></i></span>`;
                     html += `
                         <li class="task-item ${t.completed ? 'completed' : ''}" data-idx="${idx}" data-task-id="${t.id || idx}">
                             ${checkHtml}
@@ -4555,11 +4646,17 @@
                 appTitle.innerText = user.isAnonymous ? '📁 GUEST MODE' : `📚 ${name.split(' ')[0] || 'Student'}'s T-T`;
                 showStickerToast(user.isAnonymous ? '👤 Logged in as Guest' : `👋 Welcome ${name}!`);
                 if (!user.isAnonymous) {
+                    // Setup real-time sync
+                    setupRealtimeSync();
                     pullFromCloud().then(() => { refreshAllViews();
                         updateCloudStatus('online'); });
-                } else { refreshAllViews();
-                    updateCloudStatus('offline'); }
+                } else {
+                    cleanupRealtimeSync();
+                    refreshAllViews();
+                    updateCloudStatus('offline');
+                }
             } else {
+                cleanupRealtimeSync();
                 loginOverlay.classList.remove('hidden');
                 userBadge.style.display = 'none';
                 appTitle.innerText = 'SELF STUDY T-T';
@@ -4593,9 +4690,11 @@
                     resolve(true); });
             });
             if (result) {
-                try { await auth.signOut();
+                try {
+                    await auth.signOut();
                     setUser(null);
-                    showStickerToast('👋 Signed out successfully.'); } catch (e) { console.warn('Sign out error:', e);
+                    showStickerToast('👋 Signed out successfully.');
+                } catch (e) { console.warn('Sign out error:', e);
                     showStickerToast('⚠️ Could not sign out.'); }
             }
         });
@@ -4757,6 +4856,7 @@
         window.renderInsightsInside = renderInsightsInside;
 
         console.log('📚 Study Time-Table fully updated!');
+        console.log('✅ REAL-TIME SYNC ENABLED - Changes appear within 1-2 seconds!');
         console.log('✅ Task order preserved - no sorting/position change on done/undone');
         console.log('✅ Studio tab: only add and delete tasks (no done/undone)');
         console.log('✅ Today tab: full done/undo with confirmation');
